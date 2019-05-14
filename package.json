@@ -1,0 +1,24 @@
+{
+  "name": "bluetooth-dev-visualizer",
+  "version": "1.0.0",
+  "description": "Development tool for Ubikampus bluetooth tracker",
+  "repository": "github:ubikampus/bluetooth-dev-visualizer",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ubimqtt": "~2.0.5"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "~3.3.1",
+    "html-webpack-plugin": "~3.2.0",
+    "ts-loader": "~6.0.0",
+    "typescript": "~3.4.5",
+    "webpack": "~4.31.0",
+    "webpack-cli": "~3.3.2"
+  }
+}
