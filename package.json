@@ -4,7 +4,7 @@
   "description": "Development tool for Ubikampus bluetooth tracker",
   "repository": "github:ubikampus/bluetooth-dev-visualizer",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "webpack-dev-server",
     "lint": "tslint -p ."
   },
@@ -15,13 +15,16 @@
     "ubimqtt": "~2.0.5"
   },
   "devDependencies": {
+    "@types/jest": "~24.0.13",
     "html-webpack-plugin": "~3.2.0",
-    "prettier": "^1.17.1",
+    "jest": "~24.8.0",
+    "prettier": "~1.17.1",
+    "ts-jest": "~24.0.2",
     "ts-loader": "~6.0.0",
-    "tslint": "^5.16.0",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-loader": "^3.5.4",
-    "tslint-plugin-prettier": "^2.0.1",
+    "tslint": "~5.16.0",
+    "tslint-config-prettier": "~1.18.0",
+    "tslint-loader": "~3.5.4",
+    "tslint-plugin-prettier": "~2.0.1",
     "typescript": "~3.4.5",
     "webpack": "~4.31.0",
     "webpack-cli": "~3.3.2",

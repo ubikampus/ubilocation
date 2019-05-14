@@ -8,6 +8,8 @@
     "exclude": ["webpack.*.js"]
   },
   "rules": {
+    "interface-name": [true, "never-prefix"],
+    "file-name-casing": [true, "camel-case"],
     "no-console": false,
     "prettier": [true, {
       "printWidth": 80,

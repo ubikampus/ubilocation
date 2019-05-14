@@ -12,3 +12,5 @@ project. See main repo
 
 * `npm install`
 * Open browser at localhost:8080
+
+See `scripts` section in package.json for other development commands.
