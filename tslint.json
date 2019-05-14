@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "tslint:recommended",
+    "tslint-config-prettier",
+    "tslint-plugin-prettier"
+  ],
+  "linterOptions": {
+    "exclude": ["webpack.*.js"]
+  },
+  "rules": {
+    "no-console": false,
+    "prettier": [true, {
+      "printWidth": 80,
+      "trailingComma": "es5",
+      "singleQuote": true
+    }]
+  },
+  "rulesDirectory": "tslint-plugin-prettier"
+}

@@ -18,15 +18,30 @@ module.exports = {
   },
   module: {
     rules: [{
-      test: /\.ts$/,
-      loader: 'ts-loader',
-      exclude: /node_modules/,
-    }]
+        test: /\.ts$/,
+        enforce: 'pre',
+        use: [{
+          loader: 'tslint-loader',
+          options: {
+            typeCheck: true,
+            emitErrors: true
+          }
+        }],
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.ts$/,
+        loader: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ]
   },
   devServer: {
     contentBase: 'dist',
   },
   plugins: [
-    new HtmlWebpackPlugin({ template: 'index.html' }),
+    new HtmlWebpackPlugin({
+      template: 'index.html'
+    }),
   ]
 }
