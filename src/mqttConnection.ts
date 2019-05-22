@@ -1,4 +1,4 @@
-import * as UbiMqtt from 'ubimqtt';
+import { default as UbiMqtt } from 'ubimqtt';
 
 /**
  * See mqtt docs https://github.com/ubikampus/ubimqtt
@@ -8,7 +8,8 @@ import * as UbiMqtt from 'ubimqtt';
 export const connectUbiTopic = (
   uri: string,
   topic: string,
-  onMessage: (msg: string) => void
+  onMessage: (msg: string) => void,
+  onReady: () => void
 ) => {
   /**
    * Drop the topic message, because we already know what topic we are using.
@@ -16,7 +17,6 @@ export const connectUbiTopic = (
   const onMessageWrapper = (_: string, msg: string) => {
     onMessage(msg);
   };
-
   const client = new UbiMqtt(uri);
   console.log('instantiated client, connecting to', uri);
 
@@ -32,6 +32,7 @@ export const connectUbiTopic = (
         } else {
           console.log('successfully subscribed to topic', topic);
         }
+        onReady();
       });
     }
   });

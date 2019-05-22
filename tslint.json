@@ -5,9 +5,12 @@
     "tslint-plugin-prettier"
   ],
   "linterOptions": {
-    "exclude": ["webpack.*.js"]
+    "exclude": ["webpack.*.js", "coverage/**"]
   },
   "rules": {
+    "object-literal-sort-keys": false,
+    "member-access": false,
+    "no-empty": false,
     "interface-name": [true, "never-prefix"],
     "file-name-casing": [true, "camel-case"],
     "no-console": false,

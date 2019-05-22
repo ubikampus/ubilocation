@@ -1,6 +1,6 @@
 module.exports = {
+  collectCoverageFrom: ['src/**/*.ts'],
   preset: 'ts-jest',
   testEnvironment: 'node',
   testRegex: 'Test.ts$',
-  collectCoverageFrom: ['src/**/*.ts']
 };
