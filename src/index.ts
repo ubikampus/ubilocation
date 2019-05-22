@@ -1,13 +1,13 @@
 const MQTT_BUS_URL = 'mqtt://localhost:1883';
 
-import { connectUbiTopic } from './mqttConnection';
+import { drawScreen } from './screen';
 
 const onMessage = (msg: string) => {
   console.log('received message', msg);
 };
 
 const main = () => {
-  connectUbiTopic(MQTT_BUS_URL, 'ohtu/test', onMessage);
+  drawScreen();
 };
 
 main();
