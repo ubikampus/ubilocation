@@ -1,12 +1,13 @@
-import * as UbiMqtt from 'ubimqtt';
+import { drawScreen } from './screen';
 
-const MQTT_BUS_URL = '10.120.0.4';
+const MQTT_BUS_URL = 'mqtt://localhost:1883';
 
-/**
- * See mqtt docs https://github.com/ubikampus/ubimqtt
- */
+const onMessage = (msg: string) => {
+  console.log('received message', msg);
+};
+
 const main = () => {
-  const client = new UbiMqtt(MQTT_BUS_URL);
+  drawScreen();
 };
 
 main();
