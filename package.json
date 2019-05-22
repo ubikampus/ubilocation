@@ -4,7 +4,8 @@
   "description": "Development tool for Ubikampus bluetooth tracker",
   "repository": "github:ubikampus/bluetooth-dev-visualizer",
   "scripts": {
-    "test": "jest --coverage",
+    "test": "jest",
+    "coverage": "jest --coverage",
     "start": "webpack-dev-server",
     "lint": "tslint -p ."
   },
