@@ -4,8 +4,8 @@
   "description": "Development tool for Ubikampus bluetooth tracker",
   "repository": "github:ubikampus/bluetooth-dev-visualizer",
   "scripts": {
-    "build": "NODE_ENV=production webpack",
-    "deploy": "rm -rf dist && npm run build && gh-pages -d dist",
+    "build": "rm -rf dist && NODE_ENV=production webpack",
+    "deploy": "npm run build && gh-pages -d dist",
     "test": "jest",
     "coverage": "jest --coverage",
     "start": "webpack-dev-server",
@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "io-ts": "^1.8.6",
     "pixi.js": "^5.0.3",
     "ubimqtt": "~2.0.5"
   },

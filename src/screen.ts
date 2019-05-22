@@ -17,7 +17,6 @@ export const drawScreen = (onReady: (sprite: any) => void) => {
     map.scale.y = 0.75;
 
     const btIcon = new PIXI.Sprite(resources.bluetoothIcon.texture);
-    btIcon.zOrder += 1;
     btIcon.scale.x = 0.1;
     btIcon.scale.y = 0.1;
 

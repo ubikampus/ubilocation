@@ -1,7 +1,8 @@
 import { deserializeMessage, MqttMessage } from './mqttDeserialize';
 import { drawScreen } from './screen';
-
-const MQTT_BUS_URL = 'mqtt://localhost:1883';
+import { currentEnv } from './environment';
+import { connectUbiTopic } from './mqttConnection';
+const MQTT_BUS_URL = 'mqtt://localhost:9001';
 
 const generateMockMessage = (beaconHash: string): string => {
   const x = Math.floor((Math.random() * 1024) / 2);
