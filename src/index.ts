@@ -1,12 +1,13 @@
-import * as UbiMqtt from 'ubimqtt';
+const MQTT_BUS_URL = 'mqtt://localhost:1883';
 
-const MQTT_BUS_URL = '10.120.0.4';
+import { connectUbiTopic } from './mqttConnection';
 
-/**
- * See mqtt docs https://github.com/ubikampus/ubimqtt
- */
+const onMessage = (msg: string) => {
+  console.log('received message', msg);
+};
+
 const main = () => {
-  const client = new UbiMqtt(MQTT_BUS_URL);
+  connectUbiTopic(MQTT_BUS_URL, 'ohtu/test', onMessage);
 };
 
 main();
