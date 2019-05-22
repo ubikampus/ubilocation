@@ -3,11 +3,14 @@
  */
 
 const path = require('path');
+const process = require('process');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const isProd = process.env.NODE_ENV === 'production';
+
 module.exports = {
-  mode: 'development',
-  devtool: 'inline-source-map',
+  mode: isProd ? 'production' : 'development',
+  devtool: isProd ? undefined : 'inline-source-map',
   entry: path.resolve('src', 'index.ts'),
   resolve: {
     extensions: ['.ts', '.js']
