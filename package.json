@@ -4,6 +4,7 @@
   "description": "Development tool for Ubikampus bluetooth tracker",
   "repository": "github:ubikampus/bluetooth-dev-visualizer",
   "scripts": {
+    "build": "webpack",
     "test": "jest",
     "coverage": "jest --coverage",
     "start": "webpack-dev-server",

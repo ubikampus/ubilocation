@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import bluetoothIcon from '../asset/blue_bt.svg';
+import bluetoothIcon from '../asset/blue_bt.png';
 import backgroundMap from '../asset/kumpula_kerroskartat_2015_1.png';
 
 export const drawScreen = () => {
@@ -17,8 +17,9 @@ export const drawScreen = () => {
     map.scale.y = 0.75;
 
     const btIcon = new PIXI.Sprite(resources.bluetoothIcon.texture);
-    btIcon.scale.x = 0.2;
-    btIcon.scale.y = 0.2;
+    btIcon.zOrder += 1;
+    btIcon.scale.x = 0.1;
+    btIcon.scale.y = 0.1;
 
     btIcon.position.x = 475;
     btIcon.position.y = 250;
