@@ -3,5 +3,6 @@ node_js:
   - "10"
 script:
   - npm run coverage
+  - npm run build  # verify the code type checks and webpack config is valid
 after_success:
   - bash <(curl -s https://codecov.io/bash)
