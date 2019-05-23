@@ -4,8 +4,8 @@ import { drawScreen } from './screen';
 const MQTT_BUS_URL = 'mqtt://localhost:1883';
 
 const generateMockMessage = (beaconHash: string): string => {
-  const x = Math.floor(Math.random() * 1024 / 2);
-  const y = Math.floor(Math.random() * 768 / 2);
+  const x = Math.floor((Math.random() * 1024) / 2);
+  const y = Math.floor((Math.random() * 768) / 2);
   return JSON.stringify({ beaconHash, x, y });
 };
 
