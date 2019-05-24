@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import bluetoothIcon from '../asset/blue_bt.png';
 import backgroundMap from '../asset/kumpula_kerroskartat_2015_1.png';
 
-export const drawScreen = () => {
+export const drawScreen = (onReady: (sprite: any) => void) => {
   const app = new PIXI.Application({ backgroundColor: 0xffffff });
   const loader = PIXI.Loader.shared;
 
@@ -27,5 +27,6 @@ export const drawScreen = () => {
     app.stage.addChild(map);
     app.stage.addChild(btIcon);
     document.body.appendChild(app.view);
+    onReady(btIcon);
   });
 };
