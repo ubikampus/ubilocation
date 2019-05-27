@@ -6,8 +6,8 @@
   "scripts": {
     "build": "rm -rf dist && NODE_ENV=production webpack",
     "deploy": "npm run build && gh-pages -d dist",
-    "test": "jest",
-    "coverage": "jest --coverage",
+    "test": "jest --silent",
+    "coverage": "jest --silent --coverage",
     "start": "webpack-dev-server",
     "lint": "tslint -p ."
   },
