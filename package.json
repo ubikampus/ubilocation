@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "babylonjs": "^4.0.3",
     "pixi.js": "^5.0.3",
     "ubimqtt": "~2.0.5"
   },
