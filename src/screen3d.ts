@@ -1,4 +1,5 @@
 import * as BABYLON from 'babylonjs';
+import backgroundMap from '../asset/kumpula_kerroskartat_2015_1.png';
 
 export const drawScreen3d = () => {
   // Create a canvas DOM element
@@ -33,6 +34,8 @@ const createScene = (canvas: any, engine: any): any => {
     new BABYLON.Vector3(0, 5, -10),
     scene
   );
+  // Change to ortographic projection
+  // camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
   // Target the camera to scene origin
   camera.setTarget(BABYLON.Vector3.Zero());
   // Attach the camera to the canvas
@@ -56,6 +59,10 @@ const createScene = (canvas: any, engine: any): any => {
   sphere.position.y = 1;
   // Create a built-in "ground" shape; its constructor takes 6 params: name, width, height, subdivision, scene, updatable
   const ground = BABYLON.Mesh.CreateGround('ground1', 8, 8, 2, scene, false);
+  // Add a map texture on the "ground" shape
+  const mapMaterial = new BABYLON.StandardMaterial('mapMaterial', scene);
+  mapMaterial.diffuseTexture = new BABYLON.Texture(backgroundMap, scene);
+  ground.material = mapMaterial;
   // Return the created scene
   return scene;
 };
