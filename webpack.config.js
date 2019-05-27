@@ -3,17 +3,21 @@
  */
 
 const path = require('path');
+const process = require('process');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
+
+const isProd = process.env.NODE_ENV === 'production';
 
 module.exports = {
-  mode: 'development',
-  devtool: 'inline-source-map',
+  mode: isProd ? 'production' : 'development',
+  devtool: isProd ? undefined : 'inline-source-map',
   entry: path.resolve('src', 'index.ts'),
   resolve: {
     extensions: ['.ts', '.js']
   },
   output: {
-    filename: 'bundle.js',
+    filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'dist')
   },
   module: {
@@ -48,6 +52,9 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: 'index.html'
+    }),
+    new webpack.EnvironmentPlugin({
+      NODE_ENV: 'development',
     }),
   ]
 }

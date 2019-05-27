@@ -17,3 +17,9 @@ project. See main repo
 * Open browser at localhost:8080
 
 See `scripts` section in package.json for other development commands.
+
+### Deploy to production
+
+* `npm run deploy`
+
+http://ubikampus.github.io/bluetooth-dev-visualizer
