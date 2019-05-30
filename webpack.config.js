@@ -12,9 +12,9 @@ const isProd = process.env.NODE_ENV === 'production';
 module.exports = {
   mode: isProd ? 'production' : 'development',
   devtool: isProd ? undefined : 'inline-source-map',
-  entry: path.resolve('src', 'index.ts'),
+  entry: path.resolve('src', 'index.tsx'),
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js', '.tsx']
   },
   output: {
     filename: '[name].[contenthash].js',
@@ -22,7 +22,7 @@ module.exports = {
   },
   module: {
     rules: [{
-        test: /\.ts$/,
+        test: /\.tsx?$/,
         enforce: 'pre',
         use: [{
           loader: 'tslint-loader',
@@ -34,7 +34,7 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.ts$/,
+        test: /\.tsx?$/,
         loader: 'ts-loader',
         exclude: /node_modules/,
       },
@@ -48,6 +48,7 @@ module.exports = {
   },
   devServer: {
     contentBase: 'dist',
+    historyApiFallback: true
   },
   plugins: [
     new HtmlWebpackPlugin({
