@@ -1,15 +1,21 @@
-export interface MqttMessage {
+import * as t from 'io-ts';
+import { unsafeDecode } from './typeUtil';
+
+const MqttMessageDecoder = t.type({
   /**
    * TODO: document what is beaconHash and how to use it.
    */
-  beaconHash: string;
-  x: number;
-  y: number;
-}
+  beaconHash: t.string,
+
+  x: t.number,
+  y: t.number,
+});
+
+export type MqttMessage = t.TypeOf<typeof MqttMessageDecoder>;
 
 /**
- * TODO: validate input?
+ * Convert raw mqtt message into static type, crash on unexpected input.
  */
-export const deserializeMessage = (rawMessage: string) => {
-  return JSON.parse(rawMessage) as MqttMessage;
+export const deserializeMessage = (rawMessage: string): MqttMessage => {
+  return unsafeDecode(MqttMessageDecoder, JSON.parse(rawMessage));
 };

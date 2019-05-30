@@ -2,7 +2,7 @@ import { deserializeMessage, MqttMessage } from './mqttDeserialize';
 import { drawScreen } from './screen';
 import { drawScreen3d, setPosition } from './screen3d';
 
-const MQTT_BUS_URL = 'mqtt://localhost:1883';
+const MQTT_BUS_URL = 'mqtt://localhost:9001';
 
 const generateMockMessage = (beaconHash: string): string => {
   const x = Math.floor((Math.random() * 1024) / 2);
