@@ -1,6 +1,21 @@
 import * as BABYLON from 'babylonjs';
 import backgroundMap from '../asset/kumpula_kerroskartat_2015_1.png';
 
+let beacon: BABYLON.Mesh;
+
+export const setPosition = (x: number, y: number): void => {
+  if (!beacon) {
+    return;
+  }
+
+  // We are in a XZ-coordinate system
+  // The origin is at the center
+  // The X-axis points to the right
+  // The Z-axis points up
+  beacon.position.x = (x - 1024 / 4) / 100;
+  beacon.position.z = (y - 768 / 4) / 100;
+};
+
 export const drawScreen3d = () => {
   // Create a canvas DOM element
   const canvas = document.createElement('canvas');
@@ -56,6 +71,17 @@ const createScene = (canvas: any, engine: any): any => {
     scene
   );
 
+  // Create a built-in "sphere" shape - it represents a beacon
+  beacon = createSphere(scene);
+
+  // Create a built-in "ground" shape - it represents the background map
+  const ground = createBackgroundMap(scene);
+
+  // Return the created scene
+  return scene;
+};
+
+const createSphere = (scene: BABYLON.Scene): BABYLON.Mesh => {
   // Create a built-in "sphere" shape; its constructor takes 6 params: name, segment, diameter, scene, updatable, sideOrientation
   const sphere = BABYLON.Mesh.CreateSphere(
     'sphere1',
@@ -69,6 +95,10 @@ const createScene = (canvas: any, engine: any): any => {
   // Move the sphere upward 1/2 of its height
   sphere.position.y = 0.25;
 
+  return sphere;
+};
+
+const createBackgroundMap = (scene: BABYLON.Scene): BABYLON.Mesh => {
   // Create a built-in "ground" shape; its constructor takes 6 params: name, width, height, subdivision, scene, updatable
   const ground = BABYLON.Mesh.CreateGround(
     'ground1',
@@ -84,6 +114,5 @@ const createScene = (canvas: any, engine: any): any => {
   mapMaterial.diffuseTexture = new BABYLON.Texture(backgroundMap, scene);
   ground.material = mapMaterial;
 
-  // Return the created scene
-  return scene;
+  return ground;
 };
