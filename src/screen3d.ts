@@ -43,8 +43,10 @@ export const drawScreen3d = () => {
   });
 };
 
-// CreateScene function that creates and returns the scene
-const createScene = (canvas: any, engine: any): any => {
+const createScene = (
+  canvas: HTMLCanvasElement,
+  engine: BABYLON.Engine
+): BABYLON.Scene => {
   // Create a basic BJS Scene object
   const scene = new BABYLON.Scene(engine);
 
