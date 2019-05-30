@@ -28,18 +28,21 @@ export const drawScreen3d = () => {
 const createScene = (canvas: any, engine: any): any => {
   // Create a basic BJS Scene object
   const scene = new BABYLON.Scene(engine);
-  // Create a FreeCamera, and set its position to {x: 0, y: 5, z: -10}
-  const camera = new BABYLON.FreeCamera(
-    'camera1',
-    new BABYLON.Vector3(0, 5, -10),
+
+  // Create an ArcRotateCamera
+  const camera = new BABYLON.ArcRotateCamera(
+    'Camera',
+    -Math.PI / 2,
+    Math.PI / 4,
+    10,
+    new BABYLON.Vector3(0, 0, 0),
     scene
   );
+
   // Change to ortographic projection
   // camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
-  // Target the camera to scene origin
-  camera.setTarget(BABYLON.Vector3.Zero());
   // Attach the camera to the canvas
-  camera.attachControl(canvas, false);
+  camera.attachControl(canvas, true);
   // Create a basic light, aiming 0, 1, 0 - meaning, to the sky
   const light = new BABYLON.HemisphericLight(
     'light1',
@@ -56,13 +59,23 @@ const createScene = (canvas: any, engine: any): any => {
     BABYLON.Mesh.FRONTSIDE
   );
   // Move the sphere upward 1/2 of its height
-  sphere.position.y = 1;
+  sphere.position.y = 0.25;
+
   // Create a built-in "ground" shape; its constructor takes 6 params: name, width, height, subdivision, scene, updatable
-  const ground = BABYLON.Mesh.CreateGround('ground1', 8, 8, 2, scene, false);
+  const ground = BABYLON.Mesh.CreateGround(
+    'ground1',
+    1024 / 100,
+    768 / 100,
+    2,
+    scene,
+    false
+  );
+
   // Add a map texture on the "ground" shape
   const mapMaterial = new BABYLON.StandardMaterial('mapMaterial', scene);
   mapMaterial.diffuseTexture = new BABYLON.Texture(backgroundMap, scene);
   ground.material = mapMaterial;
+
   // Return the created scene
   return scene;
 };
