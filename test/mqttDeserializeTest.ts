@@ -15,4 +15,10 @@ describe('MQTT parsing', () => {
     expect(parsed.x).toBeTruthy();
     expect(parsed.y).toBeTruthy();
   });
+
+  it('should panic for odd input', () => {
+    expect(() => {
+      deserializeMessage('asdfasdf');
+    }).toThrow();
+  });
 });
