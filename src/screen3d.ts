@@ -1,5 +1,8 @@
 import * as BABYLON from 'babylonjs';
-import backgroundMap from '../asset/kumpula_kerroskartat_2015_1.png';
+import backgroundMap from '../asset/kirjasto_2krs.png';
+
+const MAP_WIDTH = 2083;
+const MAP_HEIGHT = 1562;
 
 export const addBeacon = (scene: BABYLON.Scene): BABYLON.Mesh => {
   // Create a built-in "sphere" shape - it represents a beacon
@@ -15,8 +18,8 @@ export const setPosition = (
   // The origin is at the center
   // The X-axis points to the right
   // The Z-axis points up
-  beacon.position.x = (x - 1024 / 4) / 100;
-  beacon.position.z = (y - 768 / 4) / 100;
+  beacon.position.x = (x - MAP_WIDTH / 4) / 100;
+  beacon.position.z = (y - MAP_HEIGHT / 4) / 100;
 };
 
 export const drawScreen3d = (): BABYLON.Scene => {
@@ -60,7 +63,7 @@ const createScene = (
     'Camera',
     -Math.PI / 2,
     Math.PI / 4,
-    10,
+    20,
     new BABYLON.Vector3(0, 0, 0),
     scene
   );
@@ -106,8 +109,8 @@ const createBackgroundMap = (scene: BABYLON.Scene): BABYLON.Mesh => {
   // Create a built-in "ground" shape; its constructor takes 6 params: name, width, height, subdivision, scene, updatable
   const ground = BABYLON.Mesh.CreateGround(
     'ground1',
-    1024 / 100,
-    768 / 100,
+    MAP_WIDTH / 100,
+    MAP_HEIGHT / 100,
     2,
     scene,
     false
