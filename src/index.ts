@@ -1,7 +1,7 @@
 import { deserializeMessage, MqttMessage } from './mqttDeserialize';
 import { drawScreen } from './screen';
-import { currentEnv } from './environment';
-import { connectUbiTopic } from './mqttConnection';
+import { addBeacon, drawScreen3d, setPosition } from './screen3d';
+
 const MQTT_BUS_URL = 'mqtt://localhost:9001';
 
 const generateMockMessage = (beaconHash: string): string => {
@@ -11,20 +11,19 @@ const generateMockMessage = (beaconHash: string): string => {
 };
 
 const main = () => {
-  drawScreen(sprite => {
-    setInterval(() => {
-      try {
-        const messageStr = generateMockMessage('beacon-1');
-        const message = deserializeMessage(messageStr);
-        console.log('received:', messageStr);
+  const scene = drawScreen3d();
+  const beacon = addBeacon(scene);
+  setInterval(() => {
+    try {
+      const messageStr = generateMockMessage('beacon-1');
+      const message = deserializeMessage(messageStr);
+      console.log('received:', messageStr);
 
-        sprite.position.x = message.x;
-        sprite.position.y = message.y;
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    }, 2000);
-  });
+      setPosition(beacon, message.x, message.y);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }, 2000);
 };
 
 main();
