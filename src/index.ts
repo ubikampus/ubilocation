@@ -12,7 +12,7 @@ const generateMockMessage = (beaconHash: string): string => {
 
 const main = () => {
   const scene = drawScreen3d();
-  const beacon = addBeacon(scene);
+  const beacon = addBeacon(scene, 'beacon-1');
   setInterval(() => {
     try {
       const messageStr = generateMockMessage('beacon-1');

@@ -15,8 +15,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "io-ts": "^1.8.6",
     "babylonjs": "^4.0.3",
+    "babylonjs-gui": "^4.0.3",
+    "io-ts": "^1.8.6",
     "pixi.js": "^5.0.3",
     "ubimqtt": "~2.0.5"
   },

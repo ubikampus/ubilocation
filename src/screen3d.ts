@@ -1,9 +1,17 @@
 import * as BABYLON from 'babylonjs';
+import * as GUI from 'babylonjs-gui';
 import backgroundMap from '../asset/kumpula_kerroskartat_2015_1.png';
 
-export const addBeacon = (scene: BABYLON.Scene): BABYLON.Mesh => {
+let labelTexture: GUI.AdvancedDynamicTexture;
+
+export const addBeacon = (scene: BABYLON.Scene, name: string): BABYLON.Mesh => {
   // Create a built-in "sphere" shape - it represents a beacon
-  return createSphere(scene);
+  const beacon = createSphere(scene);
+
+  // Add a label above the sphere
+  createLabel(beacon, name);
+
+  return beacon;
 };
 
 export const setPosition = (
@@ -69,7 +77,7 @@ const createScene = (
   // camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
 
   // Attach the camera to the canvas
-  camera.attachControl(canvas, true);
+  camera.attachControl(canvas, false);
 
   // Create a basic light, aiming 0, 1, 0 - meaning, to the sky
   const light = new BABYLON.HemisphericLight(
@@ -80,6 +88,9 @@ const createScene = (
 
   // Create a built-in "ground" shape - it represents the background map
   const ground = createBackgroundMap(scene);
+
+  // Create a GUI texture for rendering labels
+  labelTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI');
 
   // Return the created scene
   return scene;
@@ -119,4 +130,15 @@ const createBackgroundMap = (scene: BABYLON.Scene): BABYLON.Mesh => {
   ground.material = mapMaterial;
 
   return ground;
+};
+
+const createLabel = (sphere: BABYLON.Mesh, text: string): void => {
+  // Create a text block which shows the name of the beacon
+  const label = new GUI.TextBlock();
+  label.text = text;
+  labelTexture.addControl(label);
+
+  // Move the label so that it tracks the position of the sphere mesh
+  label.linkWithMesh(sphere);
+  label.linkOffsetY = -33;
 };
