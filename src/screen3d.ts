@@ -1,13 +1,16 @@
 import * as BABYLON from 'babylonjs';
 import backgroundMap from '../asset/kumpula_kerroskartat_2015_1.png';
 
-let beacon: BABYLON.Mesh;
+export const addBeacon = (scene: BABYLON.Scene): BABYLON.Mesh => {
+  // Create a built-in "sphere" shape - it represents a beacon
+  return createSphere(scene);
+};
 
-export const setPosition = (x: number, y: number): void => {
-  if (!beacon) {
-    return;
-  }
-
+export const setPosition = (
+  beacon: BABYLON.Mesh,
+  x: number,
+  y: number
+): void => {
   // We are in a XZ-coordinate system
   // The origin is at the center
   // The X-axis points to the right
@@ -16,7 +19,7 @@ export const setPosition = (x: number, y: number): void => {
   beacon.position.z = (y - 768 / 4) / 100;
 };
 
-export const drawScreen3d = () => {
+export const drawScreen3d = (): BABYLON.Scene => {
   // Create a canvas DOM element
   const canvas = document.createElement('canvas');
   canvas.width = window.innerWidth;
@@ -41,6 +44,8 @@ export const drawScreen3d = () => {
   window.addEventListener('resize', () => {
     engine.resize();
   });
+
+  return scene;
 };
 
 const createScene = (
@@ -72,9 +77,6 @@ const createScene = (
     new BABYLON.Vector3(0, 1, 0),
     scene
   );
-
-  // Create a built-in "sphere" shape - it represents a beacon
-  beacon = createSphere(scene);
 
   // Create a built-in "ground" shape - it represents the background map
   const ground = createBackgroundMap(scene);
