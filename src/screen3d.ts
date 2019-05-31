@@ -104,14 +104,14 @@ const createSphere = (scene: BABYLON.Scene): BABYLON.Mesh => {
   const sphere = BABYLON.Mesh.CreateSphere(
     'sphere1',
     16,
-    0.5,
+    0.7,
     scene,
     false,
     BABYLON.Mesh.FRONTSIDE
   );
 
   // Move the sphere upward 1/2 of its height
-  sphere.position.y = 0.25;
+  sphere.position.y = 0.35;
 
   return sphere;
 };
@@ -143,5 +143,5 @@ const createLabel = (sphere: BABYLON.Mesh, text: string): void => {
 
   // Move the label so that it tracks the position of the sphere mesh
   label.linkWithMesh(sphere);
-  label.linkOffsetY = -33;
+  label.linkOffsetY = -25;
 };
