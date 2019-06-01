@@ -19,3 +19,22 @@ export type MqttMessage = t.TypeOf<typeof MqttMessageDecoder>;
 export const deserializeMessage = (rawMessage: string): MqttMessage => {
   return unsafeDecode(MqttMessageDecoder, JSON.parse(rawMessage));
 };
+
+type UrlParse =
+  | { kind: 'success'; url: URL }
+  | { kind: 'fail'; message: string };
+
+export const parseMqttUrl = (rawUrl: string): UrlParse => {
+  try {
+    return { kind: 'success', url: new URL(rawUrl) };
+  } catch (e) {
+    console.log('failed to parse mqtt url', e.toString());
+
+    const message = `unexpected input: "${rawUrl}": ${e}`;
+    return { kind: 'fail', message };
+  }
+};
+
+export const VizQueryDecoder = t.type({ host: t.string, topic: t.string });
+
+export type VizQuery = t.TypeOf<typeof VizQueryDecoder>;
