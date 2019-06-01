@@ -4,36 +4,48 @@ import backgroundMap from '../asset/kirjasto_2krs.png';
 
 const MAP_WIDTH = 2083;
 const MAP_HEIGHT = 1562;
+const SPHERE_DIAMETER = 0.7;
 
 class Screen3D {
   labelTexture: GUI.AdvancedDynamicTexture;
   scene: BABYLON.Scene;
 
-  constructor(canvas: HTMLCanvasElement) {
-    this.scene = this.drawScreen3d(canvas);
-    this.labelTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI');
+  constructor(canvas: HTMLCanvasElement, engine?: BABYLON.Engine) {
+    const engine3d =
+      engine ||
+      new BABYLON.Engine(canvas, true, {
+        preserveDrawingBuffer: true,
+        stencil: true,
+      });
+
+    this.scene = this.drawScreen3d(canvas, engine3d);
+    this.labelTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI(
+      'UI',
+      true,
+      this.scene
+    );
   }
 
-  createSphere(): BABYLON.Mesh {
+  createSphere(diameter: number): BABYLON.Mesh {
     // Create a built-in "sphere" shape; its constructor takes 6 params: name, segment, diameter, scene, updatable, sideOrientation
     const sphere = BABYLON.Mesh.CreateSphere(
       'sphere1',
       16,
-      0.7,
+      diameter,
       this.scene,
       false,
       BABYLON.Mesh.FRONTSIDE
     );
 
     // Move the sphere upward 1/2 of its height
-    sphere.position.y = 0.35;
+    sphere.position.y = diameter / 2;
 
     return sphere;
   }
 
   addBeacon(name: string): BABYLON.Mesh {
     // Create a built-in "sphere" shape - it represents a beacon
-    const beacon = this.createSphere();
+    const beacon = this.createSphere(SPHERE_DIAMETER);
 
     // Add a label above the sphere
     this.createLabel(beacon, name);
@@ -50,16 +62,12 @@ class Screen3D {
     beacon.position.z = (y - MAP_HEIGHT / 4) / 100;
   }
 
-  drawScreen3d(canvas: HTMLCanvasElement): BABYLON.Scene {
+  drawScreen3d(
+    canvas: HTMLCanvasElement,
+    engine: BABYLON.Engine
+  ): BABYLON.Scene {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    document.body.appendChild(canvas);
-
-    // Load the 3D engine
-    const engine = new BABYLON.Engine(canvas, true, {
-      preserveDrawingBuffer: true,
-      stencil: true,
-    });
 
     // call the createScene function
     const scene = this.createScene(canvas, engine);
@@ -109,9 +117,6 @@ class Screen3D {
 
     // Create a built-in "ground" shape - it represents the background map
     this.createBackgroundMap();
-
-    // Create a GUI texture for rendering labels
-    this.labelTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI');
 
     // Return the created scene
     return scene;

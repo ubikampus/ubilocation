@@ -10,7 +10,9 @@ const generateMockMessage = (beaconHash: string): string => {
 };
 
 const main = () => {
-  const screen = new Screen3D(document.createElement('canvas'));
+  const canvas = document.createElement('canvas');
+  document.body.appendChild(canvas);
+  const screen = new Screen3D(canvas);
 
   const beacon = screen.addBeacon('beacon-1');
   setInterval(() => {
