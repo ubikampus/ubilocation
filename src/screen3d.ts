@@ -5,143 +5,147 @@ import backgroundMap from '../asset/kirjasto_2krs.png';
 const MAP_WIDTH = 2083;
 const MAP_HEIGHT = 1562;
 
-let labelTexture: GUI.AdvancedDynamicTexture;
+class Screen3D {
+  labelTexture: GUI.AdvancedDynamicTexture;
+  scene: BABYLON.Scene;
 
-export const addBeacon = (scene: BABYLON.Scene, name: string): BABYLON.Mesh => {
-  // Create a built-in "sphere" shape - it represents a beacon
-  const beacon = createSphere(scene);
+  constructor(canvas: HTMLCanvasElement) {
+    this.scene = this.drawScreen3d(canvas);
+    this.labelTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI');
+  }
 
-  // Add a label above the sphere
-  createLabel(beacon, name);
+  createSphere(): BABYLON.Mesh {
+    // Create a built-in "sphere" shape; its constructor takes 6 params: name, segment, diameter, scene, updatable, sideOrientation
+    const sphere = BABYLON.Mesh.CreateSphere(
+      'sphere1',
+      16,
+      0.7,
+      this.scene,
+      false,
+      BABYLON.Mesh.FRONTSIDE
+    );
 
-  return beacon;
-};
+    // Move the sphere upward 1/2 of its height
+    sphere.position.y = 0.35;
 
-export const setPosition = (
-  beacon: BABYLON.Mesh,
-  x: number,
-  y: number
-): void => {
-  // We are in a XZ-coordinate system
-  // The origin is at the center
-  // The X-axis points to the right
-  // The Z-axis points up
-  beacon.position.x = (x - MAP_WIDTH / 4) / 100;
-  beacon.position.z = (y - MAP_HEIGHT / 4) / 100;
-};
+    return sphere;
+  }
 
-export const drawScreen3d = (): BABYLON.Scene => {
-  // Create a canvas DOM element
-  const canvas = document.createElement('canvas');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  document.body.appendChild(canvas);
+  addBeacon(name: string): BABYLON.Mesh {
+    // Create a built-in "sphere" shape - it represents a beacon
+    const beacon = this.createSphere();
 
-  // Load the 3D engine
-  const engine = new BABYLON.Engine(canvas, true, {
-    preserveDrawingBuffer: true,
-    stencil: true,
-  });
+    // Add a label above the sphere
+    this.createLabel(beacon, name);
 
-  // call the createScene function
-  const scene = createScene(canvas, engine);
+    return beacon;
+  }
 
-  // run the render loop
-  engine.runRenderLoop(() => {
-    scene.render();
-  });
+  setPosition(beacon: BABYLON.Mesh, x: number, y: number): void {
+    // We are in a XZ-coordinate system
+    // The origin is at the center
+    // The X-axis points to the right
+    // The Z-axis points up
+    beacon.position.x = (x - MAP_WIDTH / 4) / 100;
+    beacon.position.z = (y - MAP_HEIGHT / 4) / 100;
+  }
 
-  // the canvas/window resize event handler
-  window.addEventListener('resize', () => {
-    engine.resize();
-  });
+  drawScreen3d(canvas: HTMLCanvasElement): BABYLON.Scene {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    document.body.appendChild(canvas);
 
-  return scene;
-};
+    // Load the 3D engine
+    const engine = new BABYLON.Engine(canvas, true, {
+      preserveDrawingBuffer: true,
+      stencil: true,
+    });
 
-const createScene = (
-  canvas: HTMLCanvasElement,
-  engine: BABYLON.Engine
-): BABYLON.Scene => {
-  // Create a basic BJS Scene object
-  const scene = new BABYLON.Scene(engine);
+    // call the createScene function
+    const scene = this.createScene(canvas, engine);
 
-  // Create an ArcRotateCamera
-  const camera = new BABYLON.ArcRotateCamera(
-    'Camera',
-    -Math.PI / 2,
-    Math.PI / 4,
-    20,
-    new BABYLON.Vector3(0, 0, 0),
-    scene
-  );
+    // run the render loop
+    engine.runRenderLoop(() => {
+      scene.render();
+    });
 
-  // Change to ortographic projection
-  // camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+    // the canvas/window resize event handler
+    window.addEventListener('resize', () => {
+      engine.resize();
+    });
 
-  // Attach the camera to the canvas
-  camera.attachControl(canvas, false);
+    return scene;
+  }
 
-  // Create a basic light, aiming 0, 1, 0 - meaning, to the sky
-  const light = new BABYLON.HemisphericLight(
-    'light1',
-    new BABYLON.Vector3(0, 1, 0),
-    scene
-  );
+  createScene(
+    canvas: HTMLCanvasElement,
+    engine: BABYLON.Engine
+  ): BABYLON.Scene {
+    // Create a basic BJS Scene object
+    const scene = new BABYLON.Scene(engine);
 
-  // Create a built-in "ground" shape - it represents the background map
-  const ground = createBackgroundMap(scene);
+    // Create an ArcRotateCamera
+    const camera = new BABYLON.ArcRotateCamera(
+      'Camera',
+      -Math.PI / 2,
+      Math.PI / 4,
+      20,
+      new BABYLON.Vector3(0, 0, 0),
+      scene
+    );
 
-  // Create a GUI texture for rendering labels
-  labelTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI');
+    // Change to ortographic projection
+    // camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
 
-  // Return the created scene
-  return scene;
-};
+    // Attach the camera to the canvas
+    camera.attachControl(canvas, false);
 
-const createSphere = (scene: BABYLON.Scene): BABYLON.Mesh => {
-  // Create a built-in "sphere" shape; its constructor takes 6 params: name, segment, diameter, scene, updatable, sideOrientation
-  const sphere = BABYLON.Mesh.CreateSphere(
-    'sphere1',
-    16,
-    0.7,
-    scene,
-    false,
-    BABYLON.Mesh.FRONTSIDE
-  );
+    // Create a basic light, aiming 0, 1, 0 - meaning, to the sky
+    const light = new BABYLON.HemisphericLight(
+      'light1',
+      new BABYLON.Vector3(0, 1, 0),
+      scene
+    );
 
-  // Move the sphere upward 1/2 of its height
-  sphere.position.y = 0.35;
+    // Create a built-in "ground" shape - it represents the background map
+    this.createBackgroundMap();
 
-  return sphere;
-};
+    // Create a GUI texture for rendering labels
+    this.labelTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI');
 
-const createBackgroundMap = (scene: BABYLON.Scene): BABYLON.Mesh => {
-  // Create a built-in "ground" shape; its constructor takes 6 params: name, width, height, subdivision, scene, updatable
-  const ground = BABYLON.Mesh.CreateGround(
-    'ground1',
-    MAP_WIDTH / 100,
-    MAP_HEIGHT / 100,
-    2,
-    scene,
-    false
-  );
+    // Return the created scene
+    return scene;
+  }
 
-  // Add a map texture on the "ground" shape
-  const mapMaterial = new BABYLON.StandardMaterial('mapMaterial', scene);
-  mapMaterial.diffuseTexture = new BABYLON.Texture(backgroundMap, scene);
-  ground.material = mapMaterial;
+  createBackgroundMap(): BABYLON.Mesh {
+    // Create a built-in "ground" shape; its constructor takes 6 params: name, width, height, subdivision, scene, updatable
+    const ground = BABYLON.Mesh.CreateGround(
+      'ground1',
+      MAP_WIDTH / 100,
+      MAP_HEIGHT / 100,
+      2,
+      this.scene,
+      false
+    );
 
-  return ground;
-};
+    // Add a map texture on the "ground" shape
+    const mapMaterial = new BABYLON.StandardMaterial('mapMaterial', this.scene);
+    mapMaterial.diffuseTexture = new BABYLON.Texture(backgroundMap, this.scene);
+    ground.material = mapMaterial;
 
-const createLabel = (sphere: BABYLON.Mesh, text: string): void => {
-  // Create a text block which shows the name of the beacon
-  const label = new GUI.TextBlock();
-  label.text = text;
-  labelTexture.addControl(label);
+    return ground;
+  }
 
-  // Move the label so that it tracks the position of the sphere mesh
-  label.linkWithMesh(sphere);
-  label.linkOffsetY = -25;
-};
+  createLabel(sphere: BABYLON.Mesh, text: string): void {
+    // Create a text block which shows the name of the beacon
+    const label = new GUI.TextBlock();
+    label.text = text;
+    this.labelTexture.addControl(label);
+
+    // Move the label so that it tracks the position of the sphere mesh
+    label.linkWithMesh(sphere);
+    label.linkOffsetY = -25;
+  }
+}
+
+export default Screen3D;
