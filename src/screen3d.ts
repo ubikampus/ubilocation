@@ -1,6 +1,7 @@
 import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
 import backgroundMap from '../asset/kirjasto_2krs.png';
+import { currentEnv } from './environment';
 
 const MAP_WIDTH = 2083;
 const MAP_HEIGHT = 1562;
@@ -11,13 +12,14 @@ class Screen3D {
   labelTexture: GUI.AdvancedDynamicTexture;
   scene: BABYLON.Scene;
 
-  constructor(canvas: HTMLCanvasElement, engine?: BABYLON.Engine) {
+  constructor(canvas: HTMLCanvasElement) {
     this.engine =
-      engine ||
-      new BABYLON.Engine(canvas, true, {
-        preserveDrawingBuffer: true,
-        stencil: true,
-      });
+      currentEnv().NODE_ENV === 'test'
+        ? new BABYLON.NullEngine()
+        : new BABYLON.Engine(canvas, true, {
+            preserveDrawingBuffer: true,
+            stencil: true,
+          });
 
     this.scene = this.drawScreen3d(canvas);
     this.labelTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI(

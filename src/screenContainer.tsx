@@ -1,3 +1,7 @@
+/**
+ * TODO: remove duplication in this module?
+ */
+
 import qs from 'qs';
 import React, { MutableRefObject, useEffect, useRef } from 'react';
 import { RouteComponentProps } from 'react-router';
@@ -41,6 +45,7 @@ export const GenuineBusContainer = ({
     const screen = new Screen3D(canvasRef.current);
     const beacon = screen.addBeacon('beacon-1');
     console.log('connecting...');
+
     connectUbiTopic(
       params.host,
       params.topic,

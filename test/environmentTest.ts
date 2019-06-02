@@ -13,6 +13,6 @@ describe('environment functions', () => {
   it('should return "production" if NODE_ENV is "production"', () => {
     process.env.NODE_ENV = 'production';
 
-    expect(currentEnv()).toBe('production');
+    expect(currentEnv().NODE_ENV).toBe('production');
   });
 });

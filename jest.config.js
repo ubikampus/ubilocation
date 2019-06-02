@@ -13,6 +13,7 @@ module.exports = {
 
   setupFiles: [
     'jest-canvas-mock',
+    './test/setup.ts',
   ],
   preset: 'ts-jest',
   testRegex: 'Test.tsx?$',
