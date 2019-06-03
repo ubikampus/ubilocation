@@ -1,6 +1,8 @@
 import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
+import 'babylonjs-loaders';
 import backgroundMap from '../asset/kirjasto_2krs.png';
+import model from '../asset/Building_Geometry.babylon';
 
 const MAP_WIDTH = 2083;
 const MAP_HEIGHT = 1562;
@@ -95,12 +97,15 @@ class Screen3D {
     // Create an ArcRotateCamera
     const camera = new BABYLON.ArcRotateCamera(
       'Camera',
-      -Math.PI / 2,
-      Math.PI / 4,
-      20,
+      Math.PI / 2,
+      7 * Math.PI / 16,
+      70,
       new BABYLON.Vector3(0, 0, 0),
       scene
     );
+
+    // Make the camera zoom slower
+    camera.wheelPrecision *= 3;
 
     // Change to ortographic projection
     // camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
@@ -116,7 +121,13 @@ class Screen3D {
     );
 
     // Create a built-in "ground" shape - it represents the background map
-    this.createBackgroundMap();
+    // this.createBackgroundMap();
+
+    // Load the 3D model
+    BABYLON.SceneLoader.Append('', model, scene, loadedScene => {
+      // do something with the scene
+      console.log('Model loaded...', loadedScene);
+    });
 
     // Return the created scene
     return scene;
