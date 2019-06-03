@@ -6,13 +6,11 @@ describe('environment functions', () => {
     process.env.NODE_ENV = 'asd';
 
     expect(() => {
-      currentEnv();
+      currentEnv('');
     }).toThrow();
   });
 
   it('should return "production" if NODE_ENV is "production"', () => {
-    process.env.NODE_ENV = 'production';
-
-    expect(currentEnv().NODE_ENV).toBe('production');
+    expect(currentEnv(DEFINE_NODE_ENV).NODE_ENV).toBe('test');
   });
 });

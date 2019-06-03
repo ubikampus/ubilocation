@@ -1,6 +1,7 @@
 module.exports = {
   collectCoverageFrom: ['src/**/*.tsx', 'src/**/*.ts'],
   globals: {
+    'DEFINE_NODE_ENV': 'test',
     'ts-jest': {
       diagnostics: false,  // disable type checking, leave that to webpack
     }

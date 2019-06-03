@@ -1,5 +1,4 @@
 import * as t from 'io-ts';
-import { env } from 'process';
 import { unsafeDecode } from './typeUtil';
 
 const EnvDecoder = t.type({
@@ -16,6 +15,11 @@ const EnvDecoder = t.type({
 
 export type Env = t.TypeOf<typeof EnvDecoder>;
 
-export const currentEnv = (): Env => {
-  return unsafeDecode(EnvDecoder, env);
+/**
+ * Pull environment variable from webpack configuration.
+ */
+export const currentEnv = (envVar: string): Env => {
+  return unsafeDecode(EnvDecoder, {
+    NODE_ENV: envVar,
+  });
 };

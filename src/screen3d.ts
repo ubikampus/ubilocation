@@ -14,7 +14,7 @@ class Screen3D {
 
   constructor(canvas: HTMLCanvasElement) {
     this.engine =
-      currentEnv().NODE_ENV === 'test'
+      currentEnv(DEFINE_NODE_ENV).NODE_ENV === 'test'
         ? new BABYLON.NullEngine()
         : new BABYLON.Engine(canvas, true, {
             preserveDrawingBuffer: true,

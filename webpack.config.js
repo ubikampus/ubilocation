@@ -54,8 +54,11 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: 'index.html'
     }),
-    new webpack.EnvironmentPlugin({
-      NODE_ENV: 'development',
+
+    // something weird going on with EnvironmentPlugin? Lets use defineplugin
+    // instead
+    new webpack.DefinePlugin({
+      DEFINE_NODE_ENV: JSON.stringify(isProd ? 'production' : 'development'),
     }),
   ]
 }
