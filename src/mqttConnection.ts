@@ -1,4 +1,22 @@
 import { default as UbiMqtt } from 'ubimqtt';
+import { MqttMessage, deserializeMessage } from './mqttDeserialize';
+
+const MOCK_MESSAGE_INTERVAL = 2000;
+
+export const startMessageMocker = (
+  beaconHash: string,
+  onMessage: (a: MqttMessage) => void,
+  interval = MOCK_MESSAGE_INTERVAL
+): NodeJS.Timeout => {
+  return setInterval(() => {
+    const x = Math.floor((Math.random() * 1024) / 2);
+    const y = Math.floor((Math.random() * 768) / 2);
+
+    const messageStr = JSON.stringify({ beaconHash, x, y });
+    const message = deserializeMessage(messageStr);
+    onMessage(message);
+  }, interval);
+};
 
 /**
  * See mqtt docs https://github.com/ubikampus/ubimqtt

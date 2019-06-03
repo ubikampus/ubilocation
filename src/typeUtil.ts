@@ -16,3 +16,17 @@ export const unsafeDecode = <A>(d: t.Decoder<unknown, A>, value: unknown) => {
     throw new Error('failed to parse type');
   });
 };
+
+/**
+ * The purpose of this helper is to do type safe exhaustiveness checking.
+ *
+ * See "assertNever" in
+ * https://www.typescriptlang.org/docs/handbook/advanced-types.html
+ */
+export const unreachable = (_: never): never => {
+  const msg =
+    'reached unreachable code, this is probably because ' +
+    'there is type casting somewhere.';
+
+  throw new Error(msg);
+};

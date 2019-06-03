@@ -3,7 +3,7 @@ import Screen3D from '../src/screen3d';
 
 const createScreen = () => {
   const canvas = document.createElement('canvas');
-  const screen = new Screen3D(canvas, new BABYLON.NullEngine());
+  const screen = new Screen3D(canvas);
   return screen;
 };
 
@@ -17,12 +17,13 @@ describe('Babylon.JS 3D graphics', () => {
 
   it('assigns label for created beacons', () => {
     const screen = createScreen();
-
     screen.addBeacon('moi');
-    const controls = screen.labelTexture.getChildren() as any;
+
+    const controls = screen.labelTexture.getChildren();
+    const labelControl = controls[0].children[0];
 
     expect(controls.length).toBe(1);
-    expect(controls[0].children[0]._text).toBe('moi');
+    expect((labelControl as any)._text).toBe('moi');
   });
 
   /**

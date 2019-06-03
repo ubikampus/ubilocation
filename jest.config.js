@@ -1,6 +1,7 @@
 module.exports = {
-  collectCoverageFrom: ['src/**/*.ts'],
+  collectCoverageFrom: ['src/**/*.tsx', 'src/**/*.ts'],
   globals: {
+    'DEFINE_NODE_ENV': 'test',
     'ts-jest': {
       diagnostics: false,  // disable type checking, leave that to webpack
     }
@@ -13,7 +14,8 @@ module.exports = {
 
   setupFiles: [
     'jest-canvas-mock',
+    './test/setup.ts',
   ],
   preset: 'ts-jest',
-  testRegex: 'Test.ts$',
+  testRegex: 'Test.tsx?$',
 };
