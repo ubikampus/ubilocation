@@ -39,7 +39,7 @@ describe('mqtt message generator', () => {
     const id = startMessageMocker(
       'abc',
       message => {
-        expect(message.beaconHash).toBe('abc');
+        expect(message.beaconId).toBe('abc');
         clearInterval(id);
         done();
       },
