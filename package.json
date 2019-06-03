@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Development tool for Ubikampus bluetooth tracker",
   "repository": "github:ubikampus/bluetooth-dev-visualizer",
+  "homepage": "https://ubikampus.github.io/bluetooth-dev-visualizer",
   "scripts": {
     "build": "rm -rf dist && NODE_ENV=production webpack",
     "deploy": "npm run build && gh-pages -d dist",

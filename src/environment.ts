@@ -23,3 +23,13 @@ export const currentEnv = (envVar: string): Env => {
     NODE_ENV: envVar,
   });
 };
+
+export const apiRoot = () => {
+  const env = currentEnv(DEFINE_NODE_ENV);
+
+  if (env.NODE_ENV === 'production') {
+    return '/bluetooth-dev-visualizer';
+  } else {
+    return '/';
+  }
+};
