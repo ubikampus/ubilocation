@@ -1,4 +1,4 @@
-import { deserializeMessage } from '../src/mqttDeserialize';
+import { deserializeMessage, parseMqttUrl } from '../src/mqttDeserialize';
 
 const exampleMessage = () => {
   return `{
@@ -25,5 +25,21 @@ describe('MQTT parsing', () => {
     expect(() => {
       deserializeMessage('asdfasdf');
     }).toThrow();
+  });
+
+  it('should parse valid mqtt bus url', () => {
+    const res = parseMqttUrl('wss://localhost:9001');
+
+    expect(res.kind).toBe('success');
+  });
+
+  it('should give informative error message for invalid mqtt url', () => {
+    const res = parseMqttUrl('ws://localhost::123');
+
+    if (res.kind === 'fail') {
+      expect(res.message).toMatch(/invalid url/i);
+    } else {
+      throw new Error('unexpected parse result');
+    }
   });
 });

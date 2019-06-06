@@ -5,7 +5,8 @@
 import qs from 'qs';
 import React, { MutableRefObject, useEffect, useRef } from 'react';
 import { RouteComponentProps } from 'react-router';
-import { startMessageMocker, connectUbiTopic } from './mqttConnection';
+import { default as UbiMqtt } from 'ubimqtt';
+import { startMessageMocker } from './mqttConnection';
 import { VizQueryDecoder, deserializeMessage } from './mqttDeserialize';
 import Screen3D from './screen3d';
 import { unsafeDecode } from './typeUtil';
@@ -46,21 +47,35 @@ export const GenuineBusContainer = ({
     const beacon = screen.addBeacon('beacon-1');
     console.log('connecting...');
 
-    connectUbiTopic(
-      params.host,
-      params.topic,
-      raw => {
-        const parsed = deserializeMessage(raw);
-        screen.setPosition(beacon, parsed.x, parsed.y);
-      },
-      () => {
-        console.log('connected to', params.host);
+    const ubiClient = new UbiMqtt(params.host);
+    console.log('connecting to ubimqtt', params.host);
+    ubiClient.connect((error: any) => {
+      if (error) {
+        console.error('error connecting to mqtt bus', error);
+      } else {
+        ubiClient.subscribe(
+          params.topic,
+          null,
+          (topic: string, rawMessage: string) => {
+            console.log('rawmessage', rawMessage);
+            const parsed = deserializeMessage(rawMessage);
+            screen.setPosition(beacon, parsed.x, parsed.y);
+          },
+          (subErr: any) => {
+            if (subErr) {
+              console.error('error subscribing to topic', subErr);
+            }
+          }
+        );
       }
-    );
+    });
 
     return () => {
-      console.log('disposing all babylon resources...');
-      screen.dispose();
+      console.log('disconnecting from mqtt bus...');
+      ubiClient.disconnect(() => {
+        console.log('disposing all babylon resources...');
+        screen.dispose();
+      });
     };
   }, []);
 
