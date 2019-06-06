@@ -45,14 +45,14 @@ export const GenuineBusContainer = ({
   useEffect(() => {
     const screen = new Screen3D(canvasRef.current);
     const beacon = screen.addBeacon('beacon-1');
-    console.log('connecting...');
-
     const ubiClient = new UbiMqtt(params.host);
+
     console.log('connecting to ubimqtt', params.host);
     ubiClient.connect((error: any) => {
       if (error) {
         console.error('error connecting to mqtt bus', error);
       } else {
+        console.log('subscribing to topic', params.topic);
         ubiClient.subscribe(
           params.topic,
           null,
