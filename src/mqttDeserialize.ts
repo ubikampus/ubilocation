@@ -3,12 +3,18 @@ import { unsafeDecode } from './typeUtil';
 
 const MqttMessageDecoder = t.type({
   /**
-   * TODO: document what is beaconHash and how to use it.
+   * TODO: document what is beaconId and how to use it.
    */
-  beaconHash: t.string,
+  beaconId: t.string,
 
   x: t.number,
   y: t.number,
+  z: t.number,
+
+  xr: t.number,
+  yr: t.number,
+  zr: t.number,
+  alignment: t.number,
 });
 
 export type MqttMessage = t.TypeOf<typeof MqttMessageDecoder>;

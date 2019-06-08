@@ -5,7 +5,15 @@ import { MockBusContainer, GenuineBusContainer } from '../src/screenContainer';
 
 const mockDispose = jest.fn();
 
-jest.mock('../src/mqttConnection');
+jest.mock('ubimqtt', () => {
+  return jest.fn().mockImplementation(() => {
+    return {
+      connect: jest.fn(),
+      disconnect: jest.fn(),
+    };
+  });
+});
+
 jest.mock('../src/screen3d', () => {
   return jest.fn().mockImplementation(() => {
     return {
