@@ -1,6 +1,5 @@
 import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
-import 'babylonjs-loaders';
 import backgroundMap from '../asset/kirjasto_2krs.png';
 import model from '../asset/Building_Geometry_NoRoof.babylon';
 
