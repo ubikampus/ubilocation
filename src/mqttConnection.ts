@@ -9,6 +9,7 @@ export const startMessageMocker = (
   interval = MOCK_MESSAGE_INTERVAL
 ): NodeJS.Timeout => {
   return setInterval(() => {
+    // TODO: set 3d model maximum length as possible upper limit
     const x = Math.floor((Math.random() * 1024) / 2);
     const y = Math.floor((Math.random() * 768) / 2);
 
