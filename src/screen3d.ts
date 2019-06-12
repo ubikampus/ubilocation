@@ -1,6 +1,5 @@
 import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
-import backgroundMap from '../asset/kirjasto_2krs.png';
 import model from '../asset/Building_Geometry_NoRoof.babylon';
 import { currentEnv } from './environment';
 
@@ -118,9 +117,6 @@ class Screen3D {
       scene
     );
 
-    // Create a built-in "ground" shape - it represents the background map
-    // this.createBackgroundMap();
-
     // Load the 3D model
     BABYLON.SceneLoader.Append('', model, scene, loadedScene => {
       // do something with the scene
@@ -129,25 +125,6 @@ class Screen3D {
 
     // Return the created scene
     return scene;
-  }
-
-  createBackgroundMap(): BABYLON.Mesh {
-    // Create a built-in "ground" shape; its constructor takes 6 params: name, width, height, subdivision, scene, updatable
-    const ground = BABYLON.Mesh.CreateGround(
-      'ground1',
-      MAP_WIDTH / 100,
-      MAP_HEIGHT / 100,
-      2,
-      this.scene,
-      false
-    );
-
-    // Add a map texture on the "ground" shape
-    const mapMaterial = new BABYLON.StandardMaterial('mapMaterial', this.scene);
-    mapMaterial.diffuseTexture = new BABYLON.Texture(backgroundMap, this.scene);
-    ground.material = mapMaterial;
-
-    return ground;
   }
 
   createLabel(sphere: BABYLON.Mesh, text: string): void {
