@@ -6,6 +6,11 @@ import { MqttMessage } from './mqttDeserialize';
 
 const MAP_WIDTH = 2083;
 const MAP_HEIGHT = 1562;
+
+/**
+ * TODO: fix naming
+ */
+const MAP_DEPTH = 200;
 const SPHERE_DIAMETER = 0.7;
 
 interface LabeledBeacon {
@@ -48,21 +53,8 @@ class Screen3D {
       BABYLON.Mesh.FRONTSIDE
     );
 
-    // Move the sphere upward 1/2 of its height
-    sphere.position.y = diameter / 2;
-
     return sphere;
   }
-
-  // addBeacon(name: string): BABYLON.Mesh {
-  //   // Create a built-in "sphere" shape - it represents a beacon
-  //   const beacon = this.createSphere(SPHERE_DIAMETER);
-
-  //   // Add a label above the sphere
-  //   this.createLabel(beacon, name);
-
-  //   return beacon;
-  // }
 
   /**
    * Idempotently set the 3D model beacon state to match the given messages from
@@ -81,10 +73,12 @@ class Screen3D {
 
     this.beacons = messages.map(message => {
       const beacon = this.createSphere(SPHERE_DIAMETER);
-      const label = this.createLabel(beacon, message.beaconId);
 
       beacon.position.x = (message.x - MAP_WIDTH / 4) / 100;
       beacon.position.z = (message.y - MAP_HEIGHT / 4) / 100;
+      beacon.position.y = message.z + SPHERE_DIAMETER / 2;
+
+      const label = this.createLabel(beacon, message.beaconId);
 
       return {
         mesh: beacon,

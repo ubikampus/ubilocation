@@ -2,6 +2,8 @@ import MqttParser, { MqttMessage } from './mqttDeserialize';
 
 const MOCK_MESSAGE_INTERVAL = 2000;
 
+const ROOM_HEIGHT_METERS = 3.8;
+
 export class FakeMqttGenerator {
   intervalRef: NodeJS.Timeout;
   onMessage: (a: MqttMessage[]) => void;
@@ -25,7 +27,7 @@ export class FakeMqttGenerator {
     const messages = Array.from(Array(count).keys()).map(id => {
       const x = Math.floor((Math.random() * 1024) / 2);
       const y = Math.floor((Math.random() * 768) / 2);
-      const z = Math.floor((Math.random() * 500) / 2);
+      const z = Math.floor(Math.random() * ROOM_HEIGHT_METERS);
 
       const messageStr = JSON.stringify({
         beaconId: `beacon-${id}`,
