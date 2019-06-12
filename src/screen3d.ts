@@ -57,12 +57,10 @@ class Screen3D {
   }
 
   setPosition(beacon: BABYLON.Mesh, x: number, y: number): void {
-    // We are in a XZ-coordinate system
-    // The origin is at the center
-    // The X-axis points to the right
-    // The Z-axis points up
-    beacon.position.x = (x - MAP_WIDTH / 4) / 100;
-    beacon.position.z = (y - MAP_HEIGHT / 4) / 100;
+    // Each floor is in the XZ plane
+    // The Y axis points up/down between floors
+    beacon.position.x = x;
+    beacon.position.z = -y;
   }
 
   onResize = () => {
