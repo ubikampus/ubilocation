@@ -5,7 +5,7 @@ import { exampleMessage } from './mqttDeserializeTest';
 import { MockBusContainer, GenuineBusContainer } from '../src/screenContainer';
 
 const mockDispose = jest.fn();
-const mockSetPosition = jest.fn();
+const mockUpdateBeacons = jest.fn();
 
 jest.mock('ubimqtt', () => {
   return jest.fn().mockImplementation(() => {
@@ -27,7 +27,7 @@ jest.mock('../src/screen3d', () => {
   return jest.fn().mockImplementation(() => {
     return {
       dispose: mockDispose,
-      setPosition: mockSetPosition,
+      updateBeacons: mockUpdateBeacons,
       addBeacon: jest.fn(),
     };
   });
@@ -84,7 +84,7 @@ describe('3d screen container components', () => {
   });
 
   it('should call setPosition when the beacons move', done => {
-    mockSetPosition.mockImplementation(() => {
+    mockUpdateBeacons.mockImplementation(() => {
       done();
     });
 

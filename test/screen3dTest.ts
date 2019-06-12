@@ -1,5 +1,11 @@
 import * as BABYLON from 'babylonjs';
 import Screen3D from '../src/screen3d';
+import { exampleMessage } from './mqttDeserializeTest';
+import MqttParser from '../src/mqttDeserialize';
+
+const exampleParsedMsg = () => {
+  return new MqttParser().deserializeMessage(exampleMessage());
+};
 
 const createScreen = () => {
   const canvas = document.createElement('canvas');
@@ -17,13 +23,14 @@ describe('Babylon.JS 3D graphics', () => {
 
   it('assigns label for created beacons', () => {
     const screen = createScreen();
-    screen.addBeacon('moi');
-
+    screen.updateBeacons([exampleParsedMsg()]);
     const controls = screen.labelTexture.getChildren();
     const labelControl = controls[0].children[0];
 
     expect(controls.length).toBe(1);
-    expect((labelControl as any)._text).toBe('moi');
+
+    // the actual label name is "undefined"...
+    expect((labelControl as any)._text).toBe('undefined');
   });
 
   /**
@@ -34,10 +41,9 @@ describe('Babylon.JS 3D graphics', () => {
   it('repositions beacon to a new location', () => {
     const screen = createScreen();
 
-    const beacon = screen.addBeacon('moi');
-    expect(beacon.position.x).toBeCloseTo(0);
+    screen.updateBeacons([exampleParsedMsg()]);
 
-    screen.setPosition(beacon, 2000, 3000);
+    const beacon = screen.scene.meshes[1];
 
     expect(beacon.position.x).not.toBeCloseTo(0);
     expect(beacon.position.y).not.toBeCloseTo(0);

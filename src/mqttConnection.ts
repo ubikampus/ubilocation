@@ -4,43 +4,48 @@ const MOCK_MESSAGE_INTERVAL = 2000;
 
 export class FakeMqttGenerator {
   intervalRef: NodeJS.Timeout;
-  onMessage: (a: MqttMessage) => void;
-  beaconId: string;
+  onMessage: (a: MqttMessage[]) => void;
   mqttParser: MqttParser;
 
   constructor(
-    beaconId: string,
     mqttParser: MqttParser,
-    onMessage: (a: MqttMessage) => void,
+    onMessage: (a: MqttMessage[]) => void,
     interval: number = MOCK_MESSAGE_INTERVAL
   ) {
     this.onMessage = onMessage;
     console.log('generating mock messages...');
-    this.intervalRef = setInterval(this.generateMessage, interval);
-    this.beaconId = beaconId;
+    this.intervalRef = setInterval(this.generateMessages, interval);
     this.mqttParser = mqttParser;
   }
 
-  generateMessage = () => {
+  generateMessages = () => {
     // TODO: set 3d model maximum length as possible upper limit
-    const x = Math.floor((Math.random() * 1024) / 2);
-    const y = Math.floor((Math.random() * 768) / 2);
+    const count = Math.ceil(Math.random() * 5);
 
-    const messageStr = JSON.stringify({
-      beaconId: this.beaconId,
-      x,
-      y,
-      z: 0,
+    const messages = Array.from(Array(count).keys()).map(id => {
+      const x = Math.floor((Math.random() * 1024) / 2);
+      const y = Math.floor((Math.random() * 768) / 2);
+      const z = Math.floor((Math.random() * 500) / 2);
 
-      // TODO: generate error values in with Math.random
-      xr: 0.5,
-      yr: 0.9,
-      zr: 0.2,
-      alignment: 123,
+      const messageStr = JSON.stringify({
+        beaconId: `beacon-${id}`,
+        x,
+        y,
+        z,
+
+        // TODO: generate error values in with Math.random
+        xr: Math.random(),
+        yr: Math.random(),
+        zr: Math.random(),
+        alignment: 0 - Math.random(),
+      });
+
+      const parsed = this.mqttParser.deserializeMessage(messageStr);
+
+      return parsed;
     });
 
-    const message = this.mqttParser.deserializeMessage(messageStr);
-    this.onMessage(message);
+    this.onMessage(messages);
   };
 
   stop() {
