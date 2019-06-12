@@ -11,6 +11,7 @@
     "object-literal-sort-keys": false,
     "ordered-imports": false,
     "member-access": false,
+    "member-ordering": false,
     "no-empty": false,
     "interface-name": [true, "never-prefix"],
     "file-name-casing": [true, "camel-case"],

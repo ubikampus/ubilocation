@@ -2,24 +2,27 @@ import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
 import backgroundMap from '../asset/kirjasto_2krs.png';
 import model from '../asset/Building_Geometry_NoRoof.babylon';
+import { currentEnv } from './environment';
 
 const MAP_WIDTH = 2083;
 const MAP_HEIGHT = 1562;
 const SPHERE_DIAMETER = 0.7;
 
 class Screen3D {
+  engine: BABYLON.Engine;
   labelTexture: GUI.AdvancedDynamicTexture;
   scene: BABYLON.Scene;
 
-  constructor(canvas: HTMLCanvasElement, engine?: BABYLON.Engine) {
-    const engine3d =
-      engine ||
-      new BABYLON.Engine(canvas, true, {
-        preserveDrawingBuffer: true,
-        stencil: true,
-      });
+  constructor(canvas: HTMLCanvasElement) {
+    this.engine =
+      currentEnv(DEFINE_NODE_ENV).NODE_ENV === 'test'
+        ? new BABYLON.NullEngine()
+        : new BABYLON.Engine(canvas, true, {
+            preserveDrawingBuffer: true,
+            stencil: true,
+          });
 
-    this.scene = this.drawScreen3d(canvas, engine3d);
+    this.scene = this.drawScreen3d(canvas);
     this.labelTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI(
       'UI',
       true,
@@ -63,35 +66,31 @@ class Screen3D {
     beacon.position.z = (y - MAP_HEIGHT / 4) / 100;
   }
 
-  drawScreen3d(
-    canvas: HTMLCanvasElement,
-    engine: BABYLON.Engine
-  ): BABYLON.Scene {
+  onResize = () => {
+    this.engine.resize();
+  };
+
+  drawScreen3d(canvas: HTMLCanvasElement): BABYLON.Scene {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
     // call the createScene function
-    const scene = this.createScene(canvas, engine);
+    const scene = this.createScene(canvas);
 
     // run the render loop
-    engine.runRenderLoop(() => {
+    this.engine.runRenderLoop(() => {
       scene.render();
     });
 
     // the canvas/window resize event handler
-    window.addEventListener('resize', () => {
-      engine.resize();
-    });
+    window.addEventListener('resize', this.onResize);
 
     return scene;
   }
 
-  createScene(
-    canvas: HTMLCanvasElement,
-    engine: BABYLON.Engine
-  ): BABYLON.Scene {
+  createScene(canvas: HTMLCanvasElement): BABYLON.Scene {
     // Create a basic BJS Scene object
-    const scene = new BABYLON.Scene(engine);
+    const scene = new BABYLON.Scene(this.engine);
 
     // Create an ArcRotateCamera
     const camera = new BABYLON.ArcRotateCamera(
@@ -160,6 +159,15 @@ class Screen3D {
     // Move the label so that it tracks the position of the sphere mesh
     label.linkWithMesh(sphere);
     label.linkOffsetY = -25;
+  }
+
+  /**
+   * Delete all resources and listeners for this Babylonjs session. This must be
+   * called e.g. for every component unmount.
+   */
+  dispose(): void {
+    this.engine.dispose();
+    window.removeEventListener('resize', this.onResize);
   }
 }
 
