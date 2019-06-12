@@ -8,7 +8,7 @@ import { unreachable } from './typeUtil';
 const DEFAULT_MQTT_BUS_URL = 'ws://localhost:9001/mqtt';
 const DEFAULT_TOPIC = 'ohtu/test/locations';
 
-const UrlPromptContainer = withRouter(({ history }: RouteComponentProps) => {
+const UrlPromptContainer = ({ history }: RouteComponentProps) => {
   const mqttParser = new MqttParser();
   const [busText, setBusText] = useState(DEFAULT_MQTT_BUS_URL);
   const [topicText, setTopicText] = useState(DEFAULT_TOPIC);
@@ -39,6 +39,6 @@ const UrlPromptContainer = withRouter(({ history }: RouteComponentProps) => {
       setTopicText={e => setTopicText(e.currentTarget.value)}
     />
   );
-});
+};
 
-export default UrlPromptContainer;
+export default withRouter(UrlPromptContainer);
