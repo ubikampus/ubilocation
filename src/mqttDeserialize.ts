@@ -14,6 +14,10 @@ const MqttMessageDecoder = t.type({
   xr: t.number,
   yr: t.number,
   zr: t.number,
+
+  /**
+   * Should be from -1 to 0;
+   */
   alignment: t.number,
 });
 
