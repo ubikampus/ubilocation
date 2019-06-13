@@ -21,7 +21,6 @@ export class FakeMqttGenerator {
   }
 
   generateMessages = () => {
-    // TODO: use real model/map dimensions for upper limits
     const count = Math.ceil(Math.random() * 5);
 
     const messages = Array.from(Array(count).keys()).map(id => {
