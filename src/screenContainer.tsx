@@ -6,25 +6,28 @@ import qs from 'qs';
 import React, { MutableRefObject, useEffect, useRef } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { default as UbiMqtt } from 'ubimqtt';
-import { startMessageMocker } from './mqttConnection';
-import { VizQueryDecoder, deserializeMessage } from './mqttDeserialize';
+import { FakeMqttGenerator } from './mqttConnection';
+import MqttParser, { VizQueryDecoder } from './mqttDeserialize';
 import Screen3D from './screen3d';
 import { unsafeDecode } from './typeUtil';
 
 export const MockBusContainer = () => {
   const canvasRef: MutableRefObject<HTMLCanvasElement> = useRef(null) as any;
-
   useEffect(() => {
     const screen = new Screen3D(canvasRef.current);
     const beacon = screen.addBeacon('beacon-1');
 
-    const mockerId = startMessageMocker('beacon_hash_123', message => {
-      screen.setPosition(beacon, message.x, message.y);
-    });
+    const mockGenerator = new FakeMqttGenerator(
+      'beacon-1',
+      new MqttParser(),
+      msg => {
+        screen.setPosition(beacon, msg.x, msg.y);
+      }
+    );
 
     return () => {
       console.log('disposing all babylon resources...');
-      clearInterval(mockerId);
+      mockGenerator.stop();
       screen.dispose();
     };
   }, []);
@@ -46,6 +49,7 @@ export const GenuineBusContainer = ({
     const screen = new Screen3D(canvasRef.current);
     const beacon = screen.addBeacon('beacon-1');
     const ubiClient = new UbiMqtt(params.host);
+    const mqttParser = new MqttParser();
 
     console.log('connecting to ubimqtt', params.host);
     ubiClient.connect((error: any) => {
@@ -57,8 +61,7 @@ export const GenuineBusContainer = ({
           params.topic,
           null,
           (topic: string, rawMessage: string) => {
-            console.log('rawmessage', rawMessage);
-            const parsed = deserializeMessage(rawMessage);
+            const parsed = mqttParser.deserializeMessage(rawMessage);
             screen.setPosition(beacon, parsed.x, parsed.y);
           },
           (subErr: any) => {
@@ -72,7 +75,11 @@ export const GenuineBusContainer = ({
 
     return () => {
       console.log('disconnecting from mqtt bus...');
-      ubiClient.disconnect(() => {
+      ubiClient.disconnect((err: any) => {
+        if (err) {
+          console.error('error disconnecting ubiclient', err);
+        }
+
         console.log('disposing all babylon resources...');
         screen.dispose();
       });
