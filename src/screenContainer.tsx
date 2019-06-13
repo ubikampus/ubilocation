@@ -15,15 +15,10 @@ export const MockBusContainer = () => {
   const canvasRef: MutableRefObject<HTMLCanvasElement> = useRef(null) as any;
   useEffect(() => {
     const screen = new Screen3D(canvasRef.current);
-    const beacon = screen.addBeacon('beacon-1');
 
-    const mockGenerator = new FakeMqttGenerator(
-      'beacon-1',
-      new MqttParser(),
-      msg => {
-        screen.setPosition(beacon, msg.x, msg.y);
-      }
-    );
+    const mockGenerator = new FakeMqttGenerator(new MqttParser(), msg => {
+      screen.updateBeacons(msg);
+    });
 
     return () => {
       console.log('disposing all babylon resources...');
@@ -47,7 +42,6 @@ export const GenuineBusContainer = ({
 
   useEffect(() => {
     const screen = new Screen3D(canvasRef.current);
-    const beacon = screen.addBeacon('beacon-1');
     const ubiClient = new UbiMqtt(params.host);
     const mqttParser = new MqttParser();
 
@@ -62,7 +56,7 @@ export const GenuineBusContainer = ({
           null,
           (topic: string, rawMessage: string) => {
             const parsed = mqttParser.deserializeMessage(rawMessage);
-            screen.setPosition(beacon, parsed.x, parsed.y);
+            screen.updateBeacons([parsed]);
           },
           (subErr: any) => {
             if (subErr) {

@@ -2,15 +2,22 @@ import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
 import backgroundMap from '../asset/kirjasto_2krs.png';
 import { currentEnv } from './environment';
+import { MqttMessage } from './mqttDeserialize';
 
 const MAP_WIDTH = 2083;
 const MAP_HEIGHT = 1562;
 const SPHERE_DIAMETER = 0.7;
 
+interface LabeledBeacon {
+  mesh: BABYLON.Mesh;
+  label: GUI.TextBlock;
+}
+
 class Screen3D {
   engine: BABYLON.Engine;
   labelTexture: GUI.AdvancedDynamicTexture;
   scene: BABYLON.Scene;
+  beacons: LabeledBeacon[];
 
   constructor(canvas: HTMLCanvasElement) {
     this.engine =
@@ -27,6 +34,7 @@ class Screen3D {
       true,
       this.scene
     );
+    this.beacons = [];
   }
 
   createSphere(diameter: number): BABYLON.Mesh {
@@ -40,29 +48,38 @@ class Screen3D {
       BABYLON.Mesh.FRONTSIDE
     );
 
-    // Move the sphere upward 1/2 of its height
-    sphere.position.y = diameter / 2;
-
     return sphere;
   }
 
-  addBeacon(name: string): BABYLON.Mesh {
-    // Create a built-in "sphere" shape - it represents a beacon
-    const beacon = this.createSphere(SPHERE_DIAMETER);
-
-    // Add a label above the sphere
-    this.createLabel(beacon, name);
-
-    return beacon;
-  }
-
-  setPosition(beacon: BABYLON.Mesh, x: number, y: number): void {
+  /**
+   * Idempotently set the 3D model beacon state to match the given messages from
+   * MQTT bus.
+   */
+  updateBeacons(messages: MqttMessage[]): void {
     // We are in a XZ-coordinate system
     // The origin is at the center
     // The X-axis points to the right
     // The Z-axis points up
-    beacon.position.x = (x - MAP_WIDTH / 4) / 100;
-    beacon.position.z = (y - MAP_HEIGHT / 4) / 100;
+
+    this.beacons.forEach(beacon => {
+      beacon.label.dispose();
+      beacon.mesh.dispose();
+    });
+
+    this.beacons = messages.map(message => {
+      const beacon = this.createSphere(SPHERE_DIAMETER);
+
+      beacon.position.x = (message.x - MAP_WIDTH / 4) / 100;
+      beacon.position.z = (message.y - MAP_HEIGHT / 4) / 100;
+      beacon.position.y = message.z;
+
+      const label = this.createLabel(beacon, message.beaconId);
+
+      return {
+        mesh: beacon,
+        label,
+      };
+    });
   }
 
   onResize = () => {
@@ -140,7 +157,7 @@ class Screen3D {
     return ground;
   }
 
-  createLabel(sphere: BABYLON.Mesh, text: string): void {
+  createLabel(sphere: BABYLON.Mesh, text: string) {
     // Create a text block which shows the name of the beacon
     const label = new GUI.TextBlock();
     label.text = text;
@@ -149,6 +166,8 @@ class Screen3D {
     // Move the label so that it tracks the position of the sphere mesh
     label.linkWithMesh(sphere);
     label.linkOffsetY = -25;
+
+    return label;
   }
 
   /**
