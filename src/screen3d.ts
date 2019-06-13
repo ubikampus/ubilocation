@@ -71,7 +71,7 @@ class Screen3D {
 
       beacon.position.x = (message.x - MAP_WIDTH / 4) / 100;
       beacon.position.z = (message.y - MAP_HEIGHT / 4) / 100;
-      beacon.position.y = message.z + SPHERE_DIAMETER / 2;
+      beacon.position.y = message.z;
 
       const label = this.createLabel(beacon, message.beaconId);
 
