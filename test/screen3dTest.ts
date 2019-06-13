@@ -1,4 +1,3 @@
-import * as BABYLON from 'babylonjs';
 import Screen3D from '../src/screen3d';
 import { exampleMessage } from './mqttDeserializeTest';
 import MqttParser from '../src/mqttDeserialize';
@@ -14,13 +13,6 @@ const createScreen = () => {
 };
 
 describe('Babylon.JS 3D graphics', () => {
-  it('raises sphere above ground level', () => {
-    const screen = createScreen();
-
-    const sphere = screen.createSphere(0.5);
-    expect(sphere.position.y).toBeCloseTo(0.25);
-  });
-
   it('assigns label for created beacons', () => {
     const screen = createScreen();
     screen.updateBeacons([exampleParsedMsg()]);
