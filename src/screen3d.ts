@@ -6,11 +6,6 @@ import { MqttMessage } from './mqttDeserialize';
 
 const MAP_WIDTH = 2083;
 const MAP_HEIGHT = 1562;
-
-/**
- * TODO: fix naming
- */
-const MAP_DEPTH = 200;
 const SPHERE_DIAMETER = 0.7;
 
 interface LabeledBeacon {
