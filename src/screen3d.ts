@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
-import model from '../asset/Building_Geometry_NoRoof.babylon';
+import model from '../asset/Building_Geometry_Modified.babylon';
 import { currentEnv } from './environment';
 
 const FLOOR_DIMENSIONS_X = 34;
