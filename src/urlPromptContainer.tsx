@@ -2,13 +2,14 @@ import React, { useState, FormEvent, Component } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import qs from 'qs';
 import UrlPrompt from './urlPrompt';
-import { parseMqttUrl } from './mqttDeserialize';
+import MqttParser from './mqttDeserialize';
 import { unreachable } from './typeUtil';
 
 const DEFAULT_MQTT_BUS_URL = 'ws://localhost:9001/mqtt';
 const DEFAULT_TOPIC = 'ohtu/test/locations';
 
-const UrlPromptContainer = withRouter(({ history }: RouteComponentProps) => {
+const UrlPromptContainer = ({ history }: RouteComponentProps) => {
+  const mqttParser = new MqttParser();
   const [busText, setBusText] = useState(DEFAULT_MQTT_BUS_URL);
   const [topicText, setTopicText] = useState(DEFAULT_TOPIC);
 
@@ -17,7 +18,7 @@ const UrlPromptContainer = withRouter(({ history }: RouteComponentProps) => {
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const parsed = parseMqttUrl(busText);
+    const parsed = mqttParser.parseMqttUrl(busText);
 
     if (parsed.kind === 'fail') {
       setBusInputError(parsed.message);
@@ -38,6 +39,6 @@ const UrlPromptContainer = withRouter(({ history }: RouteComponentProps) => {
       setTopicText={e => setTopicText(e.currentTarget.value)}
     />
   );
-});
+};
 
-export default UrlPromptContainer;
+export default withRouter(UrlPromptContainer);

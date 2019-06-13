@@ -1,31 +1,56 @@
-import { default as UbiMqtt } from 'ubimqtt';
-import { MqttMessage, deserializeMessage } from './mqttDeserialize';
+import MqttParser, { MqttMessage } from './mqttDeserialize';
 
 const MOCK_MESSAGE_INTERVAL = 2000;
 
-export const startMessageMocker = (
-  beaconId: string,
-  onMessage: (a: MqttMessage) => void,
-  interval = MOCK_MESSAGE_INTERVAL
-): NodeJS.Timeout => {
-  return setInterval(() => {
-    // Pick a random position on the 2nd floor
-    const x = 34 * Math.random();
-    const y = 7.25 + 35 * Math.random();
+const ROOM_HEIGHT_METERS = 3.8;
 
-    const messageStr = JSON.stringify({
-      beaconId,
-      x,
-      y,
-      z: 0,
+export class FakeMqttGenerator {
+  intervalRef: NodeJS.Timeout;
+  onMessage: (a: MqttMessage[]) => void;
+  mqttParser: MqttParser;
 
-      // TODO: generate error values in with Math.random
-      xr: 0.5,
-      yr: 0.9,
-      zr: 0.2,
-      alignment: 123,
+  constructor(
+    mqttParser: MqttParser,
+    onMessage: (a: MqttMessage[]) => void,
+    interval: number = MOCK_MESSAGE_INTERVAL
+  ) {
+    this.onMessage = onMessage;
+    console.log('generating mock messages...');
+    this.intervalRef = setInterval(this.generateMessages, interval);
+    this.mqttParser = mqttParser;
+  }
+
+  generateMessages = () => {
+    // TODO: use real model/map dimensions for upper limits
+    const count = Math.ceil(Math.random() * 5);
+
+    const messages = Array.from(Array(count).keys()).map(id => {
+      // Pick a random position on the 2nd floor
+      const x = 34 * Math.random();
+      const y = 7.25 + 35 * Math.random();
+      const z = ROOM_HEIGHT_METERS * Math.random();
+
+      const messageStr = JSON.stringify({
+        beaconId: `beacon-${id}`,
+        x,
+        y,
+        z,
+        xr: Math.random(),
+        yr: Math.random(),
+        zr: Math.random(),
+        alignment: 0 - Math.random(),
+      });
+
+      const parsed = this.mqttParser.deserializeMessage(messageStr);
+
+      return parsed;
     });
-    const message = deserializeMessage(messageStr);
-    onMessage(message);
-  }, interval);
-};
+
+    this.onMessage(messages);
+  };
+
+  stop() {
+    clearInterval(this.intervalRef);
+    console.log('stopped generating mock messages');
+  }
+}
