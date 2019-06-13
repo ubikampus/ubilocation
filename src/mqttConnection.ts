@@ -9,9 +9,9 @@ export const startMessageMocker = (
   interval = MOCK_MESSAGE_INTERVAL
 ): NodeJS.Timeout => {
   return setInterval(() => {
-    // Pick a random position in the 2nd floor Ubikampus space
-    const x = 42 * Math.random();
-    const y = 7.25 + 20 * Math.random();
+    // Pick a random position on the 2nd floor
+    const x = 34 * Math.random();
+    const y = 7.25 + 35 * Math.random();
 
     const messageStr = JSON.stringify({
       beaconId,

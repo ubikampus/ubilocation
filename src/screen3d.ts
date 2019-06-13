@@ -3,8 +3,8 @@ import * as GUI from 'babylonjs-gui';
 import model from '../asset/Building_Geometry_NoRoof.babylon';
 import { currentEnv } from './environment';
 
-const MAP_WIDTH = 2083;
-const MAP_HEIGHT = 1562;
+const FLOOR_DIMENSIONS_X = 34;
+const FLOOR_DIMENSIONS_Z = 7.25 + 35;
 const SPHERE_DIAMETER = 0.7;
 
 class Screen3D {
@@ -92,10 +92,10 @@ class Screen3D {
     // Create an ArcRotateCamera
     const camera = new BABYLON.ArcRotateCamera(
       'Camera',
-      Math.PI / 2,
-      (7 * Math.PI) / 16,
+      (3 * Math.PI) / 4,
+      Math.PI / 4,
       70,
-      new BABYLON.Vector3(0, 0, 0),
+      new BABYLON.Vector3(FLOOR_DIMENSIONS_X / 2, 0, -FLOOR_DIMENSIONS_Z / 2),
       scene
     );
 
