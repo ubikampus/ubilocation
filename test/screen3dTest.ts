@@ -35,7 +35,7 @@ describe('Babylon.JS 3D graphics', () => {
 
     screen.updateBeacons([exampleParsedMsg()]);
 
-    const beacon = screen.scene.meshes[1];
+    const beacon = screen.scene.meshes[0];
 
     expect(beacon.position.x).not.toBeCloseTo(0);
     expect(beacon.position.y).not.toBeCloseTo(0);

@@ -1,11 +1,11 @@
 import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
-import backgroundMap from '../asset/kirjasto_2krs.png';
+import model from '../asset/Building_Geometry_Modified.babylon';
 import { currentEnv } from './environment';
 import { MqttMessage } from './mqttDeserialize';
 
-const MAP_WIDTH = 2083;
-const MAP_HEIGHT = 1562;
+const FLOOR_DIMENSIONS_X = 34;
+const FLOOR_DIMENSIONS_Z = 7.25 + 35;
 const SPHERE_DIAMETER = 0.7;
 
 interface LabeledBeacon {
@@ -56,11 +56,6 @@ class Screen3D {
    * MQTT bus.
    */
   updateBeacons(messages: MqttMessage[]): void {
-    // We are in a XZ-coordinate system
-    // The origin is at the center
-    // The X-axis points to the right
-    // The Z-axis points up
-
     this.beacons.forEach(beacon => {
       beacon.label.dispose();
       beacon.mesh.dispose();
@@ -69,8 +64,10 @@ class Screen3D {
     this.beacons = messages.map(message => {
       const beacon = this.createSphere(SPHERE_DIAMETER);
 
-      beacon.position.x = (message.x - MAP_WIDTH / 4) / 100;
-      beacon.position.z = (message.y - MAP_HEIGHT / 4) / 100;
+      // Each floor is in the XZ plane
+      // The Y axis points up/down between floors
+      beacon.position.x = message.x;
+      beacon.position.z = -message.y;
       beacon.position.y = message.z;
 
       const label = this.createLabel(beacon, message.beaconId);
@@ -111,12 +108,15 @@ class Screen3D {
     // Create an ArcRotateCamera
     const camera = new BABYLON.ArcRotateCamera(
       'Camera',
-      -Math.PI / 2,
+      (3 * Math.PI) / 4,
       Math.PI / 4,
-      20,
-      new BABYLON.Vector3(0, 0, 0),
+      70,
+      new BABYLON.Vector3(FLOOR_DIMENSIONS_X / 2, 0, -FLOOR_DIMENSIONS_Z / 2),
       scene
     );
+
+    // Make the camera zoom slower
+    camera.wheelPrecision *= 3;
 
     // Change to ortographic projection
     // camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
@@ -131,30 +131,14 @@ class Screen3D {
       scene
     );
 
-    // Create a built-in "ground" shape - it represents the background map
-    this.createBackgroundMap();
+    // Load the 3D model
+    BABYLON.SceneLoader.Append('', model, scene, loadedScene => {
+      // do something with the scene
+      console.log('Model loaded...', loadedScene);
+    });
 
     // Return the created scene
     return scene;
-  }
-
-  createBackgroundMap(): BABYLON.Mesh {
-    // Create a built-in "ground" shape; its constructor takes 6 params: name, width, height, subdivision, scene, updatable
-    const ground = BABYLON.Mesh.CreateGround(
-      'ground1',
-      MAP_WIDTH / 100,
-      MAP_HEIGHT / 100,
-      2,
-      this.scene,
-      false
-    );
-
-    // Add a map texture on the "ground" shape
-    const mapMaterial = new BABYLON.StandardMaterial('mapMaterial', this.scene);
-    mapMaterial.diffuseTexture = new BABYLON.Texture(backgroundMap, this.scene);
-    ground.material = mapMaterial;
-
-    return ground;
   }
 
   createLabel(sphere: BABYLON.Mesh, text: string) {

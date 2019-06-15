@@ -21,13 +21,13 @@ export class FakeMqttGenerator {
   }
 
   generateMessages = () => {
-    // TODO: use real model/map dimensions for upper limits
     const count = Math.ceil(Math.random() * 5);
 
     const messages = Array.from(Array(count).keys()).map(id => {
-      const x = Math.floor((Math.random() * 1024) / 2);
-      const y = Math.floor((Math.random() * 768) / 2);
-      const z = Math.floor(Math.random() * ROOM_HEIGHT_METERS);
+      // Pick a random position on the 2nd floor
+      const x = 34 * Math.random();
+      const y = 7.25 + 35 * Math.random();
+      const z = ROOM_HEIGHT_METERS * Math.random();
 
       const messageStr = JSON.stringify({
         beaconId: `beacon-${id}`,
