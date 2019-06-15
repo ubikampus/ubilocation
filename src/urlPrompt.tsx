@@ -21,7 +21,7 @@ const UrlPrompt = ({
 }: RouteComponentProps & Props) => (
   <>
     <h3>Ubikampus bluetooth visualizer</h3>
-    <form onSubmit={onPromptSubmit}>
+    <form id="urlPromptForm" onSubmit={onPromptSubmit}>
       <div>
         mqtt bus url
         <input name="busUrl" autoFocus value={busText} onChange={setBusText} />
@@ -41,7 +41,7 @@ const UrlPrompt = ({
         use mocked bluetooth beacons
       </button>
     </div>
-    {inputError && <i>{inputError}</i>}
+    {inputError && <i id="inputError">{inputError}</i>}
   </>
 );
 
