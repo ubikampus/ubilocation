@@ -38,6 +38,13 @@ class Screen3D {
     this.beacons = [];
   }
 
+  /**
+   * Convert the alignment property received from location server into format
+   * Babylonjs uses.
+   *
+   * - location server "alignment" range: -1 to 0
+   * - BabylonJS Vector3 values range from 0 to 1 rad
+   */
   sphereRotation(alignment: number): BABYLON.Vector3 {
     return new BABYLON.Vector3(0, Math.abs(alignment) * 2 * Math.PI, 0);
   }
