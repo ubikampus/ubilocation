@@ -18,7 +18,7 @@ jest.mock('ubimqtt', () => {
     return {
       connect: jest.fn().mockImplementation(cb => cb(null)),
       subscribe,
-      disconnect: jest.fn().mockImplementation(cb => cb()),
+      forceDisconnect: jest.fn().mockImplementation(cb => cb()),
     };
   });
 });

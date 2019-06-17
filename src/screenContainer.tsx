@@ -69,7 +69,7 @@ export const GenuineBusContainer = ({
 
     return () => {
       console.log('disconnecting from mqtt bus...');
-      ubiClient.disconnect((err: any) => {
+      ubiClient.forceDisconnect((err: any) => {
         if (err) {
           console.error('error disconnecting ubiclient', err);
         }

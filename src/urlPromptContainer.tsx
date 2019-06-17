@@ -1,4 +1,4 @@
-import React, { useState, FormEvent, Component } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import qs from 'qs';
 import UrlPrompt from './urlPrompt';

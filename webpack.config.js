@@ -48,6 +48,7 @@ module.exports = {
     ]
   },
   devServer: {
+    host: '0.0.0.0',  // enable usage of another device in the network
     contentBase: 'dist',
     historyApiFallback: true
   },

@@ -3,6 +3,7 @@ import * as GUI from 'babylonjs-gui';
 import model from '../asset/Building_Geometry_Modified.babylon';
 import { currentEnv } from './environment';
 import { MqttMessage } from './mqttDeserialize';
+import { Vector3 } from 'babylonjs';
 
 const FLOOR_DIMENSIONS_X = 34;
 const FLOOR_DIMENSIONS_Z = 7.25 + 35;
@@ -37,16 +38,30 @@ class Screen3D {
     this.beacons = [];
   }
 
-  createSphere(diameter: number): BABYLON.Mesh {
+  /**
+   * Convert the alignment property received from location server into format
+   * Babylonjs uses.
+   *
+   * - location server "alignment" range: -1 to 0
+   * - BabylonJS Vector3 values range from 0 to 1 rad
+   */
+  sphereRotation(alignment: number): BABYLON.Vector3 {
+    return new BABYLON.Vector3(0, Math.abs(alignment) * 2 * Math.PI, 0);
+  }
+
+  createSphere(diameter: number, message: MqttMessage): BABYLON.Mesh {
     // Create a built-in "sphere" shape; its constructor takes 6 params: name, segment, diameter, scene, updatable, sideOrientation
-    const sphere = BABYLON.Mesh.CreateSphere(
+    const sphere = BABYLON.MeshBuilder.CreateSphere(
       'sphere1',
-      16,
-      diameter,
-      this.scene,
-      false,
-      BABYLON.Mesh.FRONTSIDE
+      {
+        diameterX: diameter + message.xr,
+        diameterY: diameter + message.yr,
+        diameterZ: diameter + message.zr,
+      },
+      this.scene
     );
+
+    sphere.rotation = this.sphereRotation(message.alignment);
 
     return sphere;
   }
@@ -62,7 +77,7 @@ class Screen3D {
     });
 
     this.beacons = messages.map(message => {
-      const beacon = this.createSphere(SPHERE_DIAMETER);
+      const beacon = this.createSphere(SPHERE_DIAMETER, message);
 
       // Each floor is in the XZ plane
       // The Y axis points up/down between floors
