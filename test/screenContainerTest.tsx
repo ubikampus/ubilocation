@@ -1,7 +1,7 @@
 import React from 'react';
 import { MemoryRouter, Route } from 'react-router';
 import { mount } from 'enzyme';
-import { exampleMessage } from './mqttDeserializeTest';
+import { exampleMessages } from './mqttDeserializeTest';
 import { MockBusContainer, GenuineBusContainer } from '../src/screenContainer';
 
 const mockDispose = jest.fn();
@@ -12,7 +12,7 @@ jest.mock('ubimqtt', () => {
     const subscribe = jest
       .fn()
       .mockImplementation((topic: string, b: any, cb: any) =>
-        cb(topic, exampleMessage())
+        cb(topic, JSON.stringify(exampleMessages()))
       );
 
     return {

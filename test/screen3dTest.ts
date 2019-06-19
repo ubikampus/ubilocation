@@ -1,9 +1,8 @@
 import Screen3D from '../src/screen3d';
-import { exampleMessage } from './mqttDeserializeTest';
-import MqttParser from '../src/mqttDeserialize';
+import { exampleMessages } from './mqttDeserializeTest';
 
 const exampleParsedMsg = () => {
-  return new MqttParser().deserializeMessage(exampleMessage());
+  return exampleMessages()[0];
 };
 
 const createScreen = () => {
@@ -48,7 +47,7 @@ describe('Babylon.JS 3D graphics', () => {
 
     const boundingBox = res.getBoundingInfo().boundingBox.extendSize;
 
-    expect(boundingBox.x).toBeCloseTo(5.5);
+    expect(boundingBox.x).toBeCloseTo(7.5);
   });
 
   it('assigns label for created beacons', () => {
@@ -60,7 +59,7 @@ describe('Babylon.JS 3D graphics', () => {
     expect(controls.length).toBe(1);
 
     // the actual label name is "undefined"...
-    expect((labelControl as any)._text).toBe('undefined');
+    expect((labelControl as any)._text).toBe('undefined-0');
   });
 
   /**
