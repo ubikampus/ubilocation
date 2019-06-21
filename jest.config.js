@@ -2,6 +2,7 @@ module.exports = {
   collectCoverageFrom: ['src/**/*.tsx', 'src/**/*.ts'],
   globals: {
     'DEFINE_NODE_ENV': 'test',
+    'DEFINE_MAPBOX_TOKEN': 'empty',
     'ts-jest': {
       diagnostics: false,  // disable type checking, leave that to webpack
     }

@@ -21,6 +21,7 @@ const UrlPrompt = ({
 }: RouteComponentProps & Props) => (
   <>
     <h3>Ubikampus bluetooth visualizer</h3>
+    <button onClick={() => history.push('/map')}>Go to map</button>
     <form id="urlPromptForm" onSubmit={onPromptSubmit}>
       <div>
         mqtt bus url

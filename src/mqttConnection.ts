@@ -8,7 +8,7 @@ const MOCK_MESSAGE_INTERVAL = 2000;
 const ROOM_HEIGHT_METERS = 3.8;
 
 export class FakeMqttGenerator {
-  intervalRef: NodeJS.Timeout;
+  intervalRef: number;
   onMessage: (a: BeaconLocation[]) => void;
   mqttParser: MqttParser;
 
