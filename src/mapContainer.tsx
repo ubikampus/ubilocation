@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactMapGl from 'react-map-gl';
 import { currentEnv } from './environment';
 import styled from 'styled-components';
@@ -10,10 +10,6 @@ const Fullscreen = styled.div`
   width: 100vw;
   height: 100vh;
 `;
-
-if (!currentEnv.MAPBOX_TOKEN) {
-  console.error('mapbox api token missing, falling back to raster maps...');
-}
 
 /**
  * Use default Mapbox vector tiles if MAPBOX_TOKEN is found, otherwise fallback
@@ -28,6 +24,12 @@ const MapContainer = () => {
     longitude: KUMPULA_COORDS.lon,
     zoom: 12,
   });
+
+  useEffect(() => {
+    if (!currentEnv.MAPBOX_TOKEN) {
+      console.error('mapbox api token missing, falling back to raster maps...');
+    }
+  }, []);
 
   return (
     <Fullscreen>
