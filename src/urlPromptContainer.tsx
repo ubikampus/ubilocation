@@ -1,15 +1,15 @@
 import React, { useState, FormEvent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import qs from 'qs';
+import queryString from 'query-string';
 import UrlPrompt from './urlPrompt';
-import MqttParser from './mqttDeserialize';
+import Deserializer from './mqttDeserialize';
 import { unreachable } from './typeUtil';
 
 const DEFAULT_MQTT_BUS_URL = 'ws://localhost:9001/mqtt';
 const DEFAULT_TOPIC = 'ohtu/test/locations';
 
 const UrlPromptContainer = ({ history }: RouteComponentProps) => {
-  const mqttParser = new MqttParser();
+  const mqttParser = new Deserializer();
   const [busText, setBusText] = useState(DEFAULT_MQTT_BUS_URL);
   const [topicText, setTopicText] = useState(DEFAULT_TOPIC);
 
@@ -23,7 +23,9 @@ const UrlPromptContainer = ({ history }: RouteComponentProps) => {
     if (parsed.kind === 'fail') {
       setBusInputError(parsed.message);
     } else if (parsed.kind === 'success') {
-      history.push('/viz?' + qs.stringify({ host: busText, topic: topicText }));
+      history.push(
+        '/viz?' + queryString.stringify({ host: busText, topic: topicText })
+      );
     } else {
       unreachable(parsed);
     }

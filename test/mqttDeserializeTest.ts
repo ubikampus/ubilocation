@@ -1,8 +1,9 @@
-import MqttParser, {
+import Deserializer, {
   mqttMessageToLocation,
   BeaconLocation,
   MqttMessageDecoder,
 } from '../src/mqttDeserialize';
+import * as t from 'io-ts';
 import { unsafeDecode } from '../src/typeUtil';
 
 export const exampleMessages = (): BeaconLocation[] => {
@@ -35,20 +36,20 @@ describe('MQTT parsing', () => {
 
   it('should panic for odd input', () => {
     expect(() => {
-      const parser = new MqttParser();
+      const parser = new Deserializer();
       parser.deserializeMessage('asdfasdf');
     }).toThrow();
   });
 
   it('should parse valid mqtt bus url', () => {
-    const parser = new MqttParser();
+    const parser = new Deserializer();
     const res = parser.parseMqttUrl('wss://localhost:9001');
 
     expect(res.kind).toBe('success');
   });
 
   it('should give informative error message for invalid mqtt url', () => {
-    const parser = new MqttParser();
+    const parser = new Deserializer();
     const res = parser.parseMqttUrl('ws://localhost::123');
 
     if (res.kind === 'fail') {
@@ -56,5 +57,31 @@ describe('MQTT parsing', () => {
     } else {
       throw new Error('unexpected parse result');
     }
+  });
+});
+
+describe('query string parsing', () => {
+  it('should throw if required number is missing', () => {
+    const queryDecoder = t.type({
+      lat: t.number,
+      lon: t.number,
+    });
+
+    const parser = new Deserializer();
+
+    expect(() => {
+      parser.parseQuery(queryDecoder, '?lon=60.1');
+    }).toThrow();
+  });
+
+  it('should parse float in the query string', () => {
+    const decoder = t.type({
+      lat: t.number,
+    });
+
+    const parser = new Deserializer();
+
+    expect(parser.parseQuery(decoder, '?lat=50.5').lat).toBeCloseTo(50.5);
+    expect(parser.parseQuery(decoder, 'lat=50.1').lat).toBeCloseTo(50.1);
   });
 });

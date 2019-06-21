@@ -1,4 +1,5 @@
 import * as t from 'io-ts';
+import queryString from 'query-string';
 import { unsafeDecode } from './typeUtil';
 
 /**
@@ -66,7 +67,11 @@ type UrlParse =
   | { kind: 'success'; url: URL }
   | { kind: 'fail'; message: string };
 
-export default class MqttParser {
+/**
+ * The purpose of Deserializer is to provide strict conversion from strings into
+ * static types, so that errors in types are immediately caught.
+ */
+export default class Deserializer {
   /**
    * Convert raw mqtt message into static type, crash on unexpected input.
    */
@@ -87,7 +92,26 @@ export default class MqttParser {
       return { kind: 'fail', message };
     }
   }
+
+  /**
+   * Parse query string into regular javascript object.
+   *
+   * @param type Decoder for the deserialized object
+   * @param rawQuery e.g. "?userLat=61.123&userLng=24.55"
+   */
+  parseQuery<A>(type: t.Decoder<unknown, A>, rawQuery: string) {
+    const parsed = queryString.parse(rawQuery, {
+      parseNumbers: true,
+    });
+
+    return unsafeDecode<A>(type, parsed);
+  }
 }
+
+export const MapLocationQueryDecoder = t.type({
+  lat: t.number,
+  lon: t.number,
+});
 
 export const VizQueryDecoder = t.type({ host: t.string, topic: t.string });
 
