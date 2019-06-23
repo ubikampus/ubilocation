@@ -2,12 +2,23 @@ import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
 import model from '../asset/Building_Geometry_Modified.babylon';
 import { currentEnv } from './environment';
-import { MqttMessage } from './mqttDeserialize';
+import { MqttMessage, BeaconLocation } from './mqttDeserialize';
 import { Vector3 } from 'babylonjs';
 
 const FLOOR_DIMENSIONS_X = 34;
 const FLOOR_DIMENSIONS_Z = 7.25 + 35;
 const SPHERE_DIAMETER = 0.7;
+
+/**
+ * The beacon spheres are stretched according to the xr, yr, zr error values
+ * received from the server. How significant do we want this effect to be?
+ *
+ * TODO: find out what would be the correct way to utilize the error values from
+ * the location server. AFAIK if we have some confidence interval (like 0.95),
+ * we should be able to calculate the exact ellipsoid dimensions, without magic
+ * numbers like this one.
+ */
+const ERROR_SCALING = 5;
 
 interface LabeledBeacon {
   mesh: BABYLON.Mesh;
@@ -42,21 +53,21 @@ class Screen3D {
    * Convert the alignment property received from location server into format
    * Babylonjs uses.
    *
-   * - location server "alignment" range: -1 to 0
+   * - location server "alignment" range: -1 to 1.0 TODO fix
    * - BabylonJS Vector3 values range from 0 to 1 rad
    */
   sphereRotation(alignment: number): BABYLON.Vector3 {
     return new BABYLON.Vector3(0, Math.abs(alignment) * 2 * Math.PI, 0);
   }
 
-  createSphere(diameter: number, message: MqttMessage): BABYLON.Mesh {
+  createSphere(diameter: number, message: BeaconLocation): BABYLON.Mesh {
     // Create a built-in "sphere" shape; its constructor takes 6 params: name, segment, diameter, scene, updatable, sideOrientation
     const sphere = BABYLON.MeshBuilder.CreateSphere(
       'sphere1',
       {
-        diameterX: diameter + message.xr,
-        diameterY: diameter + message.yr,
-        diameterZ: diameter + message.zr,
+        diameterX: diameter + message.xr * ERROR_SCALING,
+        diameterY: diameter + message.yr * ERROR_SCALING,
+        diameterZ: diameter + message.zr * ERROR_SCALING,
       },
       this.scene
     );
@@ -70,7 +81,7 @@ class Screen3D {
    * Idempotently set the 3D model beacon state to match the given messages from
    * MQTT bus.
    */
-  updateBeacons(messages: MqttMessage[]): void {
+  updateBeacons(messages: BeaconLocation[]): void {
     this.beacons.forEach(beacon => {
       beacon.label.dispose();
       beacon.mesh.dispose();
@@ -81,9 +92,9 @@ class Screen3D {
 
       // Each floor is in the XZ plane
       // The Y axis points up/down between floors
-      beacon.position.x = message.x;
-      beacon.position.z = -message.y;
-      beacon.position.y = message.z;
+      beacon.position.x = message.xMeters;
+      beacon.position.z = message.zMeters;
+      beacon.position.y = message.yMeters;
 
       const label = this.createLabel(beacon, message.beaconId);
 

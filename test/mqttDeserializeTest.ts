@@ -1,25 +1,36 @@
-import MqttParser from '../src/mqttDeserialize';
+import MqttParser, {
+  mqttMessageToLocation,
+  BeaconLocation,
+  MqttMessageDecoder,
+} from '../src/mqttDeserialize';
+import { unsafeDecode } from '../src/typeUtil';
 
-export const exampleMessage = () => {
-  return `{
-    "beaconId": "undefined",
-    "x": 86.200010304358,
-    "y": 33.79480855847156,
-    "z": 22.23232,
-    "xr": 0.3450343712509113,
-    "yr": 0.48663315791883244,
-    "zr": 0.8,
-    "alignment": -0.4801854848714045
-  }`;
+export const exampleMessages = (): BeaconLocation[] => {
+  return Array.from(Array(10).keys()).map(index => {
+    const rawMessage = `{
+      "beaconId": "undefined-${index}",
+      "x": 86.200010304358,
+      "y": 33.79480855847156,
+      "z": 22.23232,
+      "xr": 0.3450343712509113,
+      "yr": 0.48663315791883244,
+      "zr": 0.8,
+      "alignment": -0.4801854848714045
+    }`;
+
+    const parsed = unsafeDecode(MqttMessageDecoder, JSON.parse(rawMessage));
+    const location = mqttMessageToLocation(parsed);
+
+    return location;
+  });
 };
 
 describe('MQTT parsing', () => {
   it('should parse x and y coords from the MQTT message', () => {
-    const parser = new MqttParser();
-    const parsed = parser.deserializeMessage(exampleMessage());
+    const parsed = exampleMessages();
 
-    expect(parsed.x).toBeTruthy();
-    expect(parsed.y).toBeTruthy();
+    expect(parsed[0].xMeters).toBeTruthy();
+    expect(parsed[0].yMeters).toBeTruthy();
   });
 
   it('should panic for odd input', () => {

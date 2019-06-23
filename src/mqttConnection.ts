@@ -1,4 +1,7 @@
-import MqttParser, { MqttMessage } from './mqttDeserialize';
+import MqttParser, {
+  BeaconLocation,
+  mqttMessageToLocation,
+} from './mqttDeserialize';
 
 const MOCK_MESSAGE_INTERVAL = 2000;
 
@@ -6,12 +9,12 @@ const ROOM_HEIGHT_METERS = 3.8;
 
 export class FakeMqttGenerator {
   intervalRef: NodeJS.Timeout;
-  onMessage: (a: MqttMessage[]) => void;
+  onMessage: (a: BeaconLocation[]) => void;
   mqttParser: MqttParser;
 
   constructor(
     mqttParser: MqttParser,
-    onMessage: (a: MqttMessage[]) => void,
+    onMessage: (a: BeaconLocation[]) => void,
     interval: number = MOCK_MESSAGE_INTERVAL
   ) {
     this.onMessage = onMessage;
@@ -25,11 +28,11 @@ export class FakeMqttGenerator {
 
     const messages = Array.from(Array(count).keys()).map(id => {
       // Pick a random position on the 2nd floor
-      const x = 34 * Math.random();
-      const y = 7.25 + 35 * Math.random();
-      const z = ROOM_HEIGHT_METERS * Math.random();
+      const x = 34000 * Math.random();
+      const y = 7250 + 35000 * Math.random();
+      const z = ROOM_HEIGHT_METERS * 1000 * Math.random();
 
-      const messageStr = JSON.stringify({
+      const parsed = {
         beaconId: `beacon-${id}`,
         x,
         y,
@@ -38,11 +41,9 @@ export class FakeMqttGenerator {
         yr: Math.random(),
         zr: Math.random(),
         alignment: 0 - Math.random(),
-      });
+      };
 
-      const parsed = this.mqttParser.deserializeMessage(messageStr);
-
-      return parsed;
+      return mqttMessageToLocation(parsed);
     });
 
     this.onMessage(messages);
