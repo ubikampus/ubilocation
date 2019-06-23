@@ -9,6 +9,17 @@ const FLOOR_DIMENSIONS_X = 34;
 const FLOOR_DIMENSIONS_Z = 7.25 + 35;
 const SPHERE_DIAMETER = 0.7;
 
+/**
+ * The beacon spheres are stretched according to the xr, yr, zr error values
+ * received from the server. How significant do we want this effect to be?
+ *
+ * TODO: find out what would be the correct way to utilize the error values from
+ * the location server. AFAIK if we have some confidence interval (like 0.95),
+ * we should be able to calculate the exact ellipsoid dimensions, without magic
+ * numbers like this one.
+ */
+const ERROR_SCALING = 5;
+
 interface LabeledBeacon {
   mesh: BABYLON.Mesh;
   label: GUI.TextBlock;
@@ -54,9 +65,9 @@ class Screen3D {
     const sphere = BABYLON.MeshBuilder.CreateSphere(
       'sphere1',
       {
-        diameterX: diameter + message.xr * 5,
-        diameterY: diameter + message.yr * 5,
-        diameterZ: diameter + message.zr * 5,
+        diameterX: diameter + message.xr * ERROR_SCALING,
+        diameterY: diameter + message.yr * ERROR_SCALING,
+        diameterZ: diameter + message.zr * ERROR_SCALING,
       },
       this.scene
     );
