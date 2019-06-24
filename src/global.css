@@ -1,0 +1,5 @@
+/* These are the global defaults. Not for invidual components. */
+
+body {
+  margin: 0;
+}

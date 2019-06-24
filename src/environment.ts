@@ -11,6 +11,7 @@ const EnvDecoder = t.type({
      */
     t.literal('test'),
   ]),
+  MAPBOX_TOKEN: t.union([t.undefined, t.string]),
 });
 
 export type Env = t.TypeOf<typeof EnvDecoder>;
@@ -18,16 +19,17 @@ export type Env = t.TypeOf<typeof EnvDecoder>;
 /**
  * Pull environment variable from webpack configuration.
  */
-export const currentEnv = (envVar: string): Env => {
+const loadEnv = (): Env => {
   return unsafeDecode(EnvDecoder, {
-    NODE_ENV: envVar,
+    NODE_ENV: DEFINE_NODE_ENV,
+    MAPBOX_TOKEN: DEFINE_MAPBOX_TOKEN,
   });
 };
 
-export const apiRoot = () => {
-  const env = currentEnv(DEFINE_NODE_ENV);
+export const currentEnv = loadEnv();
 
-  if (env.NODE_ENV === 'production') {
+export const apiRoot = () => {
+  if (currentEnv.NODE_ENV === 'production') {
     return '/bluetooth-dev-visualizer';
   } else {
     return '/';

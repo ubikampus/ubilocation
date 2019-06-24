@@ -7,8 +7,16 @@ const process = require('process');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const isProd = process.env.NODE_ENV === 'production';
+
+if (!process.env.MAPBOX_TOKEN) {
+  console.error(
+    'MAPBOX_TOKEN is missing from .env file, falling back to raster maps'
+  );
+}
 
 module.exports = {
   mode: isProd ? 'production' : 'development',
@@ -41,9 +49,13 @@ module.exports = {
       },
       {
         test: /\.(png|svg|jpg|gif|babylon)$/,
-        use: [
-          'file-loader'
-        ]
+        use: 'file-loader',
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.css$/,
+        loader: ['style-loader', 'css-loader'],
+        exclude: /node_modules/,
       }
     ]
   },
@@ -61,6 +73,7 @@ module.exports = {
     // instead
     new webpack.DefinePlugin({
       DEFINE_NODE_ENV: JSON.stringify(isProd ? 'production' : 'development'),
+      DEFINE_MAPBOX_TOKEN: JSON.stringify(process.env.MAPBOX_TOKEN),
     }),
 
     new CopyPlugin(['asset/404.html'])
