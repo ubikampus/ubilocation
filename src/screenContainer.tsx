@@ -2,21 +2,19 @@
  * TODO: remove duplication in this module?
  */
 
-import qs from 'qs';
 import React, { MutableRefObject, useEffect, useRef } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { default as UbiMqtt } from 'ubimqtt';
 import { FakeMqttGenerator } from './mqttConnection';
-import MqttParser, { VizQueryDecoder } from './mqttDeserialize';
+import Deserializer, { VizQueryDecoder } from './mqttDeserialize';
 import Screen3D from './screen3d';
-import { unsafeDecode } from './typeUtil';
 
 export const MockBusContainer = () => {
   const canvasRef: MutableRefObject<HTMLCanvasElement> = useRef(null) as any;
   useEffect(() => {
     const screen = new Screen3D(canvasRef.current);
 
-    const mockGenerator = new FakeMqttGenerator(new MqttParser(), msg => {
+    const mockGenerator = new FakeMqttGenerator(new Deserializer(), msg => {
       screen.updateBeacons(msg);
     });
 
@@ -34,16 +32,13 @@ export const GenuineBusContainer = ({
   location: { search },
 }: RouteComponentProps) => {
   const canvasRef: MutableRefObject<HTMLCanvasElement> = useRef(null) as any;
+  const parser = new Deserializer();
 
-  const params = unsafeDecode(
-    VizQueryDecoder,
-    qs.parse(search, { ignoreQueryPrefix: true })
-  );
+  const params = parser.parseQuery(VizQueryDecoder, search);
 
   useEffect(() => {
     const screen = new Screen3D(canvasRef.current);
     const ubiClient = new UbiMqtt(params.host);
-    const mqttParser = new MqttParser();
 
     console.log('connecting to ubimqtt', params.host);
     ubiClient.connect((error: any) => {
@@ -55,7 +50,7 @@ export const GenuineBusContainer = ({
           params.topic,
           null,
           (topic: string, rawMessage: string) => {
-            const parsed = mqttParser.deserializeMessage(rawMessage);
+            const parsed = parser.deserializeMessage(rawMessage);
             screen.updateBeacons([parsed]);
           },
           (subErr: any) => {

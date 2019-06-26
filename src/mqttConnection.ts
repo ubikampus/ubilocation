@@ -1,4 +1,4 @@
-import MqttParser, {
+import Deserializer, {
   BeaconLocation,
   mqttMessageToLocation,
 } from './mqttDeserialize';
@@ -10,10 +10,10 @@ const ROOM_HEIGHT_METERS = 3.8;
 export class FakeMqttGenerator {
   intervalRef: number;
   onMessage: (a: BeaconLocation[]) => void;
-  mqttParser: MqttParser;
+  mqttParser: Deserializer;
 
   constructor(
-    mqttParser: MqttParser,
+    mqttParser: Deserializer,
     onMessage: (a: BeaconLocation[]) => void,
     interval: number = MOCK_MESSAGE_INTERVAL
   ) {

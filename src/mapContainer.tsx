@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import ReactMapGl from 'react-map-gl';
+import ReactMapGl, { Marker } from 'react-map-gl';
 import { currentEnv } from './environment';
 import styled from 'styled-components';
 import fallbackStyle from './fallbackMapStyle.json';
+import { RouteComponentProps, withRouter } from 'react-router';
+import Deserializer, { MapLocationQueryDecoder } from './mqttDeserialize';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
+const DEFAULT_ZOOM_LEVEL = 12;
 
 const Fullscreen = styled.div`
   width: 100vw;
@@ -18,11 +21,18 @@ const Fullscreen = styled.div`
  * See https://wiki.openstreetmap.org/wiki/Tile_servers
  * and https://github.com/CartoDB/basemap-styles
  */
-const MapContainer = () => {
+const MapContainer = ({ location }: RouteComponentProps) => {
+  const parser = new Deserializer();
+
+  const queryParams =
+    location.search === ''
+      ? null
+      : parser.parseQuery(MapLocationQueryDecoder, location.search);
+
   const [viewport, setViewport] = useState({
-    latitude: KUMPULA_COORDS.lat,
-    longitude: KUMPULA_COORDS.lon,
-    zoom: 12,
+    latitude: queryParams ? queryParams.lat : KUMPULA_COORDS.lat,
+    longitude: queryParams ? queryParams.lon : KUMPULA_COORDS.lon,
+    zoom: DEFAULT_ZOOM_LEVEL,
   });
 
   useEffect(() => {
@@ -43,9 +53,17 @@ const MapContainer = () => {
         onViewportChange={vp => {
           setViewport(vp);
         }}
-      />
+      >
+        {queryParams && (
+          <Marker
+            latitude={queryParams.lat}
+            longitude={queryParams.lon}
+            className="mapboxgl-user-location-dot"
+          />
+        )}
+      </ReactMapGl>
     </Fullscreen>
   );
 };
 
-export default MapContainer;
+export default withRouter(MapContainer);
