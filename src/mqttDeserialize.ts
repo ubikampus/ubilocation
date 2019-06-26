@@ -22,7 +22,7 @@ const MessageLocationShared = t.type({
   /**
    * Should be from -1.0 to 1.0;
    */
-  alignment: t.number,
+  alignment: t.union([t.undefined, t.number]),
 });
 
 /**
@@ -75,7 +75,7 @@ export default class Deserializer {
   /**
    * Convert raw mqtt message into static type, crash on unexpected input.
    */
-  deserializeMessage(rawMessage: string): BeaconLocation {
+  deserializeMessage(rawMessage: string): BeaconLocation[] {
     return JSON.parse(rawMessage).map((obj: unknown) => {
       const message = unsafeDecode(MqttMessageDecoder, obj);
       return mqttMessageToLocation(message);
