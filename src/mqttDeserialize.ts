@@ -1,5 +1,5 @@
 import * as t from 'io-ts';
-import queryString from 'query-string';
+import queryStringParser from 'query-string';
 import { unsafeDecode } from './typeUtil';
 
 /**
@@ -97,10 +97,10 @@ export default class Deserializer {
    * Parse query string into regular javascript object.
    *
    * @param type Decoder for the deserialized object
-   * @param rawQuery e.g. "?userLat=61.123&userLng=24.55"
+   * @param queryString see https://en.wikipedia.org/wiki/Query_string
    */
-  parseQuery<A>(type: t.Decoder<unknown, A>, rawQuery: string) {
-    const parsed = queryString.parse(rawQuery, {
+  parseQuery<A>(type: t.Decoder<unknown, A>, queryString: string) {
+    const parsed = queryStringParser.parse(queryString, {
       parseNumbers: true,
     });
 
