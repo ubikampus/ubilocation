@@ -7,7 +7,12 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import Deserializer, { MapLocationQueryDecoder } from './mqttDeserialize';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
-const DEFAULT_ZOOM_LEVEL = 12;
+const DEFAULT_NONTRACKED_ZOOM = 12;
+
+/**
+ * When user lands to the page with a position.
+ */
+const DEFAULT_TRACKED_ZOOM = 18;
 
 const Fullscreen = styled.div`
   width: 100vw;
@@ -32,7 +37,7 @@ const MapContainer = ({ location }: RouteComponentProps) => {
   const [viewport, setViewport] = useState({
     latitude: queryParams ? queryParams.lat : KUMPULA_COORDS.lat,
     longitude: queryParams ? queryParams.lon : KUMPULA_COORDS.lon,
-    zoom: DEFAULT_ZOOM_LEVEL,
+    zoom: queryParams ? DEFAULT_TRACKED_ZOOM : DEFAULT_NONTRACKED_ZOOM,
   });
 
   useEffect(() => {
@@ -46,7 +51,11 @@ const MapContainer = ({ location }: RouteComponentProps) => {
       <ReactMapGl
         // NOTE: onViewportChange adds extra properties to `viewport`
         {...viewport}
-        mapStyle={currentEnv.MAPBOX_TOKEN ? undefined : fallbackStyle}
+        mapStyle={
+          currentEnv.MAPBOX_TOKEN
+            ? 'mapbox://styles/ljljljlj/cjxf77ldr0wsz1dqmsl4zko9y'
+            : fallbackStyle
+        }
         mapboxApiAccessToken={currentEnv.MAPBOX_TOKEN}
         width="100%"
         height="100%"
