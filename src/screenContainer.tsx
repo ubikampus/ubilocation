@@ -51,7 +51,7 @@ export const GenuineBusContainer = ({
           null,
           (topic: string, rawMessage: string) => {
             const parsed = parser.deserializeMessage(rawMessage);
-            screen.updateBeacons([parsed]);
+            screen.updateBeacons(parsed);
           },
           (subErr: any) => {
             if (subErr) {

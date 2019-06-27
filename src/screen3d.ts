@@ -72,7 +72,9 @@ class Screen3D {
       this.scene
     );
 
-    sphere.rotation = this.sphereRotation(message.alignment);
+    if (message.alignment !== undefined) {
+      sphere.rotation = this.sphereRotation(message.alignment);
+    }
 
     return sphere;
   }
@@ -169,8 +171,7 @@ class Screen3D {
 
   createLabel(sphere: BABYLON.Mesh, text: string) {
     // Create a text block which shows the name of the beacon
-    const label = new GUI.TextBlock();
-    label.text = text;
+    const label = new GUI.TextBlock('beaconLabel', text);
     this.labelTexture.addControl(label);
 
     // Move the label so that it tracks the position of the sphere mesh
