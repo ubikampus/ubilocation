@@ -1,5 +1,5 @@
 import * as t from 'io-ts';
-import { unsafeDecode } from '../src/typeUtil';
+import { unsafeDecode } from './typeUtil';
 
 describe('unsafeDecode', () => {
   it('should parse json input', () => {

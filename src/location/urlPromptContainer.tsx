@@ -3,7 +3,7 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import queryString from 'query-string';
 import UrlPrompt from './urlPrompt';
 import Deserializer from './mqttDeserialize';
-import { unreachable } from './typeUtil';
+import { unreachable } from '../common/typeUtil';
 
 const DEFAULT_MQTT_BUS_URL = 'ws://localhost:9001/mqtt';
 const DEFAULT_TOPIC = 'ohtu/test/locations';

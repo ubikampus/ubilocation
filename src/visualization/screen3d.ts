@@ -1,9 +1,8 @@
 import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
-import model from '../asset/Building_Geometry_Modified.babylon';
-import { currentEnv } from './environment';
-import { MqttMessage, BeaconLocation } from './mqttDeserialize';
-import { Vector3 } from 'babylonjs';
+import model from '../../asset/Building_Geometry_Modified.babylon';
+import { currentEnv } from '../common/environment';
+import { BeaconLocation } from '../location/mqttDeserialize';
 
 const FLOOR_DIMENSIONS_X = 34;
 const FLOOR_DIMENSIONS_Z = 7.25 + 35;

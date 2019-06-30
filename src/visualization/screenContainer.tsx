@@ -5,8 +5,8 @@
 import React, { MutableRefObject, useEffect, useRef } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { default as UbiMqtt } from 'ubimqtt';
-import { FakeMqttGenerator } from './mqttConnection';
-import Deserializer, { VizQueryDecoder } from './mqttDeserialize';
+import { FakeMqttGenerator } from '../location/mqttConnection';
+import Deserializer, { VizQueryDecoder } from '../location/mqttDeserialize';
 import Screen3D from './screen3d';
 
 export const MockBusContainer = () => {

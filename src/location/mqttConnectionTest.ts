@@ -1,5 +1,5 @@
-import { FakeMqttGenerator } from '../src/mqttConnection';
-import Deserializer from '../src/mqttDeserialize';
+import { FakeMqttGenerator } from './mqttConnection';
+import Deserializer from './mqttDeserialize';
 
 describe('mqtt message generator', () => {
   it('should call onMessage with a deserialized message', done => {
