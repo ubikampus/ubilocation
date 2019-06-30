@@ -1,6 +1,6 @@
 import Deserializer, {
-  BeaconLocation,
-  mqttMessageToLocation,
+  BabylonBeacon,
+  mqttMessageToBabylon,
 } from './mqttDeserialize';
 
 const MOCK_MESSAGE_INTERVAL = 2000;
@@ -9,12 +9,12 @@ const ROOM_HEIGHT_METERS = 3.8;
 
 export class FakeMqttGenerator {
   intervalRef: number;
-  onMessage: (a: BeaconLocation[]) => void;
+  onMessage: (a: BabylonBeacon[]) => void;
   mqttParser: Deserializer;
 
   constructor(
     mqttParser: Deserializer,
-    onMessage: (a: BeaconLocation[]) => void,
+    onMessage: (a: BabylonBeacon[]) => void,
     interval: number = MOCK_MESSAGE_INTERVAL
   ) {
     this.onMessage = onMessage;
@@ -43,7 +43,7 @@ export class FakeMqttGenerator {
         alignment: 0 - Math.random(),
       };
 
-      return mqttMessageToLocation(parsed);
+      return mqttMessageToBabylon(parsed);
     });
 
     this.onMessage(messages);

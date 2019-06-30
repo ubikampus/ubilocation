@@ -16,6 +16,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@turf/turf": "^5.1.6",
     "babylonjs": "^4.0.3",
     "babylonjs-gui": "^4.0.3",
     "dotenv": "^8.0.0",
