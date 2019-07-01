@@ -1,6 +1,6 @@
 import * as t from 'io-ts';
 import queryStringParser from 'query-string';
-import { unsafeDecode } from './typeUtil';
+import { unsafeDecode } from '../common/typeUtil';
 
 /**
  * Represents shared properties between received MQTT location message, and

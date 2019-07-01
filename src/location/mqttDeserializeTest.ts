@@ -2,9 +2,9 @@ import Deserializer, {
   mqttMessageToLocation,
   BeaconLocation,
   MqttMessageDecoder,
-} from '../src/mqttDeserialize';
+} from './mqttDeserialize';
 import * as t from 'io-ts';
-import { unsafeDecode } from '../src/typeUtil';
+import { unsafeDecode } from '../common/typeUtil';
 
 export const exampleMessages = (): BeaconLocation[] => {
   return Array.from(Array(10).keys()).map(index => {

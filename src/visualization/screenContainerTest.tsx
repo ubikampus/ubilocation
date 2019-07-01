@@ -1,8 +1,8 @@
 import React from 'react';
 import { MemoryRouter, Route } from 'react-router';
 import { mount } from 'enzyme';
-import { exampleMessages } from './mqttDeserializeTest';
-import { MockBusContainer, GenuineBusContainer } from '../src/screenContainer';
+import { exampleMessages } from '../location/mqttDeserializeTest';
+import { MockBusContainer, GenuineBusContainer } from './screenContainer';
 
 const mockDispose = jest.fn();
 const mockUpdateBeacons = jest.fn();
@@ -23,7 +23,7 @@ jest.mock('ubimqtt', () => {
   });
 });
 
-jest.mock('../src/screen3d', () => {
+jest.mock('./screen3d', () => {
   return jest.fn().mockImplementation(() => {
     return {
       dispose: mockDispose,
@@ -35,7 +35,7 @@ jest.mock('../src/screen3d', () => {
 
 const mockStop = jest.fn();
 
-jest.mock('../src/mqttConnection', () => {
+jest.mock('../location/mqttConnection', () => {
   return {
     FakeMqttGenerator: jest.fn().mockImplementation(() => {
       return {

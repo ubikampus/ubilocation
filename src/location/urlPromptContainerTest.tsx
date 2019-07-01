@@ -1,6 +1,6 @@
 import React, { ComponentClass } from 'react';
 import { mount } from 'enzyme';
-import UrlPromptContainer from '../src/urlPromptContainer';
+import UrlPromptContainer from './urlPromptContainer';
 
 const mockPush = jest.fn();
 

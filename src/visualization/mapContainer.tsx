@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import ReactMapGl, { Marker } from 'react-map-gl';
-import { currentEnv } from './environment';
+import { currentEnv } from '../common/environment';
 import styled from 'styled-components';
 import fallbackStyle from './fallbackMapStyle.json';
 import { RouteComponentProps, withRouter } from 'react-router';
-import Deserializer, { MapLocationQueryDecoder } from './mqttDeserialize';
+import Deserializer, {
+  MapLocationQueryDecoder,
+} from '../location/mqttDeserialize';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 12;

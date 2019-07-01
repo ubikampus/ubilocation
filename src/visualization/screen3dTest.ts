@@ -1,5 +1,5 @@
-import Screen3D from '../src/screen3d';
-import { exampleMessages } from './mqttDeserializeTest';
+import Screen3D from './screen3d';
+import { exampleMessages } from '../location/mqttDeserializeTest';
 
 const exampleParsedMsg = () => {
   return exampleMessages()[0];

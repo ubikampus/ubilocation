@@ -1,9 +1,12 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { GenuineBusContainer, MockBusContainer } from './screenContainer';
-import UrlPromptContainer from './urlPromptContainer';
-import { apiRoot } from './environment';
-import MapContainer from './mapContainer';
+import {
+  GenuineBusContainer,
+  MockBusContainer,
+} from './visualization/screenContainer';
+import UrlPromptContainer from './location/urlPromptContainer';
+import { apiRoot } from './common/environment';
+import MapContainer from './visualization/mapContainer';
 
 const NotFound = () => <h3>404 page not found</h3>;
 
