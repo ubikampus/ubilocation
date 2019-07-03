@@ -5,8 +5,8 @@ import destination from '@turf/destination';
 
 const LIBRARY_BEARING = 42.5;
 const LIBRARY_ORIGO = {
-  lat: 60.205325,
-  lon: 24.962115,
+  lat: 60.205318,
+  lon: 24.962113,
 };
 
 /**

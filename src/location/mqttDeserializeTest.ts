@@ -114,7 +114,7 @@ describe('geographic coordinate conversion', () => {
     input.y = 41000.0; // length of library wall
 
     const westCorner = {
-      lat: 60.2050755,
+      lat: 60.2050688,
       lon: 24.9615679,
     };
 
