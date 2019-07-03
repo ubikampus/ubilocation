@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import ReactMapGl, { Marker } from 'react-map-gl';
-import { currentEnv } from '../common/environment';
-import styled from 'styled-components';
-import fallbackStyle from './fallbackMapStyle.json';
 import { RouteComponentProps, withRouter } from 'react-router';
+import { default as UbiMqtt } from 'ubimqtt';
+import styled from 'styled-components';
+import { currentEnv } from '../common/environment';
+import fallbackStyle from './fallbackMapStyle.json';
 import Deserializer, {
   MapLocationQueryDecoder,
 } from '../location/mqttDeserialize';
@@ -44,9 +45,9 @@ const MapContainer = ({ location }: RouteComponentProps) => {
   );
 
   const [viewport, setViewport] = useState({
-    latitude: queryParams ? queryParams.lat : KUMPULA_COORDS.lat,
-    longitude: queryParams ? queryParams.lon : KUMPULA_COORDS.lon,
-    zoom: queryParams ? DEFAULT_TRACKED_ZOOM : DEFAULT_NONTRACKED_ZOOM,
+    latitude: queryParams.lat ? queryParams.lat : KUMPULA_COORDS.lat,
+    longitude: queryParams.lon ? queryParams.lon : KUMPULA_COORDS.lon,
+    zoom: queryParams.lat ? DEFAULT_TRACKED_ZOOM : DEFAULT_NONTRACKED_ZOOM,
   });
 
   const [isOnline, setIsOnline] = useState(false);
@@ -55,6 +56,33 @@ const MapContainer = ({ location }: RouteComponentProps) => {
     if (!currentEnv.MAPBOX_TOKEN) {
       console.error('mapbox api token missing, falling back to raster maps...');
     }
+
+    const ubiClient = new UbiMqtt(queryParams.host);
+    console.log('connecting to ', queryParams.host);
+    ubiClient.connect((error: any) => {
+      if (error) {
+        console.error('error connecting to ubi mqtt', error);
+      } else {
+        ubiClient.subscribe(
+          queryParams.topic,
+          null,
+          (topic: string, msg: string) => {
+            console.log('received message');
+          },
+          (err: any) => {
+            if (err) {
+              console.error('error during sub', err);
+            }
+          }
+        );
+      }
+    });
+
+    return () => {
+      ubiClient.forceDisconnect(() => {
+        console.log('disconnected');
+      });
+    };
   }, []);
 
   const UserMarker = isOnline ? Marker : OfflineMarker;
