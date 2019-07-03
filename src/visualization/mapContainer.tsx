@@ -38,10 +38,10 @@ const OfflineMarker = styled(Marker)`
 const MapContainer = ({ location }: RouteComponentProps) => {
   const parser = new Deserializer();
 
-  const queryParams =
-    location.search === ''
-      ? null
-      : parser.parseQuery(MapLocationQueryDecoder, location.search);
+  const queryParams = parser.parseQuery(
+    MapLocationQueryDecoder,
+    location.search
+  );
 
   const [viewport, setViewport] = useState({
     latitude: queryParams ? queryParams.lat : KUMPULA_COORDS.lat,
@@ -76,7 +76,7 @@ const MapContainer = ({ location }: RouteComponentProps) => {
           setViewport(vp);
         }}
       >
-        {queryParams && (
+        {queryParams.lat && queryParams.lon && (
           <UserMarker
             latitude={queryParams.lat}
             longitude={queryParams.lon}

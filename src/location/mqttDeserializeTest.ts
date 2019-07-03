@@ -45,24 +45,6 @@ describe('MQTT parsing', () => {
       parser.deserializeMessage('asdfasdf');
     }).toThrow();
   });
-
-  it('should parse valid mqtt bus url', () => {
-    const parser = new Deserializer();
-    const res = parser.parseMqttUrl('wss://localhost:9001');
-
-    expect(res.kind).toBe('success');
-  });
-
-  it('should give informative error message for invalid mqtt url', () => {
-    const parser = new Deserializer();
-    const res = parser.parseMqttUrl('ws://localhost::123');
-
-    if (res.kind === 'fail') {
-      expect(res.message).toMatch(/invalid url/i);
-    } else {
-      throw new Error('unexpected parse result');
-    }
-  });
 });
 
 describe('query string parsing', () => {

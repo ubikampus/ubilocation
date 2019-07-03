@@ -15,31 +15,9 @@ jest.mock('react-router', () => {
 });
 
 describe('front page form for configuration', () => {
-  it('should display error if invalid url is given', () => {
-    const container = mount(<UrlPromptContainer />);
-
-    const input = container.find('input[name="busUrl"]');
-
-    (input.instance() as any).value = 'not an url';
-    input.simulate('change');
-
-    container.find('#urlPromptForm').simulate('submit');
-
-    expect(container.find('#inputError').text()).toContain('Invalid URL');
-  });
-
-  /**
-   * Assert that when user inputs valid url, we navigate to another page after
-   * submit.
-   */
-  it('should navigate if valid url is given', done => {
+  it('should navigate when form is submitted', done => {
     mockPush.mockImplementation(() => done());
     const container = mount(<UrlPromptContainer />);
-
-    const input = container.find('input[name="busUrl"]');
-
-    (input.instance() as any).value = 'wss://192.168.0.0:1234';
-    input.simulate('change');
 
     container.find('#urlPromptForm').simulate('submit');
   });
