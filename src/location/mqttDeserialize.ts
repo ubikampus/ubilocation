@@ -119,10 +119,10 @@ export default class Deserializer {
   /**
    * Convert raw mqtt message into static type, crash on unexpected input.
    */
-  deserializeMessage(rawMessage: string): BabylonBeacon[] {
+  deserializeMessage(rawMessage: string): MqttMessage[] {
     return JSON.parse(rawMessage).map((obj: unknown) => {
       const message = unsafeDecode(MqttMessageDecoder, obj);
-      return mqttMessageToBabylon(message);
+      return message;
     });
   }
 

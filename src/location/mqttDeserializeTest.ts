@@ -7,7 +7,7 @@ import Deserializer, {
 import * as t from 'io-ts';
 import { unsafeDecode } from '../common/typeUtil';
 
-const exampleMqttMessage = (index: number) => {
+export const exampleMqttMessage = (index: number) => {
   const rawMessage = `{
     "beaconId": "undefined-${index}",
     "x": 86.200010304358,
