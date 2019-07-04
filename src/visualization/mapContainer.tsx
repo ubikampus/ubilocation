@@ -57,6 +57,8 @@ const MapContainer = ({ location }: RouteComponentProps) => {
     }
   }, []);
 
+  const UserMarker = isOnline ? Marker : OfflineMarker;
+
   return (
     <Fullscreen>
       <ReactMapGl
@@ -74,20 +76,13 @@ const MapContainer = ({ location }: RouteComponentProps) => {
           setViewport(vp);
         }}
       >
-        {queryParams &&
-          (isOnline ? (
-            <Marker
-              latitude={queryParams.lat}
-              longitude={queryParams.lon}
-              className="mapboxgl-user-location-dot"
-            />
-          ) : (
-            <OfflineMarker
-              latitude={queryParams.lat}
-              longitude={queryParams.lon}
-              className="mapboxgl-user-location-dot"
-            />
-          ))}
+        {queryParams && (
+          <UserMarker
+            latitude={queryParams.lat}
+            longitude={queryParams.lon}
+            className="mapboxgl-user-location-dot"
+          />
+        )}
       </ReactMapGl>
     </Fullscreen>
   );
