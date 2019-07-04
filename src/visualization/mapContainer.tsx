@@ -21,6 +21,13 @@ const Fullscreen = styled.div`
   height: 100vh;
 `;
 
+const OfflineMarker = styled(Marker)`
+  background-color: gray;
+  &::before {
+    background-color: gray;
+  }
+`;
+
 /**
  * Use default Mapbox vector tiles if MAPBOX_TOKEN is found, otherwise fallback
  * to free Carto Light raster map.
@@ -42,11 +49,15 @@ const MapContainer = ({ location }: RouteComponentProps) => {
     zoom: queryParams ? DEFAULT_TRACKED_ZOOM : DEFAULT_NONTRACKED_ZOOM,
   });
 
+  const [isOnline, setIsOnline] = useState(false);
+
   useEffect(() => {
     if (!currentEnv.MAPBOX_TOKEN) {
       console.error('mapbox api token missing, falling back to raster maps...');
     }
   }, []);
+
+  const UserMarker = isOnline ? Marker : OfflineMarker;
 
   return (
     <Fullscreen>
@@ -66,7 +77,7 @@ const MapContainer = ({ location }: RouteComponentProps) => {
         }}
       >
         {queryParams && (
-          <Marker
+          <UserMarker
             latitude={queryParams.lat}
             longitude={queryParams.lon}
             className="mapboxgl-user-location-dot"
