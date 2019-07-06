@@ -120,7 +120,16 @@ export default class Deserializer {
    * Convert raw mqtt message into static type, crash on unexpected input.
    */
   deserializeMessage(rawMessage: string): MqttMessage[] {
-    return JSON.parse(rawMessage).map((obj: unknown) => {
+    let parsed;
+    try {
+      parsed = JSON.parse(rawMessage);
+    } catch (err) {
+      console.error('error parsing json', err);
+      console.error('json:', rawMessage);
+      throw err;
+    }
+
+    return parsed.map((obj: unknown) => {
       const message = unsafeDecode(MqttMessageDecoder, obj);
       return message;
     });

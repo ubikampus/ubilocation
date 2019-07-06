@@ -11,6 +11,7 @@ import Deserializer, {
   MapLocationQueryDecoder,
   BeaconGeoLocation,
   mqttMessageToGeo,
+  MqttMessage,
 } from '../location/mqttDeserialize';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
@@ -64,21 +65,46 @@ interface BeaconsState {
  */
 export const divideMarkers = (
   beacons: BeaconGeoLocation[],
-  name: null | string
+  bluetoothName: string | null,
+  lastKnownPosition: BeaconGeoLocation | null
 ) => {
-  if (name === null) {
-    return {
-      userMarkers: [],
-      nonUserMarkers: beacons,
-    };
-  } else {
-    const [userMarkers, nonUserMarkers] = partition(
-      beacons,
-      beacon => beacon.beaconId === name
-    );
+  const [userMarkers, nonUserMarkers] = partition(
+    beacons,
+    beacon => beacon.beaconId === bluetoothName
+  );
 
-    return { userMarkers, nonUserMarkers };
-  }
+  const allUserMarkers =
+    lastKnownPosition && userMarkers.length === 0
+      ? [lastKnownPosition]
+      : userMarkers;
+
+  return { isOnline: userMarkers.length !== 0, allUserMarkers, nonUserMarkers };
+};
+
+export const refreshBeacons = (
+  parsed: MqttMessage[],
+  bluetoothName: string | null,
+  lastKnownPosition: BeaconGeoLocation | null
+): BeaconsState => {
+  const geoBeacons = parsed.map(i => mqttMessageToGeo(i));
+
+  const nextBluetoothName =
+    geoBeacons.length > 0 && bluetoothName === null
+      ? geoBeacons[0].beaconId
+      : bluetoothName;
+
+  const ourBeacon = geoBeacons.find(
+    beacon => beacon.beaconId === nextBluetoothName
+  );
+
+  return {
+    beacons: geoBeacons,
+    bluetoothName: nextBluetoothName,
+    lastKnownPosition:
+      ourBeacon !== undefined && nextBluetoothName !== null
+        ? ourBeacon
+        : lastKnownPosition,
+  };
 };
 
 /**
@@ -110,29 +136,6 @@ const MapContainer = ({ location }: RouteComponentProps) => {
     lastKnownPosition: null,
   });
 
-  const refreshBeacons = (msg: string) => {
-    const parsed = parser.deserializeMessage(msg);
-    const geoBeacons = parsed.map(i => mqttMessageToGeo(i));
-
-    const nextBluetoothName =
-      geoBeacons.length > 0 && bluetoothName === null
-        ? geoBeacons[0].beaconId
-        : bluetoothName;
-
-    const ourBeacon = geoBeacons.find(
-      beacon => beacon.beaconId === nextBluetoothName
-    );
-
-    setBeacons({
-      beacons: geoBeacons,
-      bluetoothName: nextBluetoothName,
-      lastKnownPosition:
-        ourBeacon !== undefined && nextBluetoothName !== null
-          ? ourBeacon
-          : lastKnownPosition,
-    });
-  };
-
   useEffect(() => {
     if (!currentEnv.MAPBOX_TOKEN) {
       console.error('mapbox api token missing, falling back to raster maps...');
@@ -148,7 +151,13 @@ const MapContainer = ({ location }: RouteComponentProps) => {
           queryParams.topic,
           null,
           (topic: string, msg: string) => {
-            refreshBeacons(msg);
+            const nextBeacons = refreshBeacons(
+              parser.deserializeMessage(msg),
+              bluetoothName,
+              lastKnownPosition
+            );
+
+            setBeacons(nextBeacons);
           },
           (err: any) => {
             if (err) {
@@ -166,13 +175,13 @@ const MapContainer = ({ location }: RouteComponentProps) => {
     };
   }, []);
 
-  const { userMarkers, nonUserMarkers } = divideMarkers(beacons, bluetoothName);
+  const { isOnline, allUserMarkers, nonUserMarkers } = divideMarkers(
+    beacons,
+    bluetoothName,
+    lastKnownPosition
+  );
 
-  const shouldShowOldPos = bluetoothName !== null && userMarkers.length === 0;
-
-  const UserMarker = shouldShowOldPos ? OfflineMarker : Marker;
-  const allUserMarkers =
-    shouldShowOldPos && lastKnownPosition ? [lastKnownPosition] : userMarkers;
+  const UserMarker = isOnline ? Marker : OfflineMarker;
 
   return (
     <Fullscreen>
@@ -194,7 +203,7 @@ const MapContainer = ({ location }: RouteComponentProps) => {
         {allUserMarkers.length &&
           allUserMarkers.map((marker, i) => (
             <UserMarker
-              key={marker.beaconId + i}
+              key={i}
               latitude={marker.lat}
               longitude={marker.lon}
               className="mapboxgl-user-location-dot"
@@ -202,7 +211,7 @@ const MapContainer = ({ location }: RouteComponentProps) => {
           ))}
         {nonUserMarkers.map((beacon, i) => (
           <NonUserMarker
-            key={beacon.beaconId + i}
+            key={i}
             latitude={beacon.lat}
             longitude={beacon.lon}
             className="mapboxgl-user-location-dot"
