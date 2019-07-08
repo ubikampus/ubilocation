@@ -6,7 +6,10 @@ import React, { MutableRefObject, useEffect, useRef } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { default as UbiMqtt } from 'ubimqtt';
 import { FakeMqttGenerator } from '../location/mqttConnection';
-import Deserializer, { VizQueryDecoder } from '../location/mqttDeserialize';
+import Deserializer, {
+  VizQueryDecoder,
+  mqttMessageToBabylon,
+} from '../location/mqttDeserialize';
 import Screen3D from './screen3d';
 
 export const MockBusContainer = () => {
@@ -51,7 +54,8 @@ export const GenuineBusContainer = ({
           null,
           (topic: string, rawMessage: string) => {
             const parsed = parser.deserializeMessage(rawMessage);
-            screen.updateBeacons(parsed);
+
+            screen.updateBeacons(parsed.map(i => mqttMessageToBabylon(i)));
           },
           (subErr: any) => {
             if (subErr) {

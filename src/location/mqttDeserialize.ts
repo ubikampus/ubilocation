@@ -111,10 +111,6 @@ export const mqttMessageToGeo = (message: MqttMessage): BeaconGeoLocation => {
   };
 };
 
-type UrlParse =
-  | { kind: 'success'; url: URL }
-  | { kind: 'fail'; message: string };
-
 /**
  * The purpose of Deserializer is to provide strict conversion from strings into
  * static types, so that errors in types are immediately caught.
@@ -123,22 +119,20 @@ export default class Deserializer {
   /**
    * Convert raw mqtt message into static type, crash on unexpected input.
    */
-  deserializeMessage(rawMessage: string): BabylonBeacon[] {
-    return JSON.parse(rawMessage).map((obj: unknown) => {
-      const message = unsafeDecode(MqttMessageDecoder, obj);
-      return mqttMessageToBabylon(message);
-    });
-  }
-
-  parseMqttUrl(rawUrl: string): UrlParse {
+  deserializeMessage(rawMessage: string): MqttMessage[] {
+    let parsed;
     try {
-      return { kind: 'success', url: new URL(rawUrl) };
-    } catch (e) {
-      console.log('failed to parse mqtt url', e.toString());
-
-      const message = `unexpected input: "${rawUrl}": ${e}`;
-      return { kind: 'fail', message };
+      parsed = JSON.parse(rawMessage);
+    } catch (err) {
+      console.error('error parsing json', err);
+      console.error('json:', rawMessage);
+      throw err;
     }
+
+    return parsed.map((obj: unknown) => {
+      const message = unsafeDecode(MqttMessageDecoder, obj);
+      return message;
+    });
   }
 
   /**
@@ -157,8 +151,10 @@ export default class Deserializer {
 }
 
 export const MapLocationQueryDecoder = t.type({
-  lat: t.number,
-  lon: t.number,
+  lat: t.union([t.undefined, t.number]),
+  lon: t.union([t.undefined, t.number]),
+  host: t.string,
+  topic: t.string,
 });
 
 export const VizQueryDecoder = t.type({ host: t.string, topic: t.string });

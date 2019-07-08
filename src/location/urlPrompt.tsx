@@ -1,48 +1,37 @@
 import React, { ChangeEvent, FormEvent } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router';
+import { Link } from 'react-router-dom';
 
 interface Props {
-  busText: string;
   topicText: string;
-  inputError: string | null;
+  mqttQueryString: string;
   onPromptSubmit(a: FormEvent): void;
-  setBusText(a: ChangeEvent<HTMLInputElement>): void;
   setTopicText(a: ChangeEvent<HTMLInputElement>): void;
 }
 
 const UrlPrompt = ({
-  history,
-  busText,
-  inputError,
   topicText,
-  setBusText,
+  mqttQueryString,
   setTopicText,
   onPromptSubmit,
 }: RouteComponentProps & Props) => (
   <>
     <h3>Ubikampus bluetooth visualizer</h3>
-    <button onClick={() => history.push('/map')}>Go to map</button>
     <form id="urlPromptForm" onSubmit={onPromptSubmit}>
-      <div>
-        mqtt bus url
-        <input name="busUrl" autoFocus value={busText} onChange={setBusText} />
-      </div>
       <div>
         mqtt topic
         <input name="topic" value={topicText} onChange={setTopicText} />
       </div>
-      <button>connect to real mqtt bus</button>
+      <button>Go to mapbox map</button>
     </form>
+    <Link to={'/viz?' + mqttQueryString}>
+      <button>3d model with real data</button>
+    </Link>
     <div>
-      <button
-        onClick={() => {
-          history.push('/mockviz');
-        }}
-      >
-        use mocked bluetooth beacons
-      </button>
+      <Link to="/mockviz">
+        <button>3d model with mocked locations</button>
+      </Link>
     </div>
-    {inputError && <i id="inputError">{inputError}</i>}
   </>
 );
 
