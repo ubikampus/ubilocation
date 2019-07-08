@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactMapGl, { Marker } from 'react-map-gl';
+import Modal from 'react-modal';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { default as UbiMqtt } from 'ubimqtt';
 import styled from 'styled-components';
@@ -117,6 +118,11 @@ export const refreshBeacons = (
 const MapContainer = ({ location }: RouteComponentProps) => {
   const parser = new Deserializer();
 
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalText, setModalText] = useState('');
+  const openModal = () => setModalIsOpen(true);
+  const closeModal = () => setModalIsOpen(false);
+
   const queryParams = parser.parseQuery(
     MapLocationQueryDecoder,
     location.search
@@ -183,8 +189,21 @@ const MapContainer = ({ location }: RouteComponentProps) => {
 
   const UserMarker = isOnline ? Marker : OfflineMarker;
 
+  const onMapClick = (event: any) => {
+    const [lon, lat] = event.lngLat;
+    setModalText(`${window.location.href}&lat=${lat}&lon=${lon}`);
+    openModal();
+  };
+
   return (
     <Fullscreen>
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Example Modal"
+      >
+        <a href={modalText}>{modalText}</a>
+      </Modal>
       <ReactMapGl
         // NOTE: onViewportChange adds extra properties to `viewport`
         {...viewport}
@@ -199,6 +218,7 @@ const MapContainer = ({ location }: RouteComponentProps) => {
         onViewportChange={vp => {
           setViewport(vp);
         }}
+        onClick={onMapClick}
       >
         {allUserMarkers.length &&
           allUserMarkers.map((marker, i) => (
