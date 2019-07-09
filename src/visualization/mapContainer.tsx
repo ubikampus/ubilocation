@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import ReactMapGl, { Marker } from 'react-map-gl';
+import { Marker } from 'react-map-gl';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { default as UbiMqtt } from 'ubimqtt';
 import styled from 'styled-components';
 import partition from 'lodash/partition';
-import Modal from 'react-modal';
+import UbikampusMap from './ubikampusMap';
 
 import { currentEnv } from '../common/environment';
-import fallbackStyle from './fallbackMapStyle.json';
 import Deserializer, {
   MapLocationQueryDecoder,
   BeaconGeoLocation,
   mqttMessageToGeo,
   MqttMessage,
 } from '../location/mqttDeserialize';
+import BluetoothNameModal from './bluetoothNameModal';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 12;
@@ -23,20 +23,6 @@ const DEFAULT_NONTRACKED_ZOOM = 12;
  */
 const DEFAULT_TRACKED_ZOOM = 18;
 
-const NameHeader = styled.h3`
-  margin-top: 0;
-`;
-
-const NameList = styled.ul`
-  list-style: none;
-  padding-left: 13px;
-`;
-
-const BluetoothName = styled.li`
-  cursor: pointer;
-  margin: 10px 0;
-`;
-
 const MapboxButton = styled.div`
   && {
     display: inline-block;
@@ -45,11 +31,6 @@ const MapboxButton = styled.div`
   position: absolute;
   top: 20px;
   right: 10px;
-`;
-
-const Fullscreen = styled.div`
-  width: 100vw;
-  height: 100vh;
 `;
 
 const OfflineMarker = styled(Marker)`
@@ -72,16 +53,6 @@ const NonUserMarker = styled(OfflineMarker)`
     width: 14px;
   }
 `;
-
-interface BeaconsState {
-  beacons: BeaconGeoLocation[];
-
-  /**
-   * null indicates that user is offline.
-   */
-  bluetoothName: null | string;
-  lastKnownPosition: null | BeaconGeoLocation;
-}
 
 /**
  * Why can there be multiple markers for the user? Because we cannot get unique
@@ -202,88 +173,39 @@ const MapContainer = ({ location }: RouteComponentProps) => {
   const UserMarker = isOnline ? Marker : OfflineMarker;
 
   return (
-    <Fullscreen>
-      <ReactMapGl
-        // NOTE: onViewportChange adds extra properties to `viewport`
-        {...viewport}
-        mapStyle={
-          currentEnv.MAPBOX_TOKEN
-            ? 'mapbox://styles/ljljljlj/cjxf77ldr0wsz1dqmsl4zko9y'
-            : fallbackStyle
-        }
-        mapboxApiAccessToken={currentEnv.MAPBOX_TOKEN}
-        width="100%"
-        height="100%"
-        onViewportChange={vp => {
-          setViewport(vp);
+    <UbikampusMap viewport={viewport} setViewport={setViewport}>
+      <MapboxButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
+        <button
+          onClick={() => setNameModalOpen(true)}
+          className="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate"
+        />
+      </MapboxButton>
+      <BluetoothNameModal
+        isOpen={nameModalOpen}
+        beacons={beacons}
+        setBluetoothName={name => {
+          setBluetoothName(name);
+          setNameModalOpen(false);
         }}
-      >
-        <MapboxButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
-          <button
-            onClick={() => setNameModalOpen(true)}
-            className="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate"
-          />
-        </MapboxButton>
-        <Modal
-          style={{
-            overlay: {
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-            },
-            content: {
-              maxHeight: '80vh',
-              maxWidth: '400px',
-              position: 'static',
-              margin: '20px 10px',
-            },
-          }}
-          isOpen={nameModalOpen}
-        >
-          <NameHeader>Device select</NameHeader>
-          <p>
-            Please make sure the device bluetooth visibility is on, and select
-            your bluetooth name:
-          </p>
-          <NameList>
-            {beacons
-              .sort((a, b) =>
-                a.beaconId.localeCompare(b.beaconId, undefined, {
-                  numeric: true,
-                })
-              )
-              .map((beacon, i) => (
-                <BluetoothName
-                  key={beacon.beaconId + i}
-                  onClick={() => {
-                    setBluetoothName(beacon.beaconId);
-                    setNameModalOpen(false);
-                  }}
-                >
-                  {beacon.beaconId}
-                </BluetoothName>
-              ))}
-          </NameList>
-        </Modal>
-        {allUserMarkers.length &&
-          allUserMarkers.map((marker, i) => (
-            <UserMarker
-              key={i}
-              latitude={marker.lat}
-              longitude={marker.lon}
-              className="mapboxgl-user-location-dot"
-            />
-          ))}
-        {nonUserMarkers.map((beacon, i) => (
-          <NonUserMarker
+      />
+      {allUserMarkers.length &&
+        allUserMarkers.map((marker, i) => (
+          <UserMarker
             key={i}
-            latitude={beacon.lat}
-            longitude={beacon.lon}
+            latitude={marker.lat}
+            longitude={marker.lon}
             className="mapboxgl-user-location-dot"
           />
         ))}
-      </ReactMapGl>
-    </Fullscreen>
+      {nonUserMarkers.map((beacon, i) => (
+        <NonUserMarker
+          key={i}
+          latitude={beacon.lat}
+          longitude={beacon.lon}
+          className="mapboxgl-user-location-dot"
+        />
+      ))}
+    </UbikampusMap>
   );
 };
 
