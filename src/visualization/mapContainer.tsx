@@ -4,6 +4,7 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import { default as UbiMqtt } from 'ubimqtt';
 import styled from 'styled-components';
 import partition from 'lodash/partition';
+import Modal from 'react-modal';
 
 import { currentEnv } from '../common/environment';
 import fallbackStyle from './fallbackMapStyle.json';
@@ -21,6 +22,30 @@ const DEFAULT_NONTRACKED_ZOOM = 12;
  * When user lands to the page with a position.
  */
 const DEFAULT_TRACKED_ZOOM = 18;
+
+const NameHeader = styled.h3`
+  margin-top: 0;
+`;
+
+const NameList = styled.ul`
+  list-style: none;
+  padding-left: 13px;
+`;
+
+const BluetoothName = styled.li`
+  cursor: pointer;
+  margin: 10px 0;
+`;
+
+const MapboxButton = styled.div`
+  && {
+    display: inline-block;
+  }
+
+  position: absolute;
+  top: 20px;
+  right: 10px;
+`;
 
 const Fullscreen = styled.div`
   width: 100vw;
@@ -85,25 +110,16 @@ export const refreshBeacons = (
   parsed: MqttMessage[],
   bluetoothName: string | null,
   lastKnownPosition: BeaconGeoLocation | null
-): BeaconsState => {
+) => {
   const geoBeacons = parsed.map(i => mqttMessageToGeo(i));
 
-  const nextBluetoothName =
-    geoBeacons.length > 0 && bluetoothName === null
-      ? geoBeacons[0].beaconId
-      : bluetoothName;
-
   const ourBeacon = geoBeacons.find(
-    beacon => beacon.beaconId === nextBluetoothName
+    beacon => beacon.beaconId === bluetoothName
   );
 
   return {
     beacons: geoBeacons,
-    bluetoothName: nextBluetoothName,
-    lastKnownPosition:
-      ourBeacon !== undefined && nextBluetoothName !== null
-        ? ourBeacon
-        : lastKnownPosition,
+    lastKnownPosition: ourBeacon !== undefined ? ourBeacon : lastKnownPosition,
   };
 };
 
@@ -128,13 +144,14 @@ const MapContainer = ({ location }: RouteComponentProps) => {
     zoom: queryParams.lat ? DEFAULT_TRACKED_ZOOM : DEFAULT_NONTRACKED_ZOOM,
   });
 
-  const [{ beacons, bluetoothName, lastKnownPosition }, setBeacons] = useState<
-    BeaconsState
-  >({
-    beacons: [],
-    bluetoothName: null,
-    lastKnownPosition: null,
-  });
+  const [nameModalOpen, setNameModalOpen] = useState(false);
+
+  const [beacons, setBeacons] = useState<BeaconGeoLocation[]>([]);
+  const [bluetoothName, setBluetoothName] = useState<null | string>(null);
+  const [
+    lastKnownPosition,
+    setLastKnownPosition,
+  ] = useState<null | BeaconGeoLocation>(null);
 
   useEffect(() => {
     if (!currentEnv.MAPBOX_TOKEN) {
@@ -157,7 +174,8 @@ const MapContainer = ({ location }: RouteComponentProps) => {
               lastKnownPosition
             );
 
-            setBeacons(nextBeacons);
+            setBeacons(nextBeacons.beacons);
+            setLastKnownPosition(nextBeacons.lastKnownPosition);
           },
           (err: any) => {
             if (err) {
@@ -200,6 +218,53 @@ const MapContainer = ({ location }: RouteComponentProps) => {
           setViewport(vp);
         }}
       >
+        <MapboxButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
+          <button
+            onClick={() => setNameModalOpen(true)}
+            className="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate"
+          />
+        </MapboxButton>
+        <Modal
+          style={{
+            overlay: {
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+            },
+            content: {
+              maxHeight: '80vh',
+              maxWidth: '400px',
+              position: 'static',
+              margin: '20px 10px',
+            },
+          }}
+          isOpen={nameModalOpen}
+        >
+          <NameHeader>Device select</NameHeader>
+          <p>
+            Please make sure the device bluetooth visibility is on, and select
+            your bluetooth name:
+          </p>
+          <NameList>
+            {beacons
+              .sort((a, b) =>
+                a.beaconId.localeCompare(b.beaconId, undefined, {
+                  numeric: true,
+                })
+              )
+              .map((beacon, i) => (
+                <BluetoothName
+                  key={beacon.beaconId + i}
+                  onClick={() => {
+                    setBluetoothName(beacon.beaconId);
+                    setNameModalOpen(false);
+                  }}
+                >
+                  {beacon.beaconId}
+                </BluetoothName>
+              ))}
+          </NameList>
+        </Modal>
         {allUserMarkers.length &&
           allUserMarkers.map((marker, i) => (
             <UserMarker
