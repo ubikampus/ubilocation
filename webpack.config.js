@@ -8,6 +8,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 const dotenv = require('dotenv');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 dotenv.config();
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -26,26 +27,19 @@ module.exports = {
     extensions: ['.ts', '.js', '.tsx']
   },
   output: {
-    filename: '[name].[contenthash].js',
+    filename: '[name].[hash].js',
     path: path.resolve(__dirname, 'dist')
   },
   module: {
-    rules: [{
-        test: /\.tsx?$/,
-        enforce: 'pre',
-        use: [{
-          loader: 'tslint-loader',
-          options: {
-            typeCheck: true,
-            emitErrors: true
-          }
-        }],
-        exclude: /node_modules/,
-      },
+    rules: [
       {
         test: /\.tsx?$/,
         loader: 'ts-loader',
         exclude: /node_modules/,
+        options: {
+          // disable type checker - we will use it in the ForkTsCheckerWebpackPlugin
+          transpileOnly: true
+        }
       },
       {
         test: /\.(png|svg|jpg|gif|babylon)$/,
@@ -62,9 +56,10 @@ module.exports = {
   devServer: {
     host: '0.0.0.0',  // enable usage of another device in the network
     contentBase: 'dist',
-    historyApiFallback: true
+    historyApiFallback: true,
   },
   plugins: [
+    new ForkTsCheckerWebpackPlugin({ reportFiles: 'src/**/*.{ts,tsx}', tslint: true }),
     new HtmlWebpackPlugin({
       template: 'index.html'
     }),
@@ -75,7 +70,6 @@ module.exports = {
       DEFINE_NODE_ENV: JSON.stringify(isProd ? 'production' : 'development'),
       DEFINE_MAPBOX_TOKEN: JSON.stringify(process.env.MAPBOX_TOKEN),
     }),
-
     new CopyPlugin(['asset/404.html'])
   ]
 }

@@ -64,9 +64,8 @@ describe('map beacon lifecycle', () => {
   it('should infer new bt name if its missing', () => {
     const messages = [exampleMqttMessage(1), exampleMqttMessage(1)];
 
-    const res = refreshBeacons(messages, null, null);
+    const res = refreshBeacons(messages, 'undefined-1', null);
 
-    expect(res.bluetoothName).toBe('undefined-1');
     expect((res.lastKnownPosition as any).lat).toBeTruthy();
   });
 
