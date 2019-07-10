@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactMapGl, { Marker } from 'react-map-gl';
-import { currentEnv } from './environment';
-import styled from 'styled-components';
-import fallbackStyle from './fallbackMapStyle.json';
 import { RouteComponentProps, withRouter } from 'react-router';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import { currentEnv } from './environment';
+import fallbackStyle from './fallbackMapStyle.json';
 import Deserializer, { MapLocationQueryDecoder } from './mqttDeserialize';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
@@ -14,6 +15,7 @@ const DEFAULT_NONTRACKED_ZOOM = 12;
  */
 const DEFAULT_TRACKED_ZOOM = 18;
 
+// React Components
 const Fullscreen = styled.div`
   width: 100vw;
   height: 100vh;
