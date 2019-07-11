@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+      "resolveJsonModule": true,
+      "outDir": "./dist/",
+      "sourceMap": true,
+      "strict": true,
+      "target": "es5",
+      "allowJs": true,
+      "esModuleInterop": true,
+    }
+  }
+  
