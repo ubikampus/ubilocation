@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
+import ReactMapGl, { ViewState, PointerEvent } from 'react-map-gl';
 import styled from 'styled-components';
-import ReactMapGl, { ViewState } from 'react-map-gl';
-
 import { currentEnv } from '../common/environment';
 import fallbackStyle from './fallbackMapStyle.json';
 
@@ -11,11 +10,17 @@ const Fullscreen = styled.div`
 `;
 
 interface Props {
+  onClick(event: PointerEvent): void;
   viewport: ViewState;
   setViewport(a: ViewState): void;
 }
 
-const UbikampusMap: FC<Props> = ({ children, viewport, setViewport }) => (
+const UbikampusMap: FC<Props> = ({
+  onClick,
+  children,
+  viewport,
+  setViewport,
+}) => (
   <Fullscreen>
     <ReactMapGl
       // NOTE: onViewportChange adds extra properties to `viewport`
@@ -31,6 +36,7 @@ const UbikampusMap: FC<Props> = ({ children, viewport, setViewport }) => (
       onViewportChange={vp => {
         setViewport(vp);
       }}
+      onClick={onClick}
     >
       {children}
     </ReactMapGl>

@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Marker } from 'react-map-gl';
+import { Marker, PointerEvent } from 'react-map-gl';
+
+import Modal from 'react-modal';
+import QRcode from 'qrcode.react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { default as UbiMqtt } from 'ubimqtt';
 import styled from 'styled-components';
 import partition from 'lodash/partition';
 import UbikampusMap from './ubikampusMap';
+import queryString from 'query-string';
 
 import { currentEnv } from '../common/environment';
 import Deserializer, {
@@ -14,6 +18,33 @@ import Deserializer, {
   MqttMessage,
 } from '../location/mqttDeserialize';
 import BluetoothNameModal from './bluetoothNameModal';
+
+if (currentEnv.NODE_ENV !== 'test') {
+  Modal.setAppElement('#app');
+}
+
+const modalStyle = {
+  content: {
+    bottom: '50%',
+    left: '20%',
+    right: '20%',
+    textAlign: 'center',
+  },
+};
+
+const UrlModal = (props: any) => (
+  <Modal
+    isOpen={props.modalIsOpen}
+    onRequestClose={props.closeModal}
+    contentLabel="QR-code"
+    style={modalStyle}
+  >
+    <a href={props.modalText}>{props.modalText}</a>
+    <div>
+      <QRcode value={props.modalText} size={256} />
+    </div>
+  </Modal>
+);
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 12;
@@ -104,6 +135,11 @@ export const refreshBeacons = (
 const MapContainer = ({ location }: RouteComponentProps) => {
   const parser = new Deserializer();
 
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalText, setModalText] = useState('');
+  const openModal = () => setModalIsOpen(true);
+  const closeModal = () => setModalIsOpen(false);
+
   const queryParams = parser.parseQuery(
     MapLocationQueryDecoder,
     location.search
@@ -172,8 +208,33 @@ const MapContainer = ({ location }: RouteComponentProps) => {
 
   const UserMarker = isOnline ? Marker : OfflineMarker;
 
+  const onMapClick = (event: PointerEvent) => {
+    const url = document.location;
+
+    const query = queryParams;
+    const [lon, lat] = event.lngLat;
+
+    query.lat = lat;
+    query.lon = lon;
+
+    const updatedQueryString =
+      url.origin + url.pathname + '?' + queryString.stringify(query);
+
+    setModalText(updatedQueryString);
+    openModal();
+  };
+
   return (
-    <UbikampusMap viewport={viewport} setViewport={setViewport}>
+    <UbikampusMap
+      onClick={onMapClick}
+      viewport={viewport}
+      setViewport={setViewport}
+    >
+      <UrlModal
+        modalIsOpen={modalIsOpen}
+        closeModal={closeModal}
+        modalText={modalText}
+      />
       <MapboxButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
         <button
           onClick={() => setNameModalOpen(true)}
