@@ -5,7 +5,8 @@
   "main": "src/app.ts",
   "scripts": {
     "start": "npx ts-node src/app.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "travis": "echo TODO - see client package.json"
   },
   "author": "",
   "license": "MIT",
