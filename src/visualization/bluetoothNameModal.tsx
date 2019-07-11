@@ -30,6 +30,7 @@ const NameList = styled.ul`
   list-style: none;
   padding-left: 13px;
   margin: 20px 0;
+  word-break: break-all;
 `;
 
 const BluetoothName = styled.li`

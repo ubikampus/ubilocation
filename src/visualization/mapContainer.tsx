@@ -166,7 +166,9 @@ const MapContainer = ({ location }: RouteComponentProps) => {
   const mqttHost =
     queryParams && queryParams.host ? queryParams.host : MQTT_URL;
 
-  const [nameModalOpen, setNameModalOpen] = useState(false);
+  const [nameModalOpen, setNameModalOpen] = useState(
+    queryParams && queryParams.lat ? true : false
+  );
 
   const [beacons, setBeacons] = useState<BeaconGeoLocation[]>([]);
   const [bluetoothName, setBluetoothName] = useState<null | string>(null);
