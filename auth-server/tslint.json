@@ -1,0 +1,26 @@
+{
+  "extends": [
+    "tslint:recommended",
+    "tslint-config-prettier",
+    "tslint-plugin-prettier"
+  ],
+  "linterOptions": {
+    "exclude": []
+  },
+  "rules": {
+    "object-literal-sort-keys": false,
+    "ordered-imports": false,
+    "member-access": false,
+    "member-ordering": false,
+    "no-empty": false,
+    "interface-name": [true, "never-prefix"],
+    "file-name-casing": [true, "camel-case"],
+    "no-console": false,
+    "prettier": [true, {
+      "printWidth": 80,
+      "trailingComma": "es5",
+      "singleQuote": true
+    }]
+  },
+  "rulesDirectory": "tslint-plugin-prettier"
+}
