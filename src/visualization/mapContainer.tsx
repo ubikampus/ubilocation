@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import ReactMapGl, { Marker } from 'react-map-gl';
 import Modal from 'react-modal';
+import QRcode from 'qrcode.react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { default as UbiMqtt } from 'ubimqtt';
 import styled from 'styled-components';
 import partition from 'lodash/partition';
+import queryString from 'query-string';
 
 import { currentEnv } from '../common/environment';
 import fallbackStyle from './fallbackMapStyle.json';
@@ -14,6 +16,31 @@ import Deserializer, {
   mqttMessageToGeo,
   MqttMessage,
 } from '../location/mqttDeserialize';
+
+Modal.setAppElement('#app');
+
+const modalStyle = {
+  content: {
+    bottom: '50%',
+    left: '20%',
+    right: '20%',
+    'text-align': 'center',
+  },
+};
+
+const UrlModal = (props: any) => (
+  <Modal
+    isOpen={props.modalIsOpen}
+    onRequestClose={props.closeModal}
+    contentLabel="QR-code"
+    style={modalStyle}
+  >
+    <a href={props.modalText}>{props.modalText}</a>
+    <div>
+      <QRcode value={props.modalText} size={256} />
+    </div>
+  </Modal>
+);
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 12;
@@ -190,20 +217,28 @@ const MapContainer = ({ location }: RouteComponentProps) => {
   const UserMarker = isOnline ? Marker : OfflineMarker;
 
   const onMapClick = (event: any) => {
+    const url = document.location;
+
+    const query = parser.parseQuery(MapLocationQueryDecoder, location.search);
     const [lon, lat] = event.lngLat;
-    setModalText(`${window.location.href}&lat=${lat}&lon=${lon}`);
+
+    query.lat = lat;
+    query.lon = lon;
+
+    const updatedQueryString =
+      url.origin + url.pathname + '?' + queryString.stringify(query);
+
+    setModalText(updatedQueryString);
     openModal();
   };
 
   return (
     <Fullscreen>
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Example Modal"
-      >
-        <a href={modalText}>{modalText}</a>
-      </Modal>
+      <UrlModal
+        modalIsOpen={modalIsOpen}
+        closeModal={closeModal}
+        modalText={modalText}
+      />
       <ReactMapGl
         // NOTE: onViewportChange adds extra properties to `viewport`
         {...viewport}
