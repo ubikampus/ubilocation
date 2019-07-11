@@ -3,12 +3,21 @@ import { BrowserRouter, NavLink, Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
 import btlogo from '../asset/bluetooth_logo.svg';
 import AboutContainer from './aboutContainer';
-import { apiRoot } from './environment';
-import MapContainer from './mapContainer';
-import { GenuineBusContainer, MockBusContainer } from './screenContainer';
-import UrlPromptContainer from './urlPromptContainer';
+import {
+  GenuineBusContainer,
+  MockBusContainer,
+} from './visualization/screenContainer';
+import UrlPromptContainer from './location/urlPromptContainer';
+import { apiRoot } from './common/environment';
+import MapContainer from './visualization/mapContainer';
 
 const NotFound = () => <h3>404 page not found</h3>;
+
+const Fullscreen = styled.div`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+`;
 
 const NavContainer = styled.nav`
   height: 48px;
@@ -94,33 +103,35 @@ const Sidebar = styled.nav`
 const Router = () => {
   return (
     <BrowserRouter basename={apiRoot()}>
-      <NavContainer>
-        <Items>
-          <Logo />
-          <LinkBox to="/" exact>
-            <Content>Map</Content>
-          </LinkBox>
-          <LinkBox to="/config">
-            <Content>Settings</Content>
-          </LinkBox>
-          <LinkBox to="/about">
-            <Content>About</Content>
-          </LinkBox>
-        </Items>
-        <Search placeholder="Search .." />
-      </NavContainer>
+      <Fullscreen>
+        <NavContainer>
+          <Items>
+            <Logo />
+            <LinkBox to="/" exact>
+              <Content>Map</Content>
+            </LinkBox>
+            <LinkBox to="/config">
+              <Content>Settings</Content>
+            </LinkBox>
+            <LinkBox to="/about">
+              <Content>About</Content>
+            </LinkBox>
+          </Items>
+          <Search placeholder="Search .." />
+        </NavContainer>
 
-      <Switch>
-        <Route exact path="/" component={MapContainer} />
-        <Route exact path="/config" component={UrlPromptContainer} />
-        <Route exact path="/about" component={AboutContainer} />
+        <Switch>
+          <Route exact path="/" component={MapContainer} />
+          <Route exact path="/config" component={UrlPromptContainer} />
+          <Route exact path="/about" component={AboutContainer} />
 
-        <Route exact path="/mockviz" component={MockBusContainer} />
-        <Route exact path="/viz" component={GenuineBusContainer} />
+          <Route exact path="/mockviz" component={MockBusContainer} />
+          <Route exact path="/viz" component={GenuineBusContainer} />
 
-        {/* catch everything else */}
-        <Route component={NotFound} />
-      </Switch>
+          {/* catch everything else */}
+          <Route component={NotFound} />
+        </Switch>
+      </Fullscreen>
     </BrowserRouter>
   );
 };

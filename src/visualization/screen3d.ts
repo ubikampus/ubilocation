@@ -1,9 +1,8 @@
 import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
-import model from '../asset/Building_Geometry_Modified.babylon';
-import { currentEnv } from './environment';
-import { MqttMessage, BeaconLocation } from './mqttDeserialize';
-import { Vector3 } from 'babylonjs';
+import model from '../../asset/Building_Geometry_Modified.babylon';
+import { currentEnv } from '../common/environment';
+import { BabylonBeacon } from '../location/mqttDeserialize';
 
 const FLOOR_DIMENSIONS_X = 34;
 const FLOOR_DIMENSIONS_Z = 7.25 + 35;
@@ -60,7 +59,7 @@ class Screen3D {
     return new BABYLON.Vector3(0, Math.abs(alignment) * 2 * Math.PI, 0);
   }
 
-  createSphere(diameter: number, message: BeaconLocation): BABYLON.Mesh {
+  createSphere(diameter: number, message: BabylonBeacon): BABYLON.Mesh {
     // Create a built-in "sphere" shape; its constructor takes 6 params: name, segment, diameter, scene, updatable, sideOrientation
     const sphere = BABYLON.MeshBuilder.CreateSphere(
       'sphere1',
@@ -83,7 +82,7 @@ class Screen3D {
    * Idempotently set the 3D model beacon state to match the given messages from
    * MQTT bus.
    */
-  updateBeacons(messages: BeaconLocation[]): void {
+  updateBeacons(messages: BabylonBeacon[]): void {
     this.beacons.forEach(beacon => {
       beacon.label.dispose();
       beacon.mesh.dispose();
