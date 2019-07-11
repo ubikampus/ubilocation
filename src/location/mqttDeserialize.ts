@@ -153,8 +153,8 @@ export default class Deserializer {
 export const MapLocationQueryDecoder = t.type({
   lat: t.union([t.undefined, t.number]),
   lon: t.union([t.undefined, t.number]),
-  host: t.string,
-  topic: t.string,
+  host: t.union([t.string, t.undefined]),
+  topic: t.union([t.string, t.undefined]),
 });
 
 export const VizQueryDecoder = t.type({ host: t.string, topic: t.string });
