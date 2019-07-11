@@ -221,7 +221,7 @@ const MapContainer = ({ location }: RouteComponentProps) => {
   const onMapClick = (event: any) => {
     const url = document.location;
 
-    const query = parser.parseQuery(MapLocationQueryDecoder, location.search);
+    const query = queryParams;
     const [lon, lat] = event.lngLat;
 
     query.lat = lat;
