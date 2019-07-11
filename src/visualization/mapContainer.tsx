@@ -17,7 +17,9 @@ import Deserializer, {
   MqttMessage,
 } from '../location/mqttDeserialize';
 
-Modal.setAppElement('#app');
+if (currentEnv.NODE_ENV !== 'test') {
+  Modal.setAppElement('#app');
+}
 
 const modalStyle = {
   content: {
