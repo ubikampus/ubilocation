@@ -2,8 +2,8 @@ import express, { Request, Response } from 'express';
 
 const app = express();
 
-app.get('/', (req, res) => {
-  res.send('<h1>Hello from auth</h1>');
+app.get('/sign', (req, res) => {
+  res.send('<h1>Gonna sign</h1>');
 });
 
 const PORT = 3001;
