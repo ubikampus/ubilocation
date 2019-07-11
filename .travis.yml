@@ -2,6 +2,8 @@ language: node_js
 node_js:
   - "10"
 script:
+  - cd client
+  - npm ci
   - npm run coverage
   - npm run lint
   - npm run build  # verify the code type checks and webpack config is valid
