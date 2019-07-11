@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  bluetooth-client:
+    container_name: bluetooth-client
+    build: client
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./client/src:/client/src
+  bluetooth-auth-server:
+    container_name: bluetooth-auth-server
+    build: auth-server
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./auth-server/src:/auth-server/src
