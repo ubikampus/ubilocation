@@ -31,7 +31,7 @@
     "react-modal": "^3.8.2",
     "react-router-dom": "^5.0.1",
     "styled-components": "^4.3.2",
-    "ubimqtt": "github:je-l/ubimqtt"
+    "ubimqtt": "github:je-l/ubimqtt#ccd88c59c9"
   },
   "devDependencies": {
     "@types/dotenv": "^6.1.1",
