@@ -21,11 +21,15 @@ const modalStyles = {
 
 const NameHeader = styled.h3`
   margin-top: 0;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
 `;
 
 const NameList = styled.ul`
   list-style: none;
   padding-left: 13px;
+  margin: 20px 0;
 `;
 
 const BluetoothName = styled.li`

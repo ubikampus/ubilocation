@@ -1,21 +1,21 @@
 import React, { FC } from 'react';
-import styled from 'styled-components';
-import ReactMapGl, { ViewState } from 'react-map-gl';
-
+import ReactMapGl, { ViewState, PointerEvent } from 'react-map-gl';
 import { currentEnv } from '../common/environment';
 import fallbackStyle from './fallbackMapStyle.json';
 
 interface Props {
+  onClick(event: PointerEvent): void;
   viewport: ViewState;
   setViewport(a: ViewState): void;
 }
 
-const Map = styled(ReactMapGl)`
-  flex: 1;
-`;
-
-const UbikampusMap: FC<Props> = ({ children, viewport, setViewport }) => (
-  <Map
+const UbikampusMap: FC<Props> = ({
+  onClick,
+  children,
+  viewport,
+  setViewport,
+}) => (
+  <ReactMapGl
     // NOTE: onViewportChange adds extra properties to `viewport`
     {...viewport}
     mapStyle={
@@ -30,9 +30,10 @@ const UbikampusMap: FC<Props> = ({ children, viewport, setViewport }) => (
     onViewportChange={vp => {
       setViewport(vp);
     }}
+    onClick={e => onClick(e)}
   >
     {children}
-  </Map>
+  </ReactMapGl>
 );
 
 export default UbikampusMap;

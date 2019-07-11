@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Marker } from 'react-map-gl';
+import { Marker, PointerEvent } from 'react-map-gl';
+
+import Modal from 'react-modal';
+import QRcode from 'qrcode.react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { default as UbiMqtt } from 'ubimqtt';
 import styled from 'styled-components';
 import partition from 'lodash/partition';
+import queryString from 'query-string';
 
 import { MQTT_URL, DEFAULT_TOPIC } from '../location/urlPromptContainer';
 import UbikampusMap from './ubikampusMap';
@@ -15,6 +19,36 @@ import Deserializer, {
   MqttMessage,
 } from '../location/mqttDeserialize';
 import BluetoothNameModal from './bluetoothNameModal';
+
+if (currentEnv.NODE_ENV !== 'test') {
+  Modal.setAppElement('#app');
+}
+
+const modalStyle = {
+  overlay: {
+    zIndex: '1001',
+  },
+  content: {
+    bottom: '50%',
+    left: '20%',
+    right: '20%',
+    textAlign: 'center',
+  },
+};
+
+const UrlModal = (props: any) => (
+  <Modal
+    isOpen={props.modalIsOpen}
+    onRequestClose={props.closeModal}
+    contentLabel="QR-code"
+    style={modalStyle}
+  >
+    <a href={props.modalText}>{props.modalText}</a>
+    <div>
+      <QRcode value={props.modalText} size={256} />
+    </div>
+  </Modal>
+);
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 12;
@@ -30,8 +64,9 @@ const MapboxButton = styled.div`
   }
 
   position: absolute;
-  top: 20px;
+  top: 80px;
   right: 10px;
+  z-index: 1000;
 `;
 
 const OfflineMarker = styled(Marker)`
@@ -114,6 +149,10 @@ const MapContainer = ({ location }: RouteComponentProps) => {
     queryParams && queryParams.lat && queryParams.lon
       ? { lat: queryParams.lat, lon: queryParams.lon }
       : KUMPULA_COORDS;
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalText, setModalText] = useState('');
+  const openModal = () => setModalIsOpen(true);
+  const closeModal = () => setModalIsOpen(false);
 
   const [viewport, setViewport] = useState({
     latitude: initialCoords.lat,
@@ -124,7 +163,8 @@ const MapContainer = ({ location }: RouteComponentProps) => {
         : DEFAULT_NONTRACKED_ZOOM,
   });
 
-  const mqttHost = queryParams ? queryParams.host : MQTT_URL;
+  const mqttHost =
+    queryParams && queryParams.host ? queryParams.host : MQTT_URL;
 
   const [nameModalOpen, setNameModalOpen] = useState(false);
 
@@ -147,7 +187,7 @@ const MapContainer = ({ location }: RouteComponentProps) => {
         console.error('error connecting to ubi mqtt', error);
       } else {
         ubiClient.subscribe(
-          queryParams ? queryParams.topic : DEFAULT_TOPIC,
+          queryParams && queryParams.topic ? queryParams.topic : DEFAULT_TOPIC,
           null,
           (topic: string, msg: string) => {
             const nextBeacons = refreshBeacons(
@@ -183,40 +223,65 @@ const MapContainer = ({ location }: RouteComponentProps) => {
 
   const UserMarker = isOnline ? Marker : OfflineMarker;
 
+  const onMapClick = (event: PointerEvent) => {
+    const url = document.location;
+
+    const [lon, lat] = event.lngLat;
+
+    const nextQ = queryParams ? { ...queryParams, lat, lon } : { lat, lon };
+
+    const updatedQueryString =
+      url.origin + url.pathname + '?' + queryString.stringify(nextQ);
+
+    setModalText(updatedQueryString);
+    openModal();
+  };
+
   return (
-    <UbikampusMap viewport={viewport} setViewport={setViewport}>
+    <>
       <MapboxButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
         <button
           onClick={() => setNameModalOpen(true)}
           className="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate"
         />
       </MapboxButton>
-      <BluetoothNameModal
-        isOpen={nameModalOpen}
-        beacons={beacons}
-        setBluetoothName={name => {
-          setBluetoothName(name);
-          setNameModalOpen(false);
-        }}
-      />
-      {allUserMarkers.length &&
-        allUserMarkers.map((marker, i) => (
-          <UserMarker
+      <UbikampusMap
+        onClick={onMapClick}
+        viewport={viewport}
+        setViewport={setViewport}
+      >
+        <UrlModal
+          modalIsOpen={modalIsOpen}
+          closeModal={closeModal}
+          modalText={modalText}
+        />
+        <BluetoothNameModal
+          isOpen={nameModalOpen}
+          beacons={beacons}
+          setBluetoothName={name => {
+            setBluetoothName(name);
+            setNameModalOpen(false);
+          }}
+        />
+        {allUserMarkers.length &&
+          allUserMarkers.map((marker, i) => (
+            <UserMarker
+              key={i}
+              latitude={marker.lat}
+              longitude={marker.lon}
+              className="mapboxgl-user-location-dot"
+            />
+          ))}
+        {nonUserMarkers.map((beacon, i) => (
+          <NonUserMarker
             key={i}
-            latitude={marker.lat}
-            longitude={marker.lon}
+            latitude={beacon.lat}
+            longitude={beacon.lon}
             className="mapboxgl-user-location-dot"
           />
         ))}
-      {nonUserMarkers.map((beacon, i) => (
-        <NonUserMarker
-          key={i}
-          latitude={beacon.lat}
-          longitude={beacon.lon}
-          className="mapboxgl-user-location-dot"
-        />
-      ))}
-    </UbikampusMap>
+      </UbikampusMap>
+    </>
   );
 };
 
