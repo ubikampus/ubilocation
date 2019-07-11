@@ -7,9 +7,7 @@ const process = require('process');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
-const dotenv = require('dotenv');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-dotenv.config();
 
 const isProd = process.env.NODE_ENV === 'production';
 

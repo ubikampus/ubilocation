@@ -5,8 +5,7 @@
   "repository": "github:ubikampus/bluetooth-dev-visualizer",
   "homepage": "https://ubikampus.github.io/bluetooth-dev-visualizer",
   "scripts": {
-    "build": "rm -rf dist && NODE_ENV=production webpack",
-    "deploy": "npm run build && gh-pages -d dist",
+    "build": "NODE_ENV=production webpack",
     "test": "jest --silent",
     "coverage": "jest --silent --verbose --coverage",
     "start": "webpack-dev-server",
@@ -21,7 +20,6 @@
     "@types/react-modal": "^3.8.2",
     "babylonjs": "^4.0.3",
     "babylonjs-gui": "^4.0.3",
-    "dotenv": "^8.0.0",
     "io-ts": "^1.8.6",
     "lodash": "^4.17.11",
     "qrcode.react": "^0.9.3",
@@ -35,7 +33,6 @@
     "ubimqtt": "github:je-l/ubimqtt#ccd88c59c9"
   },
   "devDependencies": {
-    "@types/dotenv": "^6.1.1",
     "@types/enzyme": "^3.9.3",
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/jest": "^24.0.15",

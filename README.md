@@ -9,7 +9,8 @@ project. See main repo
 
 ### Requirements
 
-* Node 10+ (not tested with lower versions)
+* Node 10+ for tooling
+* docker/docker-compose for the runtime
 
 ### Development
 
@@ -28,8 +29,12 @@ See `scripts` section in package.json for other development commands. For
 example run client unit tests via `docker-compose exec bluetooth-client npm
 test`.
 
-### Deploy to production
+### Deploy client to production
 
-* `npm run deploy`
+Make sure mapbox api key is set to .env file.
+
+1. cd to repo root
+1. `docker-compose run -v $(pwd)/client/dist:/client/dist bluetooth-client npm run build`
+1. cd to client and run `npx gh-pages -d dist`
 
 http://ubikampus.github.io/bluetooth-dev-visualizer
