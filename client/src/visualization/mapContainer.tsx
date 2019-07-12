@@ -259,6 +259,7 @@ const MapContainer = ({ location }: RouteComponentProps) => {
         />
         <BluetoothNameModal
           isOpen={nameModalOpen}
+          closeModal={() => setNameModalOpen(false)}
           beacons={beacons}
           setBluetoothName={name => {
             setBluetoothName(name);

@@ -9,25 +9,33 @@ project. See main repo
 
 ### Requirements
 
-* Node 10+ (not tested with lower versions)
+* Node 10+ for tooling
+* docker/docker-compose for the runtime
 
 ### Development
 
-1. `npm install`
-1. (optional) install editor plugins for Tslint and Styled-components, for
+1. In both `client` and `auth-server` directories run `npm install` (for git hooks and editor dependencies)
+1. Optional - install editor plugins for Tslint and Styled-components, for
    example if using VS code:
    [Tslint](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-tslint-plugin)
    and [Styled
    components](https://marketplace.visualstudio.com/items?itemName=jpoissonnier.vscode-styled-components)
-1. (optional) copy .env.example to .env and set mapbox API token. If not
+1. Optional - copy .env.example to .env and set mapbox API token. If not
    supplied, fallback raster map is used.
-1. `npm start`
+1. `docker-compose up`
 1. Open browser at localhost:8080
 
-See `scripts` section in package.json for other development commands.
+See `scripts` section in package.json for other development commands. For
+example run client unit tests via `docker-compose exec bluetooth-client npm
+test`.
 
-### Deploy to production
+### Deploy client to production
 
-* `npm run deploy`
+Do not deploy to prod without mapbox api key.
+
+1. cd to repo root
+1. `docker build -t bluetooth-client -f client/Dockerfile.prod client`
+1. `docker run -v $(pwd)/client/dist:/client/dist -e MAPBOX_TOKEN=...`
+1. cd to client and run `npx gh-pages -d dist`
 
 http://ubikampus.github.io/bluetooth-dev-visualizer

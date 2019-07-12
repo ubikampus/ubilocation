@@ -41,11 +41,17 @@ const BluetoothName = styled.li`
 interface Props {
   isOpen: boolean;
   beacons: BeaconGeoLocation[];
+  closeModal(): void;
   setBluetoothName(a: string): void;
 }
 
-const BluetoothNameModal = ({ isOpen, beacons, setBluetoothName }: Props) => (
-  <Modal style={modalStyles} isOpen={isOpen}>
+const BluetoothNameModal = ({
+  isOpen,
+  beacons,
+  setBluetoothName,
+  closeModal,
+}: Props) => (
+  <Modal style={modalStyles} isOpen={isOpen} onRequestClose={closeModal}>
     <NameHeader>Device select</NameHeader>
     <p>
       Please make sure the device bluetooth visibility is on, and select your

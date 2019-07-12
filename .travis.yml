@@ -1,11 +1,10 @@
 language: node_js
-node_js:
-  - "10"
+
+services: docker
+
 script:
-  - cd client
-  - npm install
-  - npm run coverage
-  - npm run lint
-  - npm run build  # verify the code type checks and webpack config is valid
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - ci_env=`bash <(curl -s https://codecov.io/env)`
+  - docker build --no-cache -t bluetooth-client client
+  - docker run $ci_env bluetooth-client npm run travis
+  - docker build --no-cache -t bluetooth-auth-server auth-server
+  - docker run $ci_env bluetooth-auth-server npm run travis
