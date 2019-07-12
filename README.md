@@ -35,7 +35,8 @@ Do not deploy to prod without mapbox api key.
 
 1. cd to repo root
 1. `docker build -t bluetooth-client -f client/Dockerfile.prod client`
-1. `docker run -v $(pwd)/client/dist:/client/dist -e MAPBOX_TOKEN=...`
+1. `docker run -v $(pwd)/client/dist:/client/dist -e MAPBOX_TOKEN=<token>
+   bluetooth-client npm run build`
 1. cd to client and run `npx gh-pages -d dist`
 
 http://ubikampus.github.io/bluetooth-dev-visualizer
