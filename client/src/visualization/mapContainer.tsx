@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Marker, PointerEvent } from 'react-map-gl';
 
-import Modal from 'react-modal';
-import QRcode from 'qrcode.react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { default as UbiMqtt } from 'ubimqtt';
 import styled from 'styled-components';
@@ -13,6 +11,7 @@ import LocationPin from './locationPin';
 import { MQTT_URL, DEFAULT_TOPIC } from '../location/urlPromptContainer';
 import UbikampusMap from './ubikampusMap';
 import { currentEnv } from '../common/environment';
+import QrCodeModal from './qrCodeModal';
 import Deserializer, {
   MapLocationQueryDecoder,
   BeaconGeoLocation,
@@ -20,36 +19,6 @@ import Deserializer, {
   MqttMessage,
 } from '../location/mqttDeserialize';
 import BluetoothNameModal from './bluetoothNameModal';
-
-if (currentEnv.NODE_ENV !== 'test') {
-  Modal.setAppElement('#app');
-}
-
-const modalStyle = {
-  overlay: {
-    zIndex: '1001',
-  },
-  content: {
-    bottom: '50%',
-    left: '20%',
-    right: '20%',
-    textAlign: 'center',
-  },
-};
-
-const UrlModal = (props: any) => (
-  <Modal
-    isOpen={props.modalIsOpen}
-    onRequestClose={props.closeModal}
-    contentLabel="QR-code"
-    style={modalStyle}
-  >
-    <a href={props.modalText}>{props.modalText}</a>
-    <div>
-      <QRcode value={props.modalText} size={256} />
-    </div>
-  </Modal>
-);
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 12;
@@ -140,13 +109,6 @@ export const refreshBeacons = (
 };
 
 /**
- * When user chooses the "current location" option from the location tracking
- * prompt, this list is used. Again there are multiple locations because we
- * cannot have unique bluetooth identifier...
- */
-type StaticLocations = Array<{ lat: number; lon: number }>;
-
-/**
  * Use default Mapbox vector tiles if MAPBOX_TOKEN is found, otherwise fallback
  * to free Carto Light raster map.
  *
@@ -168,7 +130,13 @@ const MapContainer = ({ location }: RouteComponentProps) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalText, setModalText] = useState('');
   const [nameSelection, setNameSelection] = useState<null | string>(null);
-  const [staticLocations, setStaticLocations] = useState<StaticLocations>([]);
+
+  /**
+   * Used when user selects "only current" from the location prompt.
+   */
+  const [staticLocations, setStaticLocations] = useState<BeaconGeoLocation[]>(
+    []
+  );
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 
@@ -270,7 +238,7 @@ const MapContainer = ({ location }: RouteComponentProps) => {
         viewport={viewport}
         setViewport={setViewport}
       >
-        <UrlModal
+        <QrCodeModal
           modalIsOpen={modalIsOpen}
           closeModal={closeModal}
           modalText={modalText}
@@ -295,7 +263,7 @@ const MapContainer = ({ location }: RouteComponentProps) => {
           <Marker
             offsetLeft={-20}
             offsetTop={-40}
-            key={i}
+            key={loc.beaconId + i}
             latitude={loc.lat}
             longitude={loc.lon}
           >

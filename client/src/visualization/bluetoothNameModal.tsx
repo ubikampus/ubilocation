@@ -1,26 +1,10 @@
 import React from 'react';
-import Modal from 'react-modal';
 import styled from 'styled-components';
 import uniqBy from 'lodash/uniqBy';
 
+import Modal from './modal';
+import Button from './button';
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
-
-const modalStyles = {
-  overlay: {
-    zIndex: '1001',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  content: {
-    boxShadow: '2px 2px 10px hsla(0, 0%, 0%, 15%)',
-    border: 'none',
-    maxHeight: '80vh',
-    flex: '0 1 400px',
-    position: 'static',
-    margin: '20px 10px',
-  },
-};
 
 const NameHeader = styled.h3`
   margin-top: 0;
@@ -44,29 +28,6 @@ const BluetoothName = styled.li<{ active: boolean }>`
   margin-right: 15px;
   border-radius: 5px;
   background-color: ${props => (props.active ? '#f3f3f3' : 'inherit')};
-`;
-
-const Button = styled.button`
-  border: none;
-  margin: 5px;
-  border-radius: 5px;
-  padding: 10px 25px;
-  color: #595959;
-
-  &:hover {
-    color: #0c0c0c;
-  }
-
-  cursor: pointer;
-  font-weight: 700;
-  background-color: #e9e9e9;
-  font-family: inherit;
-
-  &[disabled] {
-    opacity: 0.2;
-    cursor: auto;
-    color: inherit;
-  }
 `;
 
 const InfoSection = styled.p`
@@ -99,7 +60,7 @@ const BluetoothNameModal = ({
   setStaticLocation,
   closeModal,
 }: Props) => (
-  <Modal style={modalStyles} isOpen={isOpen} onRequestClose={closeModal}>
+  <Modal isOpen={isOpen} onRequestClose={closeModal}>
     <NameHeader>Ubikampus indoor positioning</NameHeader>
     {promptForName && (
       <>
