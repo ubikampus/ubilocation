@@ -50,6 +50,12 @@ interface Props {
   setBluetoothName(a: string | null): void;
 }
 
+export const sortBeacons = (beacons: BeaconGeoLocation[]) => {
+  return uniqBy(beacons, beacon => beacon.beaconId).sort((left, right) =>
+    left.beaconId.localeCompare(right.beaconId, undefined, { numeric: true })
+  );
+};
+
 const BluetoothNameModal = ({
   isOpen,
   beacons,
@@ -69,23 +75,17 @@ const BluetoothNameModal = ({
           your bluetooth name:
         </InfoSection>
         <NameList>
-          {uniqBy(beacons, beacon => beacon.beaconId)
-            .sort((a, b) =>
-              a.beaconId.localeCompare(b.beaconId, undefined, {
-                numeric: true,
-              })
-            )
-            .map((beacon, i) => (
-              <BluetoothName
-                key={beacon.beaconId + i}
-                active={beacon.beaconId === nameSelection}
-                onClick={() => {
-                  setNameSelection(beacon.beaconId);
-                }}
-              >
-                {beacon.beaconId}
-              </BluetoothName>
-            ))}
+          {sortBeacons(beacons).map((beacon, i) => (
+            <BluetoothName
+              key={beacon.beaconId + i}
+              active={beacon.beaconId === nameSelection}
+              onClick={() => {
+                setNameSelection(beacon.beaconId);
+              }}
+            >
+              {beacon.beaconId}
+            </BluetoothName>
+          ))}
         </NameList>
       </>
     )}
