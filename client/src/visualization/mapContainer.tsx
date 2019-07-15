@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import partition from 'lodash/partition';
 import queryString from 'query-string';
 
+import LocationPin from './locationPin';
 import { MQTT_URL, DEFAULT_TOPIC } from '../location/urlPromptContainer';
 import UbikampusMap from './ubikampusMap';
 import { currentEnv } from '../common/environment';
@@ -90,6 +91,14 @@ const NonUserMarker = styled(OfflineMarker)`
   }
 `;
 
+const StaticMarker = styled.div`
+  svg {
+    height: 40px;
+    width: auto;
+    fill: #4287f5;
+  }
+`;
+
 /**
  * Why can there be multiple markers for the user? Because we cannot get unique
  * Id for the device thanks to bluetooth security limits. Instead we can utilize
@@ -131,6 +140,13 @@ export const refreshBeacons = (
 };
 
 /**
+ * When user chooses the "current location" option from the location tracking
+ * prompt, this list is used. Again there are multiple locations because we
+ * cannot have unique bluetooth identifier...
+ */
+type StaticLocations = Array<{ lat: number; lon: number }>;
+
+/**
  * Use default Mapbox vector tiles if MAPBOX_TOKEN is found, otherwise fallback
  * to free Carto Light raster map.
  *
@@ -151,6 +167,8 @@ const MapContainer = ({ location }: RouteComponentProps) => {
       : KUMPULA_COORDS;
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalText, setModalText] = useState('');
+  const [nameSelection, setNameSelection] = useState<null | string>(null);
+  const [staticLocations, setStaticLocations] = useState<StaticLocations>([]);
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 
@@ -182,7 +200,7 @@ const MapContainer = ({ location }: RouteComponentProps) => {
       console.error('mapbox api token missing, falling back to raster maps...');
     }
 
-    const ubiClient = new UbiMqtt(mqttHost);
+    const ubiClient = new UbiMqtt(mqttHost, { silent: true });
     console.log('connecting to ', mqttHost);
     ubiClient.connect((error: any) => {
       if (error) {
@@ -258,23 +276,42 @@ const MapContainer = ({ location }: RouteComponentProps) => {
           modalText={modalText}
         />
         <BluetoothNameModal
+          promptForName // TODO: Don't prompt if web bluetooth succeeds.
+          setStaticLocation={name => {
+            const targetBeacons = beacons.filter(b => b.beaconId === name);
+            setStaticLocations(targetBeacons);
+          }}
           isOpen={nameModalOpen}
           closeModal={() => setNameModalOpen(false)}
           beacons={beacons}
+          nameSelection={nameSelection}
+          setNameSelection={setNameSelection}
           setBluetoothName={name => {
             setBluetoothName(name);
             setNameModalOpen(false);
           }}
         />
-        {allUserMarkers.length &&
-          allUserMarkers.map((marker, i) => (
-            <UserMarker
-              key={i}
-              latitude={marker.lat}
-              longitude={marker.lon}
-              className="mapboxgl-user-location-dot"
-            />
-          ))}
+        {staticLocations.map((loc, i) => (
+          <Marker
+            offsetLeft={-20}
+            offsetTop={-40}
+            key={i}
+            latitude={loc.lat}
+            longitude={loc.lon}
+          >
+            <StaticMarker>
+              <LocationPin />
+            </StaticMarker>
+          </Marker>
+        ))}
+        {allUserMarkers.map((marker, i) => (
+          <UserMarker
+            key={i}
+            latitude={marker.lat}
+            longitude={marker.lon}
+            className="mapboxgl-user-location-dot"
+          />
+        ))}
         {nonUserMarkers.map((beacon, i) => (
           <NonUserMarker
             key={i}
