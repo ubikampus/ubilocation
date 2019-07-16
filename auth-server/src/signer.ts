@@ -11,7 +11,7 @@ interface SignedMessage {
   signatures: Signature[];
 }
 
-const sign = async (privateKey: string | Buffer, message: string) => {
+const sign = async (privateKey: string | Buffer, message: string) => {
   const key = await jose.JWK.asKey(privateKey, 'pem');
 
   const messageid = crypto.randomBytes(12).toString('base64');

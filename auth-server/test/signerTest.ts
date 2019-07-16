@@ -9,7 +9,7 @@ const PKEY = `
   ESjOzA8dy9vKKwbONgEyRuzDOs8IeC1mnBgj/w+FVXE0b5p4d7CPmhrgPpVDO443
   vo2ckrppdi3C0qG9BghSoHvzcIlyYT2WFYNKSKL5oA==
   -----END EC PRIVATE KEY-----
-`
+`;
 
 const PUBKEY = `
   -----BEGIN PUBLIC KEY-----
@@ -18,18 +18,18 @@ const PUBKEY = `
   wzrPCHgtZpwYI/8PhVVxNG+aeHewj5oa4D6VQzuON76NnJK6aXYtwtKhvQYIUqB7
   83CJcmE9lhWDSkii+aA=
   -----END PUBLIC KEY-----
-`
+`;
 
 test('signer returns signed message', async () => {
   const message = 'Hello world';
   const signed = await sign(PKEY, message);
 
-  expect(signed).toHaveProperty('signatures')
-  expect(signed.payload).toEqual('Hello world')
+  expect(signed).toHaveProperty('signatures');
+  expect(signed.payload).toEqual('Hello world');
 });
 
 test('json stays valid when signed', async () => {
-  const message = { name: 'kurko', bool: false }
+  const message = { name: 'kurko', bool: false };
   const signed = await sign(PKEY, JSON.stringify(message));
 
   const payload = JSON.parse(signed.payload);
@@ -37,16 +37,20 @@ test('json stays valid when signed', async () => {
 });
 
 test('signed message can be verified', async () => {
-  const key = await jose.JWK.asKey(PUBKEY, "pem")
+  const key = await jose.JWK.asKey(PUBKEY, 'pem');
 
   const message = 'Hello world';
   const signed = await sign(PKEY, message);
 
   signed.payload = jose.util.base64url.encode(signed.payload, 'utf8');
-  signed.signatures[0].protected = jose.util.base64url.encode(JSON.stringify(signed.signatures[0].protected), "utf8");
-  const result = await jose.JWS
-    .createVerify(key, { algorithms: ["ES512"] })
-    .verify(signed);
+  signed.signatures[0].protected = jose.util.base64url.encode(
+    JSON.stringify(signed.signatures[0].protected),
+    'utf8'
+  );
+
+  const result = await jose.JWS.createVerify(key, {
+    algorithms: ['ES512'],
+  }).verify(signed);
 
   expect(result.payload.toString()).toEqual('Hello world');
 });
