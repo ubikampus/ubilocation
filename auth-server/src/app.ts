@@ -1,9 +1,15 @@
+import process from 'process';
 import express, { Request, Response } from 'express';
 import sign from './signer';
 import dotenv from 'dotenv';
 import fs from 'fs';
 
 dotenv.config();
+
+if (process.env.TYPECHECK) {
+  console.log('exiting early for type checking purposes...');
+  process.exit(0);
+}
 
 const app = express();
 const KEY_PATH = process.env.KEY_PATH || 'pkey.pem';

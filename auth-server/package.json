@@ -8,7 +8,7 @@
     "test": "jest",
     "coverage": "jest --silent --verbose --coverage",
     "lint": "tslint -p .",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck": "TYPECHECK=1 npx ts-node src/app.ts",
     "travis": "npm run coverage && npm run lint && npm run typecheck && curl -sS https://codecov.io/bash | bash -s -- -F authserver"
   },
   "author": "",
