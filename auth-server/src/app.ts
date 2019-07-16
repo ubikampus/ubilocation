@@ -1,15 +1,22 @@
 import express, { Request, Response } from 'express';
-require('dotenv').config()
-const bodyParser = require('body-parser');
+import sign from './signer';
+import dotenv from 'dotenv';
+import fs from 'fs';
 const loginRouter = require('./controllers/login');
 
-const app = express();
+dotenv.config();
 
-app.use(bodyParser.json());
+const app = express();
+const KEY_PATH = process.env.KEY_PATH || 'pkey.pem';
+const PKEY = fs.readFileSync(KEY_PATH);
+
+app.use(express.json());
 app.use('/login', loginRouter);
 
-app.get('/sign', (req, res) => {
-  res.send('<h1>Gonna sign</h1>');
+app.post('/sign', async (req, res) => {
+  const message = req.body.message;
+  const signed = await sign(PKEY, message);
+  res.json(signed);
 });
 
 const PORT = 3001;
