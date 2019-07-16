@@ -20,6 +20,15 @@ const PUBKEY = `
   -----END PUBLIC KEY-----
 `;
 
+const INVALID_PUBKEY = `
+  -----BEGIN PUBLIC KEY-----
+  MIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQBw0CdCqD15j4LwShTBooE2hNY9UIr
+  H2r5eHQrfKg3yIyuGDCuo5GkRym8kNoD9hEN+Qxj1BEozswPHcvbyisGzjYBMkbs
+  wzrPCHgtZpwYI/8PhVVxNG+Hewj5oa4D6VQzuON76NnJK6aXYtwtKhvQYIUqB7
+  83CJcmE9lhWDSkii+aA=
+  -----END PUBLIC KEY-----
+`;
+
 test('signer returns signed message', async () => {
   const message = 'Hello world';
   const signed = await sign(PKEY, message);
@@ -36,21 +45,39 @@ test('json stays valid when signed', async () => {
   expect(payload).toEqual(message);
 });
 
-test('signed message can be verified', async () => {
-  const key = await jose.JWK.asKey(PUBKEY, 'pem');
+describe('verifying signed message', () => {
+  let signed: any;
 
-  const message = 'Hello world';
-  const signed = await sign(PKEY, message);
+  beforeEach(async () => {
+    const message = 'Hello world';
+    signed = await sign(PKEY, message);
 
-  signed.payload = jose.util.base64url.encode(signed.payload, 'utf8');
-  signed.signatures[0].protected = jose.util.base64url.encode(
-    JSON.stringify(signed.signatures[0].protected),
-    'utf8'
-  );
+    signed.payload = jose.util.base64url.encode(signed.payload, 'utf8');
+    signed.signatures[0].protected = jose.util.base64url.encode(
+      JSON.stringify(signed.signatures[0].protected),
+      'utf8'
+    );
+  });
 
-  const result = await jose.JWS.createVerify(key, {
-    algorithms: ['ES512'],
-  }).verify(signed);
+  test('can be verified', async () => {
+    const key = await jose.JWK.asKey(PUBKEY, 'pem');
 
-  expect(result.payload.toString()).toEqual('Hello world');
+    const result = await jose.JWS.createVerify(key, {
+      algorithms: ['ES512'],
+    }).verify(signed);
+
+    expect(result.payload.toString()).toEqual('Hello world');
+  });
+
+  test('can not be verified with wrong key', async () => {
+    const key = await jose.JWK.asKey(INVALID_PUBKEY, 'pem');
+
+    const result = () => {
+      return jose.JWS.createVerify(key, {
+        algorithms: ['ES512'],
+      }).verify(signed);
+    };
+
+    await expect(result()).rejects.toEqual(new Error('no key found'));
+  });
 });
