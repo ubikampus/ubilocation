@@ -1,3 +1,4 @@
+import process from 'process';
 import express, { Request, Response } from 'express';
 import sign from './signer';
 import dotenv from 'dotenv';
@@ -5,6 +6,11 @@ import fs from 'fs';
 const loginRouter = require('./controllers/login');
 
 dotenv.config();
+
+if (process.env.TYPECHECK) {
+  console.log('type check success!');
+  process.exit(0);
+}
 
 const app = express();
 const KEY_PATH = process.env.KEY_PATH || 'pkey.pem';
