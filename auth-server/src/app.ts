@@ -7,7 +7,7 @@ import fs from 'fs';
 dotenv.config();
 
 if (process.env.TYPECHECK) {
-  console.log('exiting early for type checking purposes...');
+  console.log('type check success!');
   process.exit(0);
 }
 
