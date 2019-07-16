@@ -15,6 +15,8 @@ project. See main repo
 ### Development
 
 1. In both `client` and `auth-server` directories run `npm install` (for git hooks and editor dependencies)
+1. Generate private key to /auth-server/pkey.pem with command `openssl ecparam
+   -genkey -name secp521r1 -noout`
 1. Optional - install editor plugins for Tslint and Styled-components, for
    example if using VS code:
    [Tslint](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-tslint-plugin)

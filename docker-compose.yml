@@ -17,4 +17,5 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./auth-server/src:/auth-server/src
+      - ./auth-server:/auth-server
+      - /auth-server/node_modules
