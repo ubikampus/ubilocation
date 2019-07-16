@@ -72,7 +72,7 @@ const BluetoothNameModal = ({
       <>
         <InfoSection>
           Please make sure the device bluetooth visibility is on, and select
-          your bluetooth name:
+          your Bluetooth name
         </InfoSection>
         <NameList>
           {sortBeacons(beacons).map((beacon, i) => (
@@ -89,20 +89,8 @@ const BluetoothNameModal = ({
         </NameList>
       </>
     )}
-    <InfoSection>Follow my position with bluetooth?</InfoSection>
+    <InfoSection>Allow Ubimaps to track my location</InfoSection>
     <ButtonRow>
-      <Button
-        disabled={nameSelection === null && promptForName}
-        onClick={() => {
-          if (nameSelection) {
-            setStaticLocation(nameSelection);
-            setBluetoothName(null);
-            closeModal();
-          }
-        }}
-      >
-        Only current
-      </Button>
       <Button
         disabled={nameSelection === null && promptForName}
         onClick={() => {
@@ -113,7 +101,19 @@ const BluetoothNameModal = ({
           }
         }}
       >
-        Follow
+        Yes
+      </Button>
+      <Button
+        disabled={nameSelection === null && promptForName}
+        onClick={() => {
+          if (nameSelection) {
+            setStaticLocation(nameSelection);
+            setBluetoothName(null);
+            closeModal();
+          }
+        }}
+      >
+        No
       </Button>
     </ButtonRow>
   </Modal>
