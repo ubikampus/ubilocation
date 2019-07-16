@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Marker, PointerEvent } from 'react-map-gl';
 
-import Modal from 'react-modal';
-import QRcode from 'qrcode.react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { default as UbiMqtt } from 'ubimqtt';
 import styled from 'styled-components';
 import partition from 'lodash/partition';
 import queryString from 'query-string';
 
+import LocationPin from './locationPin';
 import { MQTT_URL, DEFAULT_TOPIC } from '../location/urlPromptContainer';
 import UbikampusMap from './ubikampusMap';
 import { currentEnv } from '../common/environment';
+import QrCodeModal from './qrCodeModal';
 import Deserializer, {
   MapLocationQueryDecoder,
   BeaconGeoLocation,
@@ -19,36 +19,6 @@ import Deserializer, {
   MqttMessage,
 } from '../location/mqttDeserialize';
 import BluetoothNameModal from './bluetoothNameModal';
-
-if (currentEnv.NODE_ENV !== 'test') {
-  Modal.setAppElement('#app');
-}
-
-const modalStyle = {
-  overlay: {
-    zIndex: '1001',
-  },
-  content: {
-    bottom: '50%',
-    left: '20%',
-    right: '20%',
-    textAlign: 'center',
-  },
-};
-
-const UrlModal = (props: any) => (
-  <Modal
-    isOpen={props.modalIsOpen}
-    onRequestClose={props.closeModal}
-    contentLabel="QR-code"
-    style={modalStyle}
-  >
-    <a href={props.modalText}>{props.modalText}</a>
-    <div>
-      <QRcode value={props.modalText} size={256} />
-    </div>
-  </Modal>
-);
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 12;
@@ -87,6 +57,14 @@ const NonUserMarker = styled(OfflineMarker)`
   &:after {
     height: 14px;
     width: 14px;
+  }
+`;
+
+const StaticMarker = styled.div`
+  svg {
+    height: 40px;
+    width: auto;
+    fill: #4287f5;
   }
 `;
 
@@ -151,6 +129,14 @@ const MapContainer = ({ location }: RouteComponentProps) => {
       : KUMPULA_COORDS;
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalText, setModalText] = useState('');
+  const [nameSelection, setNameSelection] = useState<null | string>(null);
+
+  /**
+   * Used when user selects "only current" from the location prompt.
+   */
+  const [staticLocations, setStaticLocations] = useState<BeaconGeoLocation[]>(
+    []
+  );
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 
@@ -182,7 +168,7 @@ const MapContainer = ({ location }: RouteComponentProps) => {
       console.error('mapbox api token missing, falling back to raster maps...');
     }
 
-    const ubiClient = new UbiMqtt(mqttHost);
+    const ubiClient = new UbiMqtt(mqttHost, { silent: true });
     console.log('connecting to ', mqttHost);
     ubiClient.connect((error: any) => {
       if (error) {
@@ -252,29 +238,48 @@ const MapContainer = ({ location }: RouteComponentProps) => {
         viewport={viewport}
         setViewport={setViewport}
       >
-        <UrlModal
+        <QrCodeModal
           modalIsOpen={modalIsOpen}
           closeModal={closeModal}
           modalText={modalText}
         />
         <BluetoothNameModal
+          promptForName // TODO: Don't prompt if web bluetooth succeeds.
+          setStaticLocation={name => {
+            const targetBeacons = beacons.filter(b => b.beaconId === name);
+            setStaticLocations(targetBeacons);
+          }}
           isOpen={nameModalOpen}
           closeModal={() => setNameModalOpen(false)}
           beacons={beacons}
+          nameSelection={nameSelection}
+          setNameSelection={setNameSelection}
           setBluetoothName={name => {
             setBluetoothName(name);
             setNameModalOpen(false);
           }}
         />
-        {allUserMarkers.length &&
-          allUserMarkers.map((marker, i) => (
-            <UserMarker
-              key={i}
-              latitude={marker.lat}
-              longitude={marker.lon}
-              className="mapboxgl-user-location-dot"
-            />
-          ))}
+        {staticLocations.map((loc, i) => (
+          <Marker
+            offsetLeft={-20}
+            offsetTop={-40}
+            key={loc.beaconId + i}
+            latitude={loc.lat}
+            longitude={loc.lon}
+          >
+            <StaticMarker>
+              <LocationPin />
+            </StaticMarker>
+          </Marker>
+        ))}
+        {allUserMarkers.map((marker, i) => (
+          <UserMarker
+            key={i}
+            latitude={marker.lat}
+            longitude={marker.lon}
+            className="mapboxgl-user-location-dot"
+          />
+        ))}
         {nonUserMarkers.map((beacon, i) => (
           <NonUserMarker
             key={i}

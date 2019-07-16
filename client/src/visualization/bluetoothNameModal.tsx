@@ -1,23 +1,10 @@
 import React from 'react';
-import Modal from 'react-modal';
 import styled from 'styled-components';
+import uniqBy from 'lodash/uniqBy';
 
+import Modal from './modal';
+import Button from './button';
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
-
-const modalStyles = {
-  overlay: {
-    zIndex: '1001',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  content: {
-    maxHeight: '80vh',
-    maxWidth: '400px',
-    position: 'static',
-    margin: '20px 10px',
-  },
-};
 
 const NameHeader = styled.h3`
   margin-top: 0;
@@ -27,54 +14,108 @@ const NameHeader = styled.h3`
 `;
 
 const NameList = styled.ul`
-  list-style: none;
-  padding-left: 13px;
   margin: 20px 0;
+  max-height: 30vh;
+  overflow: auto;
+
+  list-style: none;
   word-break: break-all;
 `;
 
-const BluetoothName = styled.li`
+const BluetoothName = styled.li<{ active: boolean }>`
   cursor: pointer;
+  padding: 7px 10px;
+  margin-right: 15px;
+  border-radius: 5px;
+  background-color: ${props => (props.active ? '#f3f3f3' : 'inherit')};
+`;
+
+const InfoSection = styled.p`
+  line-height: 1.25;
   margin: 10px 0;
+`;
+
+const ButtonRow = styled.div`
+  margin-top: 25px;
 `;
 
 interface Props {
   isOpen: boolean;
+  promptForName: boolean; // TODO: use with web bluetooth
+  nameSelection: null | string;
   beacons: BeaconGeoLocation[];
   closeModal(): void;
-  setBluetoothName(a: string): void;
+  setNameSelection(a: string): void;
+  setStaticLocation(targetName: string | null): void;
+  setBluetoothName(a: string | null): void;
 }
+
+export const sortBeacons = (beacons: BeaconGeoLocation[]) => {
+  return uniqBy(beacons, beacon => beacon.beaconId).sort((left, right) =>
+    left.beaconId.localeCompare(right.beaconId, undefined, { numeric: true })
+  );
+};
 
 const BluetoothNameModal = ({
   isOpen,
   beacons,
+  nameSelection,
+  promptForName,
+  setNameSelection,
   setBluetoothName,
+  setStaticLocation,
   closeModal,
 }: Props) => (
-  <Modal style={modalStyles} isOpen={isOpen} onRequestClose={closeModal}>
-    <NameHeader>Device select</NameHeader>
-    <p>
-      Please make sure the device bluetooth visibility is on, and select your
-      bluetooth name:
-    </p>
-    <NameList>
-      {beacons
-        .sort((a, b) =>
-          a.beaconId.localeCompare(b.beaconId, undefined, {
-            numeric: true,
-          })
-        )
-        .map((beacon, i) => (
-          <BluetoothName
-            key={beacon.beaconId + i}
-            onClick={() => {
-              setBluetoothName(beacon.beaconId);
-            }}
-          >
-            {beacon.beaconId}
-          </BluetoothName>
-        ))}
-    </NameList>
+  <Modal isOpen={isOpen} onRequestClose={closeModal}>
+    <NameHeader>Ubikampus indoor positioning</NameHeader>
+    {promptForName && (
+      <>
+        <InfoSection>
+          Please make sure the device bluetooth visibility is on, and select
+          your bluetooth name:
+        </InfoSection>
+        <NameList>
+          {sortBeacons(beacons).map((beacon, i) => (
+            <BluetoothName
+              key={beacon.beaconId + i}
+              active={beacon.beaconId === nameSelection}
+              onClick={() => {
+                setNameSelection(beacon.beaconId);
+              }}
+            >
+              {beacon.beaconId}
+            </BluetoothName>
+          ))}
+        </NameList>
+      </>
+    )}
+    <InfoSection>Follow my position with bluetooth?</InfoSection>
+    <ButtonRow>
+      <Button
+        disabled={nameSelection === null && promptForName}
+        onClick={() => {
+          if (nameSelection) {
+            setStaticLocation(nameSelection);
+            setBluetoothName(null);
+            closeModal();
+          }
+        }}
+      >
+        Only current
+      </Button>
+      <Button
+        disabled={nameSelection === null && promptForName}
+        onClick={() => {
+          if (nameSelection) {
+            setBluetoothName(nameSelection);
+            setStaticLocation(null);
+            closeModal();
+          }
+        }}
+      >
+        Follow
+      </Button>
+    </ButtonRow>
   </Modal>
 );
 

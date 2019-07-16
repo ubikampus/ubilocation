@@ -39,11 +39,10 @@ describe('MQTT parsing', () => {
     expect(parsed[0].yMeters).toBeTruthy();
   });
 
-  it('should panic for odd input', () => {
-    expect(() => {
-      const parser = new Deserializer();
-      parser.deserializeMessage('asdfasdf');
-    }).toThrow();
+  it('should return empty list for odd input', () => {
+    const parser = new Deserializer();
+    const res = parser.deserializeMessage('asdfasdf');
+    expect(res.length).toBe(0);
   });
 });
 

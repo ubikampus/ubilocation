@@ -72,7 +72,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "npm run lint && npm test"
+      "pre-push": "docker-compose exec -T bluetooth-client npm run lint && npm test"
     }
   }
 }
