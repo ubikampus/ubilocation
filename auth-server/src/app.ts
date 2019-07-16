@@ -12,7 +12,6 @@ const PKEY = fs.readFileSync(KEY_PATH);
 app.use(express.json());
 
 app.post('/sign', async (req, res) => {
-  console.log(req.body);
   const message = req.body.message;
   const signed = await sign(PKEY, message);
   res.json(signed);

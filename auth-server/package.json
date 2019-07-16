@@ -5,7 +5,11 @@
   "main": "src/app.ts",
   "scripts": {
     "start": "npx ts-node src/app.ts",
-    "test": "jest"
+    "test": "jest",
+    "coverage": "jest --silent --verbose --coverage",
+    "lint": "tslint -p .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "travis": "npm run coverage && npm run lint && npm run typecheck && curl -sS https://codecov.io/bash | bash -s -- -F authserver"
   },
   "author": "",
   "license": "MIT",
