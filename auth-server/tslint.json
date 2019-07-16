@@ -5,7 +5,7 @@
     "tslint-plugin-prettier"
   ],
   "linterOptions": {
-    "exclude": ["jest.config.js"]
+    "exclude": ["coverage/**", "jest.config.js"]
   },
   "rules": {
     "object-literal-sort-keys": false,
