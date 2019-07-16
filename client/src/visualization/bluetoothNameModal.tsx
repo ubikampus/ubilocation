@@ -6,6 +6,7 @@ import { BeaconGeoLocation } from '../location/mqttDeserialize';
 
 const modalStyles = {
   overlay: {
+    zIndex: '1001',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'flex-start',
@@ -20,11 +21,16 @@ const modalStyles = {
 
 const NameHeader = styled.h3`
   margin-top: 0;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
 `;
 
 const NameList = styled.ul`
   list-style: none;
   padding-left: 13px;
+  margin: 20px 0;
+  word-break: break-all;
 `;
 
 const BluetoothName = styled.li`
@@ -35,11 +41,17 @@ const BluetoothName = styled.li`
 interface Props {
   isOpen: boolean;
   beacons: BeaconGeoLocation[];
+  closeModal(): void;
   setBluetoothName(a: string): void;
 }
 
-const BluetoothNameModal = ({ isOpen, beacons, setBluetoothName }: Props) => (
-  <Modal style={modalStyles} isOpen={isOpen}>
+const BluetoothNameModal = ({
+  isOpen,
+  beacons,
+  setBluetoothName,
+  closeModal,
+}: Props) => (
+  <Modal style={modalStyles} isOpen={isOpen} onRequestClose={closeModal}>
     <NameHeader>Device select</NameHeader>
     <p>
       Please make sure the device bluetooth visibility is on, and select your
