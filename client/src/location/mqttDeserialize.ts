@@ -126,7 +126,7 @@ export default class Deserializer {
     } catch (err) {
       console.error('error parsing json', err);
       console.error('json:', rawMessage);
-      throw err;
+      return [];
     }
 
     return parsed.map((obj: unknown) => {
