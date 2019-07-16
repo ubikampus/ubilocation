@@ -5,16 +5,30 @@
   "main": "src/app.ts",
   "scripts": {
     "start": "npx ts-node src/app.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "travis": "echo TODO - see client package.json"
+    "test": "jest",
+    "coverage": "jest --silent --verbose --coverage",
+    "lint": "tslint -p .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "travis": "npm run coverage && npm run lint && npm run typecheck && curl -sS https://codecov.io/bash | bash -s -- -F authserver"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@types/dotenv": "^6.1.1",
     "@types/express": "^4.17.0",
+    "@types/jest": "^24.0.15",
+    "dotenv": "^8.0.0",
     "express": "^4.17.1",
+    "jest": "^24.8.0",
+    "node-jose": "^1.1.3",
+    "prettier": "^1.18.2",
     "ts-node": "^8.3.0",
     "tslint": "^5.18.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.5.3"
+  },
+  "devDependencies": {
+    "ts-jest": "^24.0.2"
   }
 }
