@@ -3,6 +3,7 @@ version: '3'
 services:
   bluetooth-client:
     container_name: bluetooth-client
+    image: bluetooth-client
     build: client
     environment:
       MAPBOX_TOKEN: $MAPBOX_TOKEN
@@ -13,8 +14,10 @@ services:
       - /client/node_modules  # do not mix our node_modules with the one in container
   bluetooth-auth-server:
     container_name: bluetooth-auth-server
+    image: bluetooth-auth-server
     build: auth-server
     ports:
       - "3001:3001"
     volumes:
-      - ./auth-server/src:/auth-server/src
+      - ./auth-server:/auth-server
+      - /auth-server/node_modules
