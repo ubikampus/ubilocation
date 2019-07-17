@@ -4,6 +4,7 @@ import sign from './signer';
 import dotenv from 'dotenv';
 import fs from 'fs';
 const loginRouter = require('./controllers/login');
+const loginCheck = require('./middleware/loginCheck');
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ const KEY_PATH = process.env.KEY_PATH || 'pkey.pem';
 const PKEY = fs.readFileSync(KEY_PATH);
 
 app.use(express.json());
+app.use(loginCheck);
 app.use('/login', loginRouter);
 
 app.post('/sign', async (req, res) => {
