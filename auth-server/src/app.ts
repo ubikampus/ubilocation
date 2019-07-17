@@ -3,8 +3,8 @@ import express, { Request, Response } from 'express';
 import sign from './signer';
 import dotenv from 'dotenv';
 import fs from 'fs';
-const loginRouter = require('./controllers/login');
-const loginCheck = require('./middleware/loginCheck');
+import loginRouter from './controllers/login';
+import loginCheck from './middleware/loginCheck';
 
 dotenv.config();
 
@@ -32,4 +32,4 @@ app.listen(PORT, () => {
   console.log('Listening at', PORT);
 });
 
-module.exports = app;
+export default app;

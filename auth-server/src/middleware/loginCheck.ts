@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 const getTokenFrom = (req: Request) => {
   const authorization = req.get('authorization');
@@ -20,9 +20,15 @@ const loginCheck = (req: Request, res: Response, next: () => void) => {
     return res.status(401).json({ error: 'token missing' });
   }
 
+  if (!process.env.SECRET) {
+    return res
+      .status(500)
+      .json({ error: 'secret is undefined (set it in your .env file)' });
+  }
+
   let decodedToken;
   try {
-    decodedToken = jwt.verify(token, process.env.SECRET);
+    decodedToken = jwt.verify(token, process.env.SECRET) as any;
   } catch (exception) {
     return res.status(401).json({ error: 'invalid token' });
   }
@@ -38,4 +44,4 @@ const loginCheck = (req: Request, res: Response, next: () => void) => {
   next();
 };
 
-module.exports = loginCheck;
+export default loginCheck;

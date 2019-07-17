@@ -1,12 +1,12 @@
-const supertest = require('supertest');
-const app = require('../src/app');
+import supertest from 'supertest';
+import app from '../src/app';
 
 const api = supertest(app);
 
 test('login successful with valid credentials', async () => {
   await api
     .post('/login')
-    .send({ username: 'admin', password: 'July1969#Apollo11' })
+    .send({ username: 'admin', password: '#Apollo11-July1969' })
     .expect('Content-Type', /json/)
     .expect(200);
 });
