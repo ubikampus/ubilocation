@@ -19,7 +19,7 @@ import Deserializer, {
 } from '../location/mqttDeserialize';
 import BluetoothNameModal from './bluetoothNameModal';
 import raspberryLogo from '../../asset/rasp.png';
-import { RaspberryLocation } from './calibrationContainer';
+import { RaspberryLocation } from './calibrationPanel';
 import { StaticUbiMarker, OfflineMarker, NonUserMarker } from './marker';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
@@ -247,7 +247,7 @@ const MapContainer = ({
         <CalibrateButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
           <CalibrateButtonInset
             onClick={() => {
-              setCalibrationPanelOpen(true);
+              setCalibrationPanelOpen(!calibrationPanelOpen);
             }}
           >
             <CalibrateIcon />

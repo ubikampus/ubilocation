@@ -11,9 +11,9 @@ import {
 import UrlPromptContainer from './location/urlPromptContainer';
 import { apiRoot } from './common/environment';
 import MapContainer from './visualization/mapContainer';
-import CalibrationContainer, {
+import CalibrationPanel, {
   RaspberryLocation,
-} from './visualization/calibrationContainer';
+} from './visualization/calibrationPanel';
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -94,7 +94,7 @@ const Search = styled.input`
 const Sidebar = styled.nav`
   width: 350px;
   height: 100%;
-  z-index: 1;
+  z-index: 1001;
 
   overflow-x: hidden;
   background-color: white;
@@ -109,6 +109,7 @@ const AdminChip = styled.div`
 `;
 
 const LogOutButton = styled(Button)`
+  background: #e9e9e9;
   white-space: pre;
 `;
 
@@ -128,6 +129,8 @@ const Router = () => {
   const [raspberryDevices, setRaspberryDevies] = useState<RaspberryLocation[]>(
     []
   );
+  const [newName, setNewName] = useState('');
+  const [newHeight, setNewHeight] = useState('');
 
   return (
     <BrowserRouter basename={apiRoot()}>
@@ -160,7 +163,11 @@ const Router = () => {
         <MainRow>
           {calibrationPanelOpen && (
             <Sidebar>
-              <CalibrationContainer
+              <CalibrationPanel
+                newHeight={newHeight}
+                setNewHeight={setNewHeight}
+                newName={newName}
+                setNewName={setNewName}
                 onSubmit={devices => {
                   console.log(
                     'TODO: sent to mqtt bus after signing the message'
@@ -174,7 +181,7 @@ const Router = () => {
                 raspberryDevices={raspberryDevices}
                 setRaspberryDevices={setRaspberryDevies}
                 raspberryLocation={raspberryLocation}
-                onRaspberryAdd={() => setRaspberryLocation(null)}
+                resetRaspberryLocation={() => setRaspberryLocation(null)}
               />
             </Sidebar>
           )}
