@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, NavLink, Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
+import Button from './visualization/button';
 import btlogo from '../asset/bluetooth_logo.svg';
 import AboutContainer from './aboutContainer';
 import {
@@ -10,6 +11,9 @@ import {
 import UrlPromptContainer from './location/urlPromptContainer';
 import { apiRoot } from './common/environment';
 import MapContainer from './visualization/mapContainer';
+import CalibrationContainer, {
+  RaspberryLocation,
+} from './visualization/calibrationContainer';
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -87,20 +91,44 @@ const Search = styled.input`
   }
 `;
 
-/** For future use */
 const Sidebar = styled.nav`
+  width: 350px;
   height: 100%;
-  width: 35px;
-  z-index: -1000;
-  right: 0;
-  bottom: 0;
-  position: fixed;
+  z-index: 1;
+
   overflow-x: hidden;
-  padding-top: 20px;
-  background-color: #111;
+  background-color: white;
+`;
+
+const AdminChip = styled.div`
+  margin-right: 15px;
+  white-space: pre;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: white;
+`;
+
+const LogOutButton = styled(Button)`
+  white-space: pre;
+`;
+
+const MainRow = styled.div`
+  display: flex;
+  height: 100%;
 `;
 
 const Router = () => {
+  // TODO: authenticate with auth-server
+  const [isAdmin, setIsAdmin] = useState(true);
+  const [calibrationPanelOpen, setCalibrationPanelOpen] = useState(true);
+  const [raspberryLocation, setRaspberryLocation] = useState<{
+    lat: number;
+    lon: number;
+  } | null>(null);
+  const [raspberryDevices, setRaspberryDevies] = useState<RaspberryLocation[]>(
+    []
+  );
+
   return (
     <BrowserRouter basename={apiRoot()}>
       <Fullscreen>
@@ -118,19 +146,65 @@ const Router = () => {
             </LinkBox>
           </Items>
           <Search placeholder="Search .." />
+          {isAdmin && (
+            <>
+              <AdminChip>admin mode</AdminChip>
+              {/* TODO: actually log out / delete token */}
+              <LogOutButton onClick={() => setIsAdmin(false)}>
+                Log out
+              </LogOutButton>
+            </>
+          )}
         </NavContainer>
 
-        <Switch>
-          <Route exact path="/" component={MapContainer} />
-          <Route exact path="/config" component={UrlPromptContainer} />
-          <Route exact path="/about" component={AboutContainer} />
+        <MainRow>
+          {calibrationPanelOpen && (
+            <Sidebar>
+              <CalibrationContainer
+                onSubmit={devices => {
+                  console.log(
+                    'TODO: sent to mqtt bus after signing the message'
+                  );
+                }}
+                onCancel={() => {
+                  setCalibrationPanelOpen(false);
+                  setRaspberryLocation(null);
+                  setRaspberryDevies([]);
+                }}
+                raspberryDevices={raspberryDevices}
+                setRaspberryDevices={setRaspberryDevies}
+                raspberryLocation={raspberryLocation}
+                onRaspberryAdd={() => setRaspberryLocation(null)}
+              />
+            </Sidebar>
+          )}
 
-          <Route exact path="/mockviz" component={MockBusContainer} />
-          <Route exact path="/viz" component={GenuineBusContainer} />
+          <Switch>
+            <Route
+              exact
+              path="/"
+              render={props => (
+                <MapContainer
+                  {...props}
+                  raspberryDevices={raspberryDevices}
+                  raspberryLocation={raspberryLocation}
+                  isAdmin={isAdmin}
+                  setRaspberryLocation={setRaspberryLocation}
+                  calibrationPanelOpen={calibrationPanelOpen}
+                  setCalibrationPanelOpen={setCalibrationPanelOpen}
+                />
+              )}
+            />
+            <Route exact path="/config" component={UrlPromptContainer} />
+            <Route exact path="/about" component={AboutContainer} />
 
-          {/* catch everything else */}
-          <Route component={NotFound} />
-        </Switch>
+            <Route exact path="/mockviz" component={MockBusContainer} />
+            <Route exact path="/viz" component={GenuineBusContainer} />
+
+            {/* catch everything else */}
+            <Route component={NotFound} />
+          </Switch>
+        </MainRow>
       </Fullscreen>
     </BrowserRouter>
   );

@@ -19,6 +19,8 @@ import Deserializer, {
   MqttMessage,
 } from '../location/mqttDeserialize';
 import BluetoothNameModal from './bluetoothNameModal';
+import raspberryLogo from '../../asset/rasp.png';
+import { RaspberryLocation } from './calibrationContainer';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 12;
@@ -37,6 +39,22 @@ const MapboxButton = styled.div`
   top: 80px;
   right: 10px;
   z-index: 1000;
+`;
+
+const CalibrateButton = styled(MapboxButton)`
+  top: 120px;
+`;
+
+const CalibrateButtonInset = styled.button`
+  && {
+    padding: 4px;
+  }
+`;
+
+const CalibrateIcon = styled.div`
+  height: 100%;
+  background-image: url("${raspberryLogo}");
+  background-size: contain;
 `;
 
 const OfflineMarker = styled(Marker)`
@@ -108,6 +126,15 @@ export const refreshBeacons = (
   };
 };
 
+interface Props {
+  isAdmin: boolean;
+  calibrationPanelOpen: boolean;
+  raspberryLocation: { lat: number; lon: number } | null;
+  setCalibrationPanelOpen(a: boolean): void;
+  setRaspberryLocation(a: { lat: number; lon: number }): void;
+  raspberryDevices: RaspberryLocation[];
+}
+
 /**
  * Use default Mapbox vector tiles if MAPBOX_TOKEN is found, otherwise fallback
  * to free Carto Light raster map.
@@ -115,7 +142,15 @@ export const refreshBeacons = (
  * See https://wiki.openstreetmap.org/wiki/Tile_servers
  * and https://github.com/CartoDB/basemap-styles
  */
-const MapContainer = ({ location }: RouteComponentProps) => {
+const MapContainer = ({
+  location,
+  isAdmin,
+  setCalibrationPanelOpen,
+  setRaspberryLocation,
+  calibrationPanelOpen,
+  raspberryLocation,
+  raspberryDevices,
+}: RouteComponentProps & Props) => {
   const parser = new Deserializer();
 
   const queryParams =
@@ -221,8 +256,12 @@ const MapContainer = ({ location }: RouteComponentProps) => {
     const updatedQueryString =
       url.origin + url.pathname + '?' + queryString.stringify(nextQ);
 
-    setModalText(updatedQueryString);
-    openModal();
+    if (calibrationPanelOpen) {
+      setRaspberryLocation({ lon, lat });
+    } else {
+      setModalText(updatedQueryString);
+      openModal();
+    }
   };
 
   return (
@@ -233,9 +272,22 @@ const MapContainer = ({ location }: RouteComponentProps) => {
           className="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate"
         />
       </MapboxButton>
+      {isAdmin && (
+        <CalibrateButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
+          <CalibrateButtonInset
+            onClick={() => {
+              setCalibrationPanelOpen(true);
+            }}
+          >
+            <CalibrateIcon />
+          </CalibrateButtonInset>
+        </CalibrateButton>
+      )}
+
       <UbikampusMap
         onClick={onMapClick}
         viewport={viewport}
+        pointerCursor={calibrationPanelOpen}
         setViewport={setViewport}
       >
         <QrCodeModal
@@ -259,6 +311,31 @@ const MapContainer = ({ location }: RouteComponentProps) => {
             setNameModalOpen(false);
           }}
         />
+        {raspberryDevices.map((device, i) => (
+          <Marker
+            key={'raspberry-' + i}
+            offsetLeft={-20}
+            offsetTop={-40}
+            latitude={device.lat}
+            longitude={device.lon}
+          >
+            <StaticMarker>
+              <LocationPin />
+            </StaticMarker>
+          </Marker>
+        ))}
+        {raspberryLocation && (
+          <Marker
+            offsetLeft={-20}
+            offsetTop={-40}
+            latitude={raspberryLocation.lat}
+            longitude={raspberryLocation.lon}
+          >
+            <StaticMarker>
+              <LocationPin />
+            </StaticMarker>
+          </Marker>
+        )}
         {staticLocations.map((loc, i) => (
           <Marker
             offsetLeft={-20}

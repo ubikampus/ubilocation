@@ -1,15 +1,13 @@
 import styled from 'styled-components';
 
+// TODO: move to common
+
 const Button = styled.button`
   border: none;
   margin: 5px;
   border-radius: 5px;
   padding: 10px 25px;
   color: #595959;
-
-  &:hover {
-    color: #0c0c0c;
-  }
 
   cursor: pointer;
   font-weight: 700;
@@ -19,7 +17,10 @@ const Button = styled.button`
   &[disabled] {
     opacity: 0.2;
     cursor: auto;
-    color: inherit;
+  }
+
+  &:not([disabled]):hover {
+    color: #0c0c0c;
   }
 `;
 
