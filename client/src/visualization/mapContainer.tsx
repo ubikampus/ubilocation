@@ -7,7 +7,6 @@ import styled from 'styled-components';
 import partition from 'lodash/partition';
 import queryString from 'query-string';
 
-import LocationPin from './locationPin';
 import { MQTT_URL, DEFAULT_TOPIC } from '../location/urlPromptContainer';
 import UbikampusMap from './ubikampusMap';
 import { currentEnv } from '../common/environment';
@@ -21,6 +20,7 @@ import Deserializer, {
 import BluetoothNameModal from './bluetoothNameModal';
 import raspberryLogo from '../../asset/rasp.png';
 import { RaspberryLocation } from './calibrationContainer';
+import { StaticUbiMarker, OfflineMarker, NonUserMarker } from './marker';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 12;
@@ -55,35 +55,6 @@ const CalibrateIcon = styled.div`
   height: 100%;
   background-image: url("${raspberryLogo}");
   background-size: contain;
-`;
-
-const OfflineMarker = styled(Marker)`
-  background-color: gray;
-  &::before {
-    background-color: gray;
-  }
-`;
-
-const NonUserMarker = styled(OfflineMarker)`
-  width: 10px;
-  height: 10px;
-
-  &:before {
-    display: none;
-  }
-
-  &:after {
-    height: 14px;
-    width: 14px;
-  }
-`;
-
-const StaticMarker = styled.div`
-  svg {
-    height: 40px;
-    width: auto;
-    fill: #4287f5;
-  }
 `;
 
 /**
@@ -311,44 +282,19 @@ const MapContainer = ({
             setNameModalOpen(false);
           }}
         />
-        {raspberryDevices.map((device, i) => (
-          <Marker
+        {[...raspberryDevices, ...staticLocations].map((device, i) => (
+          <StaticUbiMarker
             key={'raspberry-' + i}
-            offsetLeft={-20}
-            offsetTop={-40}
             latitude={device.lat}
             longitude={device.lon}
-          >
-            <StaticMarker>
-              <LocationPin />
-            </StaticMarker>
-          </Marker>
+          />
         ))}
         {raspberryLocation && (
-          <Marker
-            offsetLeft={-20}
-            offsetTop={-40}
+          <StaticUbiMarker
             latitude={raspberryLocation.lat}
             longitude={raspberryLocation.lon}
-          >
-            <StaticMarker>
-              <LocationPin />
-            </StaticMarker>
-          </Marker>
+          />
         )}
-        {staticLocations.map((loc, i) => (
-          <Marker
-            offsetLeft={-20}
-            offsetTop={-40}
-            key={loc.beaconId + i}
-            latitude={loc.lat}
-            longitude={loc.lon}
-          >
-            <StaticMarker>
-              <LocationPin />
-            </StaticMarker>
-          </Marker>
-        ))}
         {allUserMarkers.map((marker, i) => (
           <UserMarker
             key={i}
