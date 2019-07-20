@@ -14,6 +14,7 @@ import MapContainer from './visualization/mapContainer';
 import CalibrationPanel, {
   RaspberryLocation,
 } from './visualization/calibrationPanel';
+import { Location } from './common/typeUtil';
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -122,10 +123,9 @@ const Router = () => {
   // TODO: authenticate with auth-server
   const [isAdmin, setIsAdmin] = useState(true);
   const [calibrationPanelOpen, setCalibrationPanelOpen] = useState(true);
-  const [raspberryLocation, setRaspberryLocation] = useState<{
-    lat: number;
-    lon: number;
-  } | null>(null);
+  const [raspberryLocation, setRaspberryLocation] = useState<Location | null>(
+    null
+  );
   const [raspberryDevices, setRaspberryDevies] = useState<RaspberryLocation[]>(
     []
   );

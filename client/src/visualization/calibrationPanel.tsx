@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Button from './button';
+import { Location } from '../common/typeUtil';
 
 const AddNewButton = styled(Button)`
   background: #4287f5;
@@ -81,7 +82,7 @@ const Divider = styled.hr`
 `;
 
 interface Props {
-  raspberryLocation: { lat: number; lon: number } | null;
+  raspberryLocation: Location | null;
   raspberryDevices: RaspberryLocation[];
   setRaspberryDevices(a: RaspberryLocation[]): void;
   onCancel(): void;

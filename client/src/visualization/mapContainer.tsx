@@ -21,6 +21,7 @@ import BluetoothNameModal from './bluetoothNameModal';
 import raspberryLogo from '../../asset/rasp.png';
 import { RaspberryLocation } from './calibrationPanel';
 import { StaticUbiMarker, OfflineMarker, NonUserMarker } from './marker';
+import { Location } from '../common/typeUtil';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 12;
@@ -100,9 +101,9 @@ export const refreshBeacons = (
 interface Props {
   isAdmin: boolean;
   calibrationPanelOpen: boolean;
-  raspberryLocation: { lat: number; lon: number } | null;
+  raspberryLocation: Location | null;
   setCalibrationPanelOpen(a: boolean): void;
-  setRaspberryLocation(a: { lat: number; lon: number }): void;
+  setRaspberryLocation(a: Location): void;
   raspberryDevices: RaspberryLocation[];
 }
 
@@ -175,11 +176,11 @@ const MapContainer = ({
     }
 
     const ubiClient = new UbiMqtt(mqttHost, { silent: true });
-    console.log('connecting to ', mqttHost);
     ubiClient.connect((error: any) => {
       if (error) {
         console.error('error connecting to ubi mqtt', error);
       } else {
+        console.log('connected to', mqttHost);
         ubiClient.subscribe(
           queryParams && queryParams.topic ? queryParams.topic : DEFAULT_TOPIC,
           null,

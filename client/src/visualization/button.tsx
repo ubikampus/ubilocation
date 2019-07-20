@@ -1,7 +1,5 @@
 import styled from 'styled-components';
 
-// TODO: move to common
-
 const Button = styled.button`
   border: none;
   margin: 5px;
