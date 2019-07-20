@@ -121,8 +121,8 @@ const MainRow = styled.div`
 
 const Router = () => {
   // TODO: authenticate with auth-server
-  const [isAdmin, setIsAdmin] = useState(true);
-  const [calibrationPanelOpen, setCalibrationPanelOpen] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [calibrationPanelOpen, setCalibrationPanelOpen] = useState(false);
   const [raspberryLocation, setRaspberryLocation] = useState<Location | null>(
     null
   );

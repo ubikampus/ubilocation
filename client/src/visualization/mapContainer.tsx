@@ -17,6 +17,7 @@ import Deserializer, {
   mqttMessageToGeo,
   MqttMessage,
 } from '../location/mqttDeserialize';
+import { useUbiMqtt } from '../location/mqttConnection';
 import BluetoothNameModal from './bluetoothNameModal';
 import raspberryLogo from '../../asset/rasp.png';
 import { RaspberryLocation } from './calibrationPanel';
@@ -81,21 +82,19 @@ export const divideMarkers = (
   return { isOnline: userMarkers.length !== 0, allUserMarkers, nonUserMarkers };
 };
 
-export const refreshBeacons = (
-  parsed: MqttMessage[],
-  bluetoothName: string | null,
-  lastKnownPosition: BeaconGeoLocation | null
+export const urlForLocation = (
+  queryParams: object | null,
+  lon: number,
+  lat: number
 ) => {
-  const geoBeacons = parsed.map(i => mqttMessageToGeo(i));
+  const url = document.location;
 
-  const ourBeacon = geoBeacons.find(
-    beacon => beacon.beaconId === bluetoothName
-  );
+  const nextQ = queryParams ? { ...queryParams, lat, lon } : { lat, lon };
 
-  return {
-    beacons: geoBeacons,
-    lastKnownPosition: ourBeacon !== undefined ? ourBeacon : lastKnownPosition,
-  };
+  const updatedQueryString =
+    url.origin + url.pathname + '?' + queryString.stringify(nextQ);
+
+  return updatedQueryString;
 };
 
 interface Props {
@@ -156,59 +155,18 @@ const MapContainer = ({
         : DEFAULT_NONTRACKED_ZOOM,
   });
 
-  const mqttHost =
-    queryParams && queryParams.host ? queryParams.host : MQTT_URL;
-
   const [nameModalOpen, setNameModalOpen] = useState(
     queryParams && queryParams.lat ? true : false
   );
 
-  const [beacons, setBeacons] = useState<BeaconGeoLocation[]>([]);
-  const [bluetoothName, setBluetoothName] = useState<null | string>(null);
-  const [
-    lastKnownPosition,
-    setLastKnownPosition,
-  ] = useState<null | BeaconGeoLocation>(null);
-
-  useEffect(() => {
-    if (!currentEnv.MAPBOX_TOKEN) {
-      console.error('mapbox api token missing, falling back to raster maps...');
-    }
-
-    const ubiClient = new UbiMqtt(mqttHost, { silent: true });
-    ubiClient.connect((error: any) => {
-      if (error) {
-        console.error('error connecting to ubi mqtt', error);
-      } else {
-        console.log('connected to', mqttHost);
-        ubiClient.subscribe(
-          queryParams && queryParams.topic ? queryParams.topic : DEFAULT_TOPIC,
-          null,
-          (topic: string, msg: string) => {
-            const nextBeacons = refreshBeacons(
-              parser.deserializeMessage(msg),
-              bluetoothName,
-              lastKnownPosition
-            );
-
-            setBeacons(nextBeacons.beacons);
-            setLastKnownPosition(nextBeacons.lastKnownPosition);
-          },
-          (err: any) => {
-            if (err) {
-              console.error('error during sub', err);
-            }
-          }
-        );
-      }
-    });
-
-    return () => {
-      ubiClient.forceDisconnect(() => {
-        console.log('disconnected from ubimqtt');
-      });
-    };
-  }, []);
+  const mqttHost =
+    queryParams && queryParams.host ? queryParams.host : MQTT_URL;
+  const [bluetoothName, setBluetoothName] = useState<string | null>(null);
+  const { beacons, lastKnownPosition } = useUbiMqtt(
+    mqttHost,
+    bluetoothName,
+    queryParams && queryParams.topic ? queryParams.topic : undefined
+  );
 
   const { isOnline, allUserMarkers, nonUserMarkers } = divideMarkers(
     beacons,
@@ -217,24 +175,6 @@ const MapContainer = ({
   );
 
   const UserMarker = isOnline ? Marker : OfflineMarker;
-
-  const onMapClick = (event: PointerEvent) => {
-    const url = document.location;
-
-    const [lon, lat] = event.lngLat;
-
-    const nextQ = queryParams ? { ...queryParams, lat, lon } : { lat, lon };
-
-    const updatedQueryString =
-      url.origin + url.pathname + '?' + queryString.stringify(nextQ);
-
-    if (calibrationPanelOpen) {
-      setRaspberryLocation({ lon, lat });
-    } else {
-      setModalText(updatedQueryString);
-      openModal();
-    }
-  };
 
   return (
     <>
@@ -257,7 +197,16 @@ const MapContainer = ({
       )}
 
       <UbikampusMap
-        onClick={onMapClick}
+        onClick={e => {
+          const [lon, lat] = e.lngLat;
+
+          if (calibrationPanelOpen) {
+            setRaspberryLocation({ lon, lat });
+          } else {
+            setModalText(urlForLocation(queryParams, lon, lat));
+            openModal();
+          }
+        }}
         viewport={viewport}
         pointerCursor={calibrationPanelOpen}
         setViewport={setViewport}
