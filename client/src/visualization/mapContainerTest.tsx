@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { MemoryRouter } from 'react-router';
-import MapContainer, { divideMarkers, refreshBeacons } from './mapContainer';
+import MapContainer, { divideMarkers, urlForLocation } from './mapContainer';
 import { exampleMqttMessage } from '../location/mqttDeserializeTest';
 import { mqttMessageToGeo } from '../location/mqttDeserialize';
 
@@ -55,34 +55,7 @@ describe('<MapContainer />', () => {
     expect(res.allUserMarkers[0].lat).toBe(2);
     expect(res.isOnline).toBe(false);
   });
-});
 
-describe('map beacon lifecycle', () => {
-  /**
-   * TODO: fetch actual bluetooth name from web bluetooth
-   */
-  it('should infer new bt name if its missing', () => {
-    const messages = [exampleMqttMessage(1), exampleMqttMessage(1)];
-
-    const res = refreshBeacons(messages, 'undefined-1', null);
-
-    expect((res.lastKnownPosition as any).lat).toBeTruthy();
-  });
-
-  it('should display old position if user device is not found', () => {
-    const messages = [exampleMqttMessage(1), exampleMqttMessage(1)];
-
-    const lastPos = mqttMessageToGeo(exampleMqttMessage(2));
-    lastPos.lat = 1;
-    lastPos.lon = 2;
-
-    const nextState = refreshBeacons(messages, 'huawei-153', lastPos);
-    expect((nextState.lastKnownPosition as any).lat).toBe(1);
-    expect((nextState.lastKnownPosition as any).lon).toBe(2);
-  });
-});
-
-describe('<MapContainer />', () => {
   it('connects to ubimqtt on mount', done => {
     mockConnect.mockImplementation(() => {
       done();
@@ -90,8 +63,22 @@ describe('<MapContainer />', () => {
 
     mount(
       <MemoryRouter initialEntries={['/map?lat=1&lon=2&host=abc&topic=aihe']}>
-        <MapContainer />
+        <MapContainer
+          isAdmin={false}
+          calibrationPanelOpen={false}
+          raspberryLocation={null}
+          setCalibrationPanelOpen={() => {}}
+          setRaspberryLocation={() => {}}
+          raspberryDevices={[]}
+        />
       </MemoryRouter>
     );
+  });
+
+  it('preserves query params when generating QR code link', () => {
+    const oldParams = { old: 'val' };
+    const url = urlForLocation(oldParams, 24.0, 60.0);
+
+    expect(url).toContain('old=val');
   });
 });

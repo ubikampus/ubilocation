@@ -7,10 +7,6 @@ const Button = styled.button`
   padding: 10px 25px;
   color: #595959;
 
-  &:hover {
-    color: #0c0c0c;
-  }
-
   cursor: pointer;
   font-weight: 700;
   background-color: #e9e9e9;
@@ -19,7 +15,10 @@ const Button = styled.button`
   &[disabled] {
     opacity: 0.2;
     cursor: auto;
-    color: inherit;
+  }
+
+  &:not([disabled]):hover {
+    color: #0c0c0c;
   }
 `;
 

@@ -7,6 +7,7 @@ interface Props {
   onClick(event: PointerEvent): void;
   viewport: ViewState;
   setViewport(a: ViewState): void;
+  pointerCursor: boolean;
 }
 
 const UbikampusMap: FC<Props> = ({
@@ -14,6 +15,7 @@ const UbikampusMap: FC<Props> = ({
   children,
   viewport,
   setViewport,
+  pointerCursor,
 }) => (
   <ReactMapGl
     // NOTE: onViewportChange adds extra properties to `viewport`
@@ -26,6 +28,7 @@ const UbikampusMap: FC<Props> = ({
     mapboxApiAccessToken={currentEnv.MAPBOX_TOKEN}
     width="100%"
     height="auto"
+    getCursor={pointerCursor ? () => 'pointer' : undefined}
     style={{ flex: '1' }}
     onViewportChange={vp => {
       setViewport(vp);

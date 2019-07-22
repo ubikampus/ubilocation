@@ -30,3 +30,8 @@ export const unreachable = (_: never): never => {
 
   throw new Error(msg);
 };
+
+export interface Location {
+  lat: number;
+  lon: number;
+}
