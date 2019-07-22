@@ -109,8 +109,8 @@ const CalibrationContainer = ({
   <CalibrationBar>
     <CalibrationHeader>Set Raspberry Pi locations</CalibrationHeader>
     <InfoSection>
-      Click location on map and enter name and height in millimeters relative to
-      the second floor for the Raspberry Pi.
+      Click location on map, and enter name and height in millimeters for the
+      Raspberry Pi. Height should be given relative to the second floor.
     </InfoSection>
     {raspberryDevices.map((device, i) => (
       <RaspberryRow key={'rpi-' + i}>
@@ -148,7 +148,7 @@ const CalibrationContainer = ({
             onChange={e => setNewName(e.target.value)}
           />
           <Input
-            placeholder="Elevation mm"
+            placeholder="Height mm"
             value={newHeight}
             type="number"
             onChange={e => setNewHeight(e.target.value)}

@@ -1,21 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Marker, PointerEvent } from 'react-map-gl';
+import React, { useState } from 'react';
+import { Marker } from 'react-map-gl';
 
 import { RouteComponentProps, withRouter } from 'react-router';
-import { default as UbiMqtt } from 'ubimqtt';
 import styled from 'styled-components';
 import partition from 'lodash/partition';
 import queryString from 'query-string';
 
-import { MQTT_URL, DEFAULT_TOPIC } from '../location/urlPromptContainer';
+import { MQTT_URL } from '../location/urlPromptContainer';
 import UbikampusMap from './ubikampusMap';
-import { currentEnv } from '../common/environment';
 import QrCodeModal from './qrCodeModal';
 import Deserializer, {
   MapLocationQueryDecoder,
   BeaconGeoLocation,
-  mqttMessageToGeo,
-  MqttMessage,
 } from '../location/mqttDeserialize';
 import { useUbiMqtt } from '../location/mqttConnection';
 import BluetoothNameModal from './bluetoothNameModal';
@@ -25,7 +21,7 @@ import { StaticUbiMarker, OfflineMarker, NonUserMarker } from './marker';
 import { Location } from '../common/typeUtil';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
-const DEFAULT_NONTRACKED_ZOOM = 12;
+const DEFAULT_NONTRACKED_ZOOM = 17;
 
 /**
  * When user lands to the page with a position.
