@@ -1,13 +1,10 @@
-/**
- * TODO: separate dev and prod configurations.
- */
-
 const path = require('path');
 const process = require('process');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const styledComponentsTransformer = require('typescript-plugin-styled-components').default();
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -36,7 +33,8 @@ module.exports = {
         exclude: /node_modules/,
         options: {
           // disable type checker - we will use it in the ForkTsCheckerWebpackPlugin
-          transpileOnly: true
+          transpileOnly: true,
+          getCustomTransformers: () => ({ before: [styledComponentsTransformer] }),
         }
       },
       {
