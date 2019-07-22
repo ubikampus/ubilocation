@@ -170,7 +170,7 @@ const Router = () => {
                 setNewName={setNewName}
                 onSubmit={devices => {
                   console.log(
-                    'TODO: sent to mqtt bus after signing the message'
+                    'TODO: Send to mqtt bus after signing the message'
                   );
                 }}
                 onCancel={() => {
