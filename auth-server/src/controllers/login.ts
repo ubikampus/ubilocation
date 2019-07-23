@@ -4,7 +4,7 @@ import express from 'express';
 const loginRouter = express.Router();
 
 const adminUsername = 'admin';
-const adminPassword = '#Apollo11-July1969';
+const adminPassword = '#Apollo11';
 
 loginRouter.post('/', (request: Request, response: Response) => {
   const body = request.body;
