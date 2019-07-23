@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, NavLink, Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from './visualization/button';
@@ -16,6 +16,7 @@ import CalibrationPanel, {
 } from './visualization/calibrationPanel';
 import { Location } from './common/typeUtil';
 import LoginPromptContainer from './visualization/loginPromptContainer';
+import { Admin } from './visualization/authServerService';
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -121,9 +122,7 @@ const MainRow = styled.div`
 `;
 
 const Router = () => {
-  // TODO: authenticate with auth-server
-  // const [user, setUser] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [admin, setAdmin] = useState<Admin | null>(null);
   const [calibrationPanelOpen, setCalibrationPanelOpen] = useState(false);
   const [raspberryLocation, setRaspberryLocation] = useState<Location | null>(
     null
@@ -133,6 +132,17 @@ const Router = () => {
   );
   const [newName, setNewName] = useState('');
   const [newHeight, setNewHeight] = useState('');
+
+  useEffect(() => {
+    const loggedAdminUserJSON = window.localStorage.getItem(
+      'loggedUbimapsAdmin'
+    );
+
+    if (loggedAdminUserJSON) {
+      const adminUser = JSON.parse(loggedAdminUserJSON);
+      setAdmin(adminUser);
+    }
+  }, []);
 
   return (
     <BrowserRouter basename={apiRoot()}>
@@ -151,11 +161,15 @@ const Router = () => {
             </LinkBox>
           </Items>
           <Search placeholder="Search .." />
-          {isAdmin && (
+          {admin && (
             <>
               <AdminChip>admin mode</AdminChip>
-              {/* TODO: actually log out / delete token */}
-              <LogOutButton onClick={() => setIsAdmin(false)}>
+              <LogOutButton
+                onClick={() => {
+                  setAdmin(null);
+                  window.localStorage.removeItem('loggedUbimapsAdmin');
+                }}
+              >
                 Log out
               </LogOutButton>
             </>
@@ -197,7 +211,7 @@ const Router = () => {
                   {...props}
                   raspberryDevices={raspberryDevices}
                   raspberryLocation={raspberryLocation}
-                  isAdmin={isAdmin}
+                  isAdmin={admin != null}
                   setRaspberryLocation={setRaspberryLocation}
                   calibrationPanelOpen={calibrationPanelOpen}
                   setCalibrationPanelOpen={setCalibrationPanelOpen}
@@ -211,7 +225,7 @@ const Router = () => {
               exact
               path="/admin"
               render={props => (
-                <LoginPromptContainer {...props} setIsAdmin={setIsAdmin} />
+                <LoginPromptContainer {...props} setAdmin={setAdmin} />
               )}
             />
 

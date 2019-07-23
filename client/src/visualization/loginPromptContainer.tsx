@@ -1,29 +1,30 @@
 import React, { useState, FormEvent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import LoginPrompt from './loginPrompt';
-import loginService from './loginService';
+import AuthServerService, { Admin } from './authServerService';
 
 interface Props {
-  setIsAdmin(a: boolean): void;
+  setAdmin(a: Admin): void;
 }
 
-const LoginContainer = ({
-  history,
-  setIsAdmin,
-}: RouteComponentProps & Props) => {
+const LoginContainer = ({ history, setAdmin }: RouteComponentProps & Props) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const newUser = await loginService.login({
+      const adminUser = await AuthServerService.login({
         username,
         password,
       });
 
-      // TODO: Replace with setUser(newUser);
-      setIsAdmin(true);
+      setAdmin(adminUser);
+      window.localStorage.setItem(
+        'loggedUbimapsAdmin',
+        JSON.stringify(adminUser)
+      );
+
       setUsername('');
       setPassword('');
       history.push('/');
