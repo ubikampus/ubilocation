@@ -68,19 +68,30 @@ const StaticMarker = styled.div`
   }
 `;
 
-const LocationPinMarker = (props: any) => {
-  if (props.show) {
-    return (
-      <Popup
-        anchor="bottom"
-        longitude={props.coords.lon}
-        latitude={props.coords.lat}
-      >
-        <button onClick={props.onClick}>qr code</button>
-      </Popup>
-    );
-  } else {
-    return null;
+interface PinProps {
+  type: 'configure' | 'show' | 'none';
+  coords: any;
+  onClick: any;
+}
+
+const LocationPinMarker = ({ type, coords, onClick }: PinProps) => {
+  switch (type) {
+    case 'configure':
+      return (
+        <Popup anchor="bottom" longitude={coords.lon} latitude={coords.lat}>
+          <button onClick={onClick}>qr code</button>
+        </Popup>
+      );
+    case 'show':
+      return (
+        <NonUserMarker
+          latitude={coords.lat}
+          longitude={coords.lon}
+          className="mapboxgl-user-location-dot"
+        />
+      );
+    case 'none':
+      return null;
   }
 };
 
@@ -148,8 +159,11 @@ const MapContainer = ({ location }: RouteComponentProps) => {
   const [modalText, setModalText] = useState('');
   const [nameSelection, setNameSelection] = useState<null | string>(null);
 
-  const [showPin, setShowPin] = useState(fromQuery);
+  const initialPinType = fromQuery ? 'show' : 'none';
   const [pinCoordinates, setPinCoordinates] = useState(initialCoords);
+  const [pinType, setPinType] = useState<'configure' | 'show' | 'none'>(
+    initialPinType
+  );
 
   /**
    * Used when user selects "only current" from the location prompt.
@@ -242,7 +256,7 @@ const MapContainer = ({ location }: RouteComponentProps) => {
       url.origin + url.pathname + '?' + queryString.stringify(nextQ);
 
     setModalText(updatedQueryString);
-    setShowPin(true);
+    setPinType('configure');
     setPinCoordinates({ lat, lon });
   };
 
@@ -311,9 +325,9 @@ const MapContainer = ({ location }: RouteComponentProps) => {
         ))}
 
         <LocationPinMarker
-          show={showPin}
           coords={pinCoordinates}
           onClick={openModal}
+          type={pinType}
         />
       </UbikampusMap>
     </>
