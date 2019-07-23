@@ -1,27 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { Marker, PointerEvent, Popup } from 'react-map-gl';
+import React, { useState } from 'react';
+import { Marker, Popup } from 'react-map-gl';
 
 import { RouteComponentProps, withRouter } from 'react-router';
-import { default as UbiMqtt } from 'ubimqtt';
 import styled from 'styled-components';
 import partition from 'lodash/partition';
 import queryString from 'query-string';
 
-import LocationPin from './locationPin';
-import { MQTT_URL, DEFAULT_TOPIC } from '../location/urlPromptContainer';
+import { MQTT_URL } from '../location/urlPromptContainer';
 import UbikampusMap from './ubikampusMap';
-import { currentEnv } from '../common/environment';
 import QrCodeModal from './qrCodeModal';
 import Deserializer, {
   MapLocationQueryDecoder,
   BeaconGeoLocation,
-  mqttMessageToGeo,
-  MqttMessage,
 } from '../location/mqttDeserialize';
+import { useUbiMqtt } from '../location/mqttConnection';
 import BluetoothNameModal from './bluetoothNameModal';
+import raspberryLogo from '../../asset/rasp.png';
+import { RaspberryLocation } from './calibrationPanel';
+import { StaticUbiMarker, OfflineMarker, NonUserMarker } from './marker';
+import { Location } from '../common/typeUtil';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
-const DEFAULT_NONTRACKED_ZOOM = 12;
+const DEFAULT_NONTRACKED_ZOOM = 17;
 
 /**
  * When user lands to the page with a position.
@@ -39,33 +39,20 @@ const MapboxButton = styled.div`
   z-index: 1000;
 `;
 
-const OfflineMarker = styled(Marker)`
-  background-color: gray;
-  &::before {
-    background-color: gray;
+const CalibrateButton = styled(MapboxButton)`
+  top: 120px;
+`;
+
+const CalibrateButtonInset = styled.button`
+  && {
+    padding: 4px;
   }
 `;
 
-const NonUserMarker = styled(OfflineMarker)`
-  width: 10px;
-  height: 10px;
-
-  &:before {
-    display: none;
-  }
-
-  &:after {
-    height: 14px;
-    width: 14px;
-  }
-`;
-
-const StaticMarker = styled.div`
-  svg {
-    height: 40px;
-    width: auto;
-    fill: #4287f5;
-  }
+const CalibrateIcon = styled.div`
+  height: 100%;
+  background-image: url("${raspberryLogo}");
+  background-size: contain;
 `;
 
 interface PinProps {
@@ -118,22 +105,29 @@ export const divideMarkers = (
   return { isOnline: userMarkers.length !== 0, allUserMarkers, nonUserMarkers };
 };
 
-export const refreshBeacons = (
-  parsed: MqttMessage[],
-  bluetoothName: string | null,
-  lastKnownPosition: BeaconGeoLocation | null
+export const urlForLocation = (
+  queryParams: object | null,
+  lon: number,
+  lat: number
 ) => {
-  const geoBeacons = parsed.map(i => mqttMessageToGeo(i));
+  const url = document.location;
 
-  const ourBeacon = geoBeacons.find(
-    beacon => beacon.beaconId === bluetoothName
-  );
+  const nextQ = queryParams ? { ...queryParams, lat, lon } : { lat, lon };
 
-  return {
-    beacons: geoBeacons,
-    lastKnownPosition: ourBeacon !== undefined ? ourBeacon : lastKnownPosition,
-  };
+  const updatedQueryString =
+    url.origin + url.pathname + '?' + queryString.stringify(nextQ);
+
+  return updatedQueryString;
 };
+
+interface Props {
+  isAdmin: boolean;
+  calibrationPanelOpen: boolean;
+  raspberryLocation: Location | null;
+  setCalibrationPanelOpen(a: boolean): void;
+  setRaspberryLocation(a: Location): void;
+  raspberryDevices: RaspberryLocation[];
+}
 
 /**
  * Use default Mapbox vector tiles if MAPBOX_TOKEN is found, otherwise fallback
@@ -142,7 +136,15 @@ export const refreshBeacons = (
  * See https://wiki.openstreetmap.org/wiki/Tile_servers
  * and https://github.com/CartoDB/basemap-styles
  */
-const MapContainer = ({ location }: RouteComponentProps) => {
+const MapContainer = ({
+  location,
+  isAdmin,
+  setCalibrationPanelOpen,
+  setRaspberryLocation,
+  calibrationPanelOpen,
+  raspberryLocation,
+  raspberryDevices,
+}: RouteComponentProps & Props) => {
   const parser = new Deserializer();
 
   const queryParams =
@@ -183,59 +185,18 @@ const MapContainer = ({ location }: RouteComponentProps) => {
         : DEFAULT_NONTRACKED_ZOOM,
   });
 
-  const mqttHost =
-    queryParams && queryParams.host ? queryParams.host : MQTT_URL;
-
   const [nameModalOpen, setNameModalOpen] = useState(
     queryParams && queryParams.lat ? true : false
   );
 
-  const [beacons, setBeacons] = useState<BeaconGeoLocation[]>([]);
-  const [bluetoothName, setBluetoothName] = useState<null | string>(null);
-  const [
-    lastKnownPosition,
-    setLastKnownPosition,
-  ] = useState<null | BeaconGeoLocation>(null);
-
-  useEffect(() => {
-    if (!currentEnv.MAPBOX_TOKEN) {
-      console.error('mapbox api token missing, falling back to raster maps...');
-    }
-
-    const ubiClient = new UbiMqtt(mqttHost, { silent: true });
-    console.log('connecting to ', mqttHost);
-    ubiClient.connect((error: any) => {
-      if (error) {
-        console.error('error connecting to ubi mqtt', error);
-      } else {
-        ubiClient.subscribe(
-          queryParams && queryParams.topic ? queryParams.topic : DEFAULT_TOPIC,
-          null,
-          (topic: string, msg: string) => {
-            const nextBeacons = refreshBeacons(
-              parser.deserializeMessage(msg),
-              bluetoothName,
-              lastKnownPosition
-            );
-
-            setBeacons(nextBeacons.beacons);
-            setLastKnownPosition(nextBeacons.lastKnownPosition);
-          },
-          (err: any) => {
-            if (err) {
-              console.error('error during sub', err);
-            }
-          }
-        );
-      }
-    });
-
-    return () => {
-      ubiClient.forceDisconnect(() => {
-        console.log('disconnected from ubimqtt');
-      });
-    };
-  }, []);
+  const mqttHost =
+    queryParams && queryParams.host ? queryParams.host : MQTT_URL;
+  const [bluetoothName, setBluetoothName] = useState<string | null>(null);
+  const { beacons, lastKnownPosition } = useUbiMqtt(
+    mqttHost,
+    bluetoothName,
+    queryParams && queryParams.topic ? queryParams.topic : undefined
+  );
 
   const { isOnline, allUserMarkers, nonUserMarkers } = divideMarkers(
     beacons,
@@ -245,21 +206,6 @@ const MapContainer = ({ location }: RouteComponentProps) => {
 
   const UserMarker = isOnline ? Marker : OfflineMarker;
 
-  const onMapClick = (event: PointerEvent) => {
-    const url = document.location;
-
-    const [lon, lat] = event.lngLat;
-
-    const nextQ = queryParams ? { ...queryParams, lat, lon } : { lat, lon };
-
-    const updatedQueryString =
-      url.origin + url.pathname + '?' + queryString.stringify(nextQ);
-
-    setModalText(updatedQueryString);
-    setPinType('configure');
-    setPinCoordinates({ lat, lon });
-  };
-
   return (
     <>
       <MapboxButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
@@ -268,9 +214,32 @@ const MapContainer = ({ location }: RouteComponentProps) => {
           className="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate"
         />
       </MapboxButton>
+      {isAdmin && (
+        <CalibrateButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
+          <CalibrateButtonInset
+            onClick={() => {
+              setCalibrationPanelOpen(!calibrationPanelOpen);
+            }}
+          >
+            <CalibrateIcon />
+          </CalibrateButtonInset>
+        </CalibrateButton>
+      )}
+
       <UbikampusMap
-        onClick={onMapClick}
+        onClick={e => {
+          const [lon, lat] = e.lngLat;
+
+          if (calibrationPanelOpen) {
+            setRaspberryLocation({ lon, lat });
+          } else {
+            setModalText(urlForLocation(queryParams, lon, lat));
+            setPinType('configure');
+            setPinCoordinates({ lat, lon });
+          }
+        }}
         viewport={viewport}
+        pointerCursor={calibrationPanelOpen}
         setViewport={setViewport}
       >
         <QrCodeModal
@@ -294,19 +263,19 @@ const MapContainer = ({ location }: RouteComponentProps) => {
             setNameModalOpen(false);
           }}
         />
-        {staticLocations.map((loc, i) => (
-          <Marker
-            offsetLeft={-20}
-            offsetTop={-40}
-            key={loc.beaconId + i}
-            latitude={loc.lat}
-            longitude={loc.lon}
-          >
-            <StaticMarker>
-              <LocationPin />
-            </StaticMarker>
-          </Marker>
+        {[...raspberryDevices, ...staticLocations].map((device, i) => (
+          <StaticUbiMarker
+            key={'raspberry-' + i}
+            latitude={device.lat}
+            longitude={device.lon}
+          />
         ))}
+        {raspberryLocation && (
+          <StaticUbiMarker
+            latitude={raspberryLocation.lat}
+            longitude={raspberryLocation.lon}
+          />
+        )}
         {allUserMarkers.map((marker, i) => (
           <UserMarker
             key={i}
