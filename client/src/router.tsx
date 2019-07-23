@@ -15,6 +15,7 @@ import CalibrationPanel, {
   RaspberryLocation,
 } from './visualization/calibrationPanel';
 import { Location } from './common/typeUtil';
+import LoginPromptContainer from './visualization/loginPromptContainer';
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -121,6 +122,7 @@ const MainRow = styled.div`
 
 const Router = () => {
   // TODO: authenticate with auth-server
+  // const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [calibrationPanelOpen, setCalibrationPanelOpen] = useState(false);
   const [raspberryLocation, setRaspberryLocation] = useState<Location | null>(
@@ -204,6 +206,14 @@ const Router = () => {
             />
             <Route exact path="/config" component={UrlPromptContainer} />
             <Route exact path="/about" component={AboutContainer} />
+
+            <Route
+              exact
+              path="/admin"
+              render={props => (
+                <LoginPromptContainer {...props} setIsAdmin={setIsAdmin} />
+              )}
+            />
 
             <Route exact path="/mockviz" component={MockBusContainer} />
             <Route exact path="/viz" component={GenuineBusContainer} />
