@@ -6,6 +6,12 @@ const loginRouter = express.Router();
 const adminUsername = 'admin';
 const adminPassword = '#Apollo11-July1969';
 
+if (!process.env.SECRET) {
+  throw new Error('SECRET env variable cannot be empty');
+}
+
+const { SECRET } = process.env;
+
 loginRouter.post('/', (request: Request, response: Response) => {
   const body = request.body;
 
@@ -17,17 +23,9 @@ loginRouter.post('/', (request: Request, response: Response) => {
     username: body.username,
   };
 
-  if (!process.env.SECRET) {
-    return response
-      .status(500)
-      .json({ error: 'secret is undefined (set it in your .env file)' });
-  }
+  const token = jwt.sign(userForToken, SECRET);
 
-  const token = jwt.sign(userForToken, process.env.SECRET);
-
-  response
-    .status(200)
-    .send({ token, username: body.username })
+  response.status(200).send({ token, username: body.username });
 });
 
 export default loginRouter;

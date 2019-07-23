@@ -16,6 +16,8 @@ services:
     container_name: bluetooth-auth-server
     image: bluetooth-auth-server
     build: auth-server
+    environment:
+      SECRET: secret
     ports:
       - "3001:3001"
     volumes:

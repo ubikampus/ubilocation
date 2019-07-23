@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ts-node-dev --respawn --files src/app.ts",
     "test": "jest",
-    "coverage": "jest --silent --verbose --coverage",
+    "coverage": "jest --silent --verbose --coverage --forceExit",
     "lint": "tslint -p .",
     "typecheck": "TYPECHECK=1 ts-node-dev --files src/app.ts",
     "travis": "npm run coverage && npm run lint && npm run typecheck && curl -sS https://codecov.io/bash | bash -s -- -F authserver"
@@ -14,12 +14,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@types/dotenv": "^6.1.1",
     "@types/express": "^4.17.0",
     "@types/jest": "^24.0.15",
     "@types/jsonwebtoken": "^8.3.2",
     "@types/supertest": "^2.0.8",
-    "dotenv": "^8.0.0",
     "express": "^4.17.1",
     "jest": "^24.8.0",
     "jsonwebtoken": "^8.5.1",
