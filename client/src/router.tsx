@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter, NavLink, Route, Switch } from 'react-router-dom';
+import { TiCog } from 'react-icons/ti';
 import styled from 'styled-components';
-import Button from './visualization/button';
 import btlogo from '../asset/bluetooth_logo.svg';
 import AboutContainer from './aboutContainer';
 import {
@@ -92,26 +92,12 @@ const Search = styled.input`
   }
 `;
 
-const Sidebar = styled.nav`
-  width: 350px;
-  height: 100%;
-  z-index: 1001;
-
-  overflow-x: hidden;
-  background-color: white;
-`;
-
 const AdminChip = styled.div`
-  margin-right: 15px;
+  font-size: 11px;
+  margin-right: 5px;
   white-space: pre;
-  text-transform: uppercase;
   font-weight: 700;
   color: white;
-`;
-
-const LogOutButton = styled(Button)`
-  background: #e9e9e9;
-  white-space: pre;
 `;
 
 const MainRow = styled.div`
@@ -119,9 +105,28 @@ const MainRow = styled.div`
   height: 100%;
 `;
 
+const AdminCog = styled.div`
+  color: white;
+  height: auto;
+  width: 30px;
+
+  & > svg {
+    height: 100%;
+    width: 100%;
+  }
+  /* margin-right: 15px; */
+`;
+
+const SidepanelButton = styled.div`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-right: 15px;
+`;
+
 const Router = () => {
   // TODO: authenticate with auth-server
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(true);
   const [calibrationPanelOpen, setCalibrationPanelOpen] = useState(false);
   const [raspberryLocation, setRaspberryLocation] = useState<Location | null>(
     null
@@ -150,40 +155,41 @@ const Router = () => {
           </Items>
           <Search placeholder="Search .." />
           {isAdmin && (
-            <>
-              <AdminChip>admin mode</AdminChip>
-              {/* TODO: actually log out / delete token */}
-              <LogOutButton onClick={() => setIsAdmin(false)}>
-                Log out
-              </LogOutButton>
-            </>
+            <SidepanelButton
+              onClick={() => setCalibrationPanelOpen(!calibrationPanelOpen)}
+            >
+              <AdminChip>Admin panel</AdminChip>
+              <AdminCog>
+                <TiCog />
+              </AdminCog>
+            </SidepanelButton>
           )}
         </NavContainer>
 
         <MainRow>
           {calibrationPanelOpen && (
-            <Sidebar>
-              <CalibrationPanel
-                newHeight={newHeight}
-                setNewHeight={setNewHeight}
-                newName={newName}
-                setNewName={setNewName}
-                onSubmit={devices => {
-                  console.log(
-                    'TODO: sent to mqtt bus after signing the message'
-                  );
-                }}
-                onCancel={() => {
-                  setCalibrationPanelOpen(false);
-                  setRaspberryLocation(null);
-                  setRaspberryDevies([]);
-                }}
-                raspberryDevices={raspberryDevices}
-                setRaspberryDevices={setRaspberryDevies}
-                raspberryLocation={raspberryLocation}
-                resetRaspberryLocation={() => setRaspberryLocation(null)}
-              />
-            </Sidebar>
+            <CalibrationPanel
+              newHeight={newHeight}
+              setNewHeight={setNewHeight}
+              newName={newName}
+              onLogout={() => {
+                setIsAdmin(false); // TODO: actually logout
+                setCalibrationPanelOpen(false);
+              }}
+              setNewName={setNewName}
+              onSubmit={devices => {
+                console.log('TODO: sent to mqtt bus after signing the message');
+              }}
+              onCancel={() => {
+                setCalibrationPanelOpen(false);
+                setRaspberryLocation(null);
+                setRaspberryDevies([]);
+              }}
+              raspberryDevices={raspberryDevices}
+              setRaspberryDevices={setRaspberryDevies}
+              raspberryLocation={raspberryLocation}
+              resetRaspberryLocation={() => setRaspberryLocation(null)}
+            />
           )}
 
           <Switch>
@@ -195,10 +201,8 @@ const Router = () => {
                   {...props}
                   raspberryDevices={raspberryDevices}
                   raspberryLocation={raspberryLocation}
-                  isAdmin={isAdmin}
                   setRaspberryLocation={setRaspberryLocation}
                   calibrationPanelOpen={calibrationPanelOpen}
-                  setCalibrationPanelOpen={setCalibrationPanelOpen}
                 />
               )}
             />

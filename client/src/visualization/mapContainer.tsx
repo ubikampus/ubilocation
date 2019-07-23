@@ -15,7 +15,6 @@ import Deserializer, {
 } from '../location/mqttDeserialize';
 import { useUbiMqtt } from '../location/mqttConnection';
 import BluetoothNameModal from './bluetoothNameModal';
-import raspberryLogo from '../../asset/rasp.png';
 import { RaspberryLocation } from './calibrationPanel';
 import { StaticUbiMarker, OfflineMarker, NonUserMarker } from './marker';
 import { Location } from '../common/typeUtil';
@@ -47,12 +46,6 @@ const CalibrateButtonInset = styled.button`
   && {
     padding: 4px;
   }
-`;
-
-const CalibrateIcon = styled.div`
-  height: 100%;
-  background-image: url("${raspberryLogo}");
-  background-size: contain;
 `;
 
 interface PinProps {
@@ -121,10 +114,8 @@ export const urlForLocation = (
 };
 
 interface Props {
-  isAdmin: boolean;
   calibrationPanelOpen: boolean;
   raspberryLocation: Location | null;
-  setCalibrationPanelOpen(a: boolean): void;
   setRaspberryLocation(a: Location): void;
   raspberryDevices: RaspberryLocation[];
 }
@@ -138,8 +129,6 @@ interface Props {
  */
 const MapContainer = ({
   location,
-  isAdmin,
-  setCalibrationPanelOpen,
   setRaspberryLocation,
   calibrationPanelOpen,
   raspberryLocation,
@@ -214,17 +203,6 @@ const MapContainer = ({
           className="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate"
         />
       </MapboxButton>
-      {isAdmin && (
-        <CalibrateButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
-          <CalibrateButtonInset
-            onClick={() => {
-              setCalibrationPanelOpen(!calibrationPanelOpen);
-            }}
-          >
-            <CalibrateIcon />
-          </CalibrateButtonInset>
-        </CalibrateButton>
-      )}
 
       <UbikampusMap
         onClick={e => {

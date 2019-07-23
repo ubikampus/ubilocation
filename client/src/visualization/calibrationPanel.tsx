@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Button from './button';
 import { Location } from '../common/typeUtil';
 
-const AddNewButton = styled(Button)`
+const PrimaryButton = styled(Button)`
   background: #4287f5;
   color: white;
 
@@ -17,7 +17,7 @@ const CancelButton = styled(Button)`
   background: white;
 `;
 
-const SubmitButton = styled(Button)`
+const SecondaryButton = styled(Button)`
   background: #f3f6f7;
 `;
 
@@ -27,10 +27,6 @@ export interface RaspberryLocation {
   lon: number;
   height: number;
 }
-
-const CalibrationBar = styled.div`
-  padding: 20px;
-`;
 
 const CalibrationHeader = styled.h3`
   font-size: 18px;
@@ -49,6 +45,10 @@ const InputRow = styled.div`
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+`;
+
+const LogoutButton = styled(Button)`
+  margin-top: auto;
 `;
 
 const InputCol = styled.div`
@@ -81,6 +81,28 @@ const Divider = styled.hr`
   border-bottom: 1px solid #e6e6e6;
 `;
 
+const BottomRow = styled.div`
+  display: flex;
+  margin-top: auto;
+`;
+
+const SidebarContent = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 20px;
+`;
+
+const Sidebar = styled.nav`
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  width: 350px;
+  height: 100%;
+  z-index: 1001;
+  background-color: white;
+`;
+
 interface Props {
   raspberryLocation: Location | null;
   raspberryDevices: RaspberryLocation[];
@@ -88,6 +110,7 @@ interface Props {
   onCancel(): void;
   onSubmit(a: RaspberryLocation[]): void;
   resetRaspberryLocation(): void;
+  onLogout(): void;
   newName: string;
   setNewName(a: string): void;
   newHeight: string;
@@ -100,77 +123,85 @@ const CalibrationContainer = ({
   setRaspberryDevices,
   onCancel,
   onSubmit,
+  onLogout,
   resetRaspberryLocation,
   newName,
   setNewName,
   newHeight,
   setNewHeight,
 }: Props) => (
-  <CalibrationBar>
-    <CalibrationHeader>Set Raspberry Pi locations</CalibrationHeader>
-    <InfoSection>
-      Click location on map, and enter name and height in millimeters for the
-      Raspberry Pi. Height should be given relative to the second floor.
-    </InfoSection>
-    {raspberryDevices.map((device, i) => (
-      <RaspberryRow key={'rpi-' + i}>
-        <RaspberryHeader>{device.name}</RaspberryHeader>
-        <LocationRow>
-          N {device.lat.toFixed(6)}° E {device.lon.toFixed(6)}°
-        </LocationRow>
-      </RaspberryRow>
-    ))}
-    <Divider />
-    <form
-      onSubmit={e => {
-        e.preventDefault();
-        if (raspberryLocation) {
-          setRaspberryDevices([
-            ...raspberryDevices,
-            {
-              name: newName,
-              lat: raspberryLocation.lat,
-              lon: raspberryLocation.lon,
-              height: parseInt(newHeight, 10),
-            },
-          ]);
-          setNewName('');
-          setNewHeight('');
-          resetRaspberryLocation();
-        }
-      }}
-    >
-      <InputRow>
-        <InputCol>
-          <Input
-            placeholder="Device name"
-            value={newName}
-            onChange={e => setNewName(e.target.value)}
-          />
-          <Input
-            placeholder="Height mm"
-            value={newHeight}
-            type="number"
-            onChange={e => setNewHeight(e.target.value)}
-          />
-        </InputCol>
-        <AddNewButton
-          disabled={
-            raspberryLocation === null || newName === '' || newHeight === ''
-          }
+  <Sidebar>
+    <SidebarContent>
+      <div>
+        <CalibrationHeader>Set Raspberry Pi locations</CalibrationHeader>
+        <InfoSection>
+          Click location on map, and enter name and height in millimeters for
+          the Raspberry Pi. Height should be given relative to the second floor.
+        </InfoSection>
+        {raspberryDevices.map((device, i) => (
+          <RaspberryRow key={'rpi-' + i}>
+            <RaspberryHeader>{device.name}</RaspberryHeader>
+            <LocationRow>
+              N {device.lat.toFixed(6)}° E {device.lon.toFixed(6)}°
+            </LocationRow>
+          </RaspberryRow>
+        ))}
+        <Divider />
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            if (raspberryLocation) {
+              setRaspberryDevices([
+                ...raspberryDevices,
+                {
+                  name: newName,
+                  lat: raspberryLocation.lat,
+                  lon: raspberryLocation.lon,
+                  height: parseInt(newHeight, 10),
+                },
+              ]);
+              setNewName('');
+              setNewHeight('');
+              resetRaspberryLocation();
+            }
+          }}
         >
-          Add new
-        </AddNewButton>
-      </InputRow>
-    </form>
-    <CancelButton onClick={() => onCancel()}>Cancel</CancelButton>
-    <SubmitButton
-      disabled={raspberryDevices.length === 0}
-      onClick={() => onSubmit(raspberryDevices)}
-    >
-      Submit
-    </SubmitButton>
-  </CalibrationBar>
+          <InputRow>
+            <InputCol>
+              <Input
+                placeholder="Device name"
+                value={newName}
+                onChange={e => setNewName(e.target.value)}
+              />
+              <Input
+                placeholder="Height mm"
+                value={newHeight}
+                type="number"
+                onChange={e => setNewHeight(e.target.value)}
+              />
+            </InputCol>
+            <PrimaryButton
+              disabled={
+                raspberryLocation === null || newName === '' || newHeight === ''
+              }
+            >
+              Add new
+            </PrimaryButton>
+          </InputRow>
+        </form>
+        <CancelButton onClick={() => onCancel()}>Cancel</CancelButton>
+        <SecondaryButton
+          disabled={raspberryDevices.length === 0}
+          onClick={() => onSubmit(raspberryDevices)}
+        >
+          Submit
+        </SecondaryButton>
+      </div>
+      <BottomRow>
+        <SecondaryButton onClick={() => onLogout()}>Log out</SecondaryButton>
+      </BottomRow>
+    </SidebarContent>
+  </Sidebar>
 );
 
 export default CalibrationContainer;
