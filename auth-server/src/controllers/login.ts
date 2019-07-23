@@ -7,7 +7,7 @@ const adminUsername = 'admin';
 const adminPassword = '#Apollo11-July1969';
 
 if (!process.env.SECRET) {
-  throw new Error('secret is undefined (set it in your .env file)');
+  throw new Error('SECRET env variable cannot be empty');
 }
 
 const { SECRET } = process.env;
