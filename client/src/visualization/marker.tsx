@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import styled from 'styled-components';
-import { Marker } from 'react-map-gl';
+import { Marker, Popup } from 'react-map-gl';
 
 import LocationPin from './locationPin';
+import { Location } from '../common/typeUtil';
 
 const StaticMarker = styled.div`
   svg {
@@ -53,3 +54,30 @@ export const NonUserMarker = styled(OfflineMarker)`
     width: 14px;
   }
 `;
+
+interface PinProps {
+  type: 'configure' | 'show' | 'none';
+  coords: Location;
+  onClick(a: MouseEvent<HTMLButtonElement>): void;
+}
+
+export const LocationPinMarker = ({ type, coords, onClick }: PinProps) => {
+  switch (type) {
+    case 'configure':
+      return (
+        <Popup anchor="bottom" longitude={coords.lon} latitude={coords.lat}>
+          <button onClick={onClick}>qr code</button>
+        </Popup>
+      );
+    case 'show':
+      return (
+        <NonUserMarker
+          latitude={coords.lat}
+          longitude={coords.lon}
+          className="mapboxgl-user-location-dot"
+        />
+      );
+    case 'none':
+      return null;
+  }
+};

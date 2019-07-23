@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
+import { Transition } from 'react-spring/renderprops';
+import { config } from 'react-spring';
 import AboutContainer from './aboutContainer';
 import {
   GenuineBusContainer,
@@ -38,6 +40,7 @@ const Router = () => {
   const [devices, setDevices] = useState<RaspberryLocation[]>([]);
   const [newName, setNewName] = useState('');
   const [newHeight, setNewHeight] = useState('');
+  const [roomReserved, setRoomReserved] = useState(false);
 
   return (
     <BrowserRouter basename={apiRoot()}>
@@ -51,34 +54,49 @@ const Router = () => {
           <Route
             exact
             path="/"
-            render={() =>
-              isAdminPanelOpen && (
-                <CalibrationPanel
-                  newHeight={newHeight}
-                  setNewHeight={setNewHeight}
-                  newName={newName}
-                  onLogout={() => {
-                    setAdminMode(false); // TODO: actually logout
-                    openAdminPanel(false);
-                  }}
-                  setNewName={setNewName}
-                  onSubmit={_ => {
-                    console.log(
-                      'TODO: sent to mqtt bus after signing the message'
-                    );
-                  }}
-                  onCancel={() => {
-                    openAdminPanel(false);
-                    setDeviceLocation(null);
-                    setDevices([]);
-                  }}
-                  devices={devices}
-                  setDevices={setDevices}
-                  getDeviceLocation={getDeviceLocation}
-                  resetDeviceLocation={() => setDeviceLocation(null)}
-                />
-              )
-            }
+            render={() => (
+              <Transition
+                items={isAdminPanelOpen}
+                from={{ marginLeft: -350 }}
+                enter={{ marginLeft: 0 }}
+                leave={{ marginLeft: -350 }}
+                config={{ mass: 1, tension: 275, friction: 25, clamp: true }}
+              >
+                {show =>
+                  show &&
+                  (props => (
+                    <CalibrationPanel
+                      style={props}
+                      toggleRoomReservation={() =>
+                        setRoomReserved(!roomReserved)
+                      }
+                      newHeight={newHeight}
+                      setNewHeight={setNewHeight}
+                      newName={newName}
+                      onLogout={() => {
+                        setAdminMode(false); // TODO: actually logout
+                        openAdminPanel(false);
+                      }}
+                      setNewName={setNewName}
+                      onSubmit={rasps => {
+                        console.log(
+                          'TODO: sent to mqtt bus after signing the message'
+                        );
+                      }}
+                      onCancel={() => {
+                        openAdminPanel(false);
+                        setDeviceLocation(null);
+                        setDevices([]);
+                      }}
+                      devices={devices}
+                      setDevices={setDevices}
+                      resetDeviceLocation={() => setDeviceLocation(null)}
+                      getDeviceLocation={getDeviceLocation}
+                    />
+                  ))
+                }
+              </Transition>
+            )}
           />
 
           <Switch>
@@ -88,6 +106,8 @@ const Router = () => {
               render={props => (
                 <MapContainer
                   {...props}
+                  isAdmin={isAdmin}
+                  roomReserved={roomReserved}
                   devices={devices}
                   getDeviceLocation={getDeviceLocation}
                   setDeviceLocation={setDeviceLocation}

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { animated } from 'react-spring';
 
 import Button from './button';
 import { Location } from '../common/typeUtil';
@@ -93,7 +94,7 @@ const SidebarContent = styled.div`
   padding: 20px;
 `;
 
-const Sidebar = styled.nav`
+const Sidebar = styled(animated.nav)`
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
@@ -111,6 +112,8 @@ interface Props {
   onSubmit(a: RaspberryLocation[]): void;
   resetDeviceLocation(): void;
   onLogout(): void;
+  style: object;
+  toggleRoomReservation(): void;
   newName: string;
   setNewName(a: string): void;
   newHeight: string;
@@ -123,6 +126,8 @@ const CalibrationContainer = ({
   setDevices,
   onCancel,
   onSubmit,
+  style,
+  toggleRoomReservation,
   onLogout,
   resetDeviceLocation,
   newName,
@@ -130,7 +135,7 @@ const CalibrationContainer = ({
   newHeight,
   setNewHeight,
 }: Props) => (
-  <Sidebar>
+  <Sidebar style={style}>
     <SidebarContent>
       <div>
         <CalibrationHeader>Set Raspberry Pi locations</CalibrationHeader>
@@ -199,9 +204,12 @@ const CalibrationContainer = ({
       </div>
       <BottomRow>
         <SecondaryButton onClick={() => onLogout()}>Log out</SecondaryButton>
+        <SecondaryButton onClick={() => toggleRoomReservation()}>
+          Room reservation
+        </SecondaryButton>
       </BottomRow>
     </SidebarContent>
   </Sidebar>
 );
 
-export default CalibrationContainer;
+export default animated(CalibrationContainer);

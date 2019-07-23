@@ -65,6 +65,8 @@ describe('<MapContainer />', () => {
       <MemoryRouter initialEntries={['/map?lat=1&lon=2&host=abc&topic=aihe']}>
         <MapContainer
           isAdminPanelOpen={false}
+          isAdmin={false}
+          roomReserved={false}
           getDeviceLocation={null}
           setDeviceLocation={() => {}}
           devices={[]}
