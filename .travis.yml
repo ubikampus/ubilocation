@@ -4,7 +4,8 @@ services: docker
 
 script:
   - ci_env=`bash <(curl -s https://codecov.io/env)`
+  - openssl ecparam -genkey -name secp521r1 -noout > $TRAVIS_BUILD_DIR/auth-server/pkey.pem
+  - docker build --no-cache -t bluetooth-auth-server auth-server
+  - docker run -e SECRET=aaaa $ci_env bluetooth-auth-server npm run travis
   - docker build --no-cache -t bluetooth-client client
   - docker run $ci_env bluetooth-client npm run travis
-  - docker build --no-cache -t bluetooth-auth-server auth-server
-  - docker run $ci_env bluetooth-auth-server npm run travis
