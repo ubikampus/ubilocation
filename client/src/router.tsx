@@ -16,7 +16,7 @@ import CalibrationPanel, {
 } from './visualization/calibrationPanel';
 import { Location } from './common/typeUtil';
 import LoginPromptContainer from './visualization/loginPromptContainer';
-import { Admin } from './visualization/authServerService';
+import AuthServerService, { Admin } from './visualization/authServerService';
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -188,6 +188,16 @@ const Router = () => {
                   console.log(
                     'TODO: sent to mqtt bus after signing the message'
                   );
+
+                  if (admin) {
+                    const message = JSON.stringify(devices);
+                    AuthServerService.sign(message, admin.token).then(
+                      signedMessage => {
+                        console.log('message:', message);
+                        console.log('signedMessage:', signedMessage);
+                      }
+                    );
+                  }
                 }}
                 onCancel={() => {
                   setCalibrationPanelOpen(false);
