@@ -35,8 +35,8 @@ const LoginForm = styled.form`
 
 const FormInput = styled.input`
   width: 100%;
-  padding: 5px;
   box-sizing: border-box;
+  padding: 5px;
   margin: 0 0 10px;
   font-size: 14px;
   background: #fbfbfb;
@@ -55,11 +55,20 @@ const FormButton = styled.button`
   }
 `;
 
+const Notification = styled.div`
+  background-color: #f44336;
+  color: white;
+  padding: 10px;
+  margin: 0 0 10px;
+  font-size: 14px;
+`;
+
 interface Props {
   username: string;
   password: string;
   setUsername(e: ChangeEvent<HTMLInputElement>): void;
   setPassword(e: ChangeEvent<HTMLInputElement>): void;
+  notification: string;
   onSubmit(e: FormEvent): void;
 }
 
@@ -68,6 +77,7 @@ const LoginPrompt = ({
   password,
   setUsername,
   setPassword,
+  notification,
   onSubmit,
 }: RouteComponentProps & Props) => (
   <Background>
@@ -86,6 +96,7 @@ const LoginPrompt = ({
           value={password}
           onChange={setPassword}
         />
+        {notification && <Notification>{notification}</Notification>}
         <FormButton type="submit">Log In</FormButton>
       </LoginForm>
       <p>

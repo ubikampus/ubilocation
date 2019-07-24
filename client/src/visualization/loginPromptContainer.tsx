@@ -10,6 +10,7 @@ interface Props {
 const LoginContainer = ({ history, setAdmin }: RouteComponentProps & Props) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [notification, setNotification] = useState('');
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -27,9 +28,13 @@ const LoginContainer = ({ history, setAdmin }: RouteComponentProps & Props) => {
 
       setUsername('');
       setPassword('');
+      setNotification('');
       history.push('/');
     } catch (exception) {
-      // TODO: setErrorMessage...
+      setNotification('Invalid username or password');
+      setTimeout(() => {
+        setNotification('');
+      }, 5000);
     }
   };
 
@@ -39,6 +44,7 @@ const LoginContainer = ({ history, setAdmin }: RouteComponentProps & Props) => {
       password={password}
       setUsername={e => setUsername(e.currentTarget.value)}
       setPassword={e => setPassword(e.currentTarget.value)}
+      notification={notification}
       onSubmit={onSubmit}
     />
   );
