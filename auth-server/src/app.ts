@@ -1,13 +1,10 @@
 import process from 'process';
 import express, { Request, Response } from 'express';
 import sign from './signer';
-import dotenv from 'dotenv';
 import fs from 'fs';
 import cors from 'cors';
 import loginRouter from './controllers/login';
 import loginCheck from './middleware/loginCheck';
-
-dotenv.config();
 
 if (process.env.TYPECHECK) {
   console.log('type check success!');

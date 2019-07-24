@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Marker } from 'react-map-gl';
+import { Marker, Popup } from 'react-map-gl';
 
 import { RouteComponentProps, withRouter } from 'react-router';
 import styled from 'styled-components';
@@ -54,6 +54,33 @@ const CalibrateIcon = styled.div`
   background-image: url("${raspberryLogo}");
   background-size: contain;
 `;
+
+interface PinProps {
+  type: 'configure' | 'show' | 'none';
+  coords: any;
+  onClick: any;
+}
+
+const LocationPinMarker = ({ type, coords, onClick }: PinProps) => {
+  switch (type) {
+    case 'configure':
+      return (
+        <Popup anchor="bottom" longitude={coords.lon} latitude={coords.lat}>
+          <button onClick={onClick}>qr code</button>
+        </Popup>
+      );
+    case 'show':
+      return (
+        <NonUserMarker
+          latitude={coords.lat}
+          longitude={coords.lon}
+          className="mapboxgl-user-location-dot"
+        />
+      );
+    case 'none':
+      return null;
+  }
+};
 
 /**
  * Why can there be multiple markers for the user? Because we cannot get unique
@@ -125,6 +152,7 @@ const MapContainer = ({
       ? null
       : parser.parseQuery(MapLocationQueryDecoder, location.search);
 
+  const fromQuery = !!(queryParams && queryParams.lat && queryParams.lon);
   const initialCoords =
     queryParams && queryParams.lat && queryParams.lon
       ? { lat: queryParams.lat, lon: queryParams.lon }
@@ -132,6 +160,12 @@ const MapContainer = ({
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalText, setModalText] = useState('');
   const [nameSelection, setNameSelection] = useState<null | string>(null);
+
+  const initialPinType = fromQuery ? 'show' : 'none';
+  const [pinCoordinates, setPinCoordinates] = useState(initialCoords);
+  const [pinType, setPinType] = useState<'configure' | 'show' | 'none'>(
+    initialPinType
+  );
 
   /**
    * Used when user selects "only current" from the location prompt.
@@ -200,7 +234,8 @@ const MapContainer = ({
             setRaspberryLocation({ lon, lat });
           } else {
             setModalText(urlForLocation(queryParams, lon, lat));
-            openModal();
+            setPinType('configure');
+            setPinCoordinates({ lat, lon });
           }
         }}
         viewport={viewport}
@@ -257,6 +292,12 @@ const MapContainer = ({
             className="mapboxgl-user-location-dot"
           />
         ))}
+
+        <LocationPinMarker
+          coords={pinCoordinates}
+          onClick={openModal}
+          type={pinType}
+        />
       </UbikampusMap>
     </>
   );

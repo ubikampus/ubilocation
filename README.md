@@ -42,3 +42,7 @@ Do not deploy to prod without mapbox api key.
 1. cd to client and run `npx gh-pages -d dist`
 
 http://ubikampus.github.io/bluetooth-dev-visualizer
+
+### Run auth-server in production
+
+TODO
