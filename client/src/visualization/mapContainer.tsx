@@ -114,10 +114,10 @@ export const urlForLocation = (
 };
 
 interface Props {
-  calibrationPanelOpen: boolean;
-  raspberryLocation: Location | null;
-  setRaspberryLocation(a: Location): void;
-  raspberryDevices: RaspberryLocation[];
+  isAdminPanelOpen: boolean;
+  getDeviceLocation: Location | null;
+  setDeviceLocation(a: Location): void;
+  devices: RaspberryLocation[];
 }
 
 /**
@@ -129,10 +129,10 @@ interface Props {
  */
 const MapContainer = ({
   location,
-  setRaspberryLocation,
-  calibrationPanelOpen,
-  raspberryLocation,
-  raspberryDevices,
+  setDeviceLocation,
+  isAdminPanelOpen,
+  getDeviceLocation,
+  devices,
 }: RouteComponentProps & Props) => {
   const parser = new Deserializer();
 
@@ -208,8 +208,8 @@ const MapContainer = ({
         onClick={e => {
           const [lon, lat] = e.lngLat;
 
-          if (calibrationPanelOpen) {
-            setRaspberryLocation({ lon, lat });
+          if (isAdminPanelOpen) {
+            setDeviceLocation({ lon, lat });
           } else {
             setModalText(urlForLocation(queryParams, lon, lat));
             setPinType('configure');
@@ -217,7 +217,7 @@ const MapContainer = ({
           }
         }}
         viewport={viewport}
-        pointerCursor={calibrationPanelOpen}
+        pointerCursor={isAdminPanelOpen}
         setViewport={setViewport}
       >
         <QrCodeModal
@@ -241,17 +241,17 @@ const MapContainer = ({
             setNameModalOpen(false);
           }}
         />
-        {[...raspberryDevices, ...staticLocations].map((device, i) => (
+        {[...devices, ...staticLocations].map((device, i) => (
           <StaticUbiMarker
             key={'raspberry-' + i}
             latitude={device.lat}
             longitude={device.lon}
           />
         ))}
-        {raspberryLocation && (
+        {getDeviceLocation && (
           <StaticUbiMarker
-            latitude={raspberryLocation.lat}
-            longitude={raspberryLocation.lon}
+            latitude={getDeviceLocation.lat}
+            longitude={getDeviceLocation.lon}
           />
         )}
         {allUserMarkers.map((marker, i) => (

@@ -64,10 +64,10 @@ describe('<MapContainer />', () => {
     mount(
       <MemoryRouter initialEntries={['/map?lat=1&lon=2&host=abc&topic=aihe']}>
         <MapContainer
-          calibrationPanelOpen={false}
-          raspberryLocation={null}
-          setRaspberryLocation={() => {}}
-          raspberryDevices={[]}
+          isAdminPanelOpen={false}
+          getDeviceLocation={null}
+          setDeviceLocation={() => {}}
+          devices={[]}
         />
       </MemoryRouter>
     );

@@ -1,11 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import {
-  NavLink,
-  Link,
-  withRouter,
-  RouteComponentProps,
-} from 'react-router-dom';
+import { NavLink, withRouter, RouteComponentProps } from 'react-router-dom';
 import { TiCog } from 'react-icons/ti';
 import btlogo from '../../asset/bluetooth_logo.svg';
 
@@ -105,14 +100,14 @@ const SidepanelButton = styled.div`
 
 interface Props {
   isAdmin: boolean;
-  setCalibrationPanelOpen(a: boolean): void;
-  calibrationPanelOpen: boolean;
+  openAdminPanel(a: boolean): void;
+  isAdminPanelOpen: boolean;
 }
 
 const NavBar = ({
   isAdmin,
-  calibrationPanelOpen,
-  setCalibrationPanelOpen,
+  isAdminPanelOpen,
+  openAdminPanel,
   location: { pathname },
   history,
 }: Props & RouteComponentProps) => (
@@ -135,9 +130,9 @@ const NavBar = ({
         onClick={() => {
           if (pathname !== '/') {
             history.push('/');
-            setCalibrationPanelOpen(true);
+            openAdminPanel(true);
           } else {
-            setCalibrationPanelOpen(!calibrationPanelOpen);
+            openAdminPanel(!isAdminPanelOpen);
           }
         }}
       >

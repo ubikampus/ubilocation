@@ -104,12 +104,12 @@ const Sidebar = styled.nav`
 `;
 
 interface Props {
-  raspberryLocation: Location | null;
-  raspberryDevices: RaspberryLocation[];
-  setRaspberryDevices(a: RaspberryLocation[]): void;
+  getDeviceLocation: Location | null;
+  devices: RaspberryLocation[];
+  setDevices(a: RaspberryLocation[]): void;
   onCancel(): void;
   onSubmit(a: RaspberryLocation[]): void;
-  resetRaspberryLocation(): void;
+  resetDeviceLocation(): void;
   onLogout(): void;
   newName: string;
   setNewName(a: string): void;
@@ -118,13 +118,13 @@ interface Props {
 }
 
 const CalibrationContainer = ({
-  raspberryLocation,
-  raspberryDevices,
-  setRaspberryDevices,
+  getDeviceLocation,
+  devices,
+  setDevices,
   onCancel,
   onSubmit,
   onLogout,
-  resetRaspberryLocation,
+  resetDeviceLocation,
   newName,
   setNewName,
   newHeight,
@@ -138,7 +138,7 @@ const CalibrationContainer = ({
           Click location on map, and enter name and height in millimeters for
           the Raspberry Pi. Height should be given relative to the second floor.
         </InfoSection>
-        {raspberryDevices.map((device, i) => (
+        {devices.map((device, i) => (
           <RaspberryRow key={'rpi-' + i}>
             <RaspberryHeader>{device.name}</RaspberryHeader>
             <LocationRow>
@@ -150,19 +150,19 @@ const CalibrationContainer = ({
         <form
           onSubmit={e => {
             e.preventDefault();
-            if (raspberryLocation) {
-              setRaspberryDevices([
-                ...raspberryDevices,
+            if (getDeviceLocation) {
+              setDevices([
+                ...devices,
                 {
                   name: newName,
-                  lat: raspberryLocation.lat,
-                  lon: raspberryLocation.lon,
+                  lat: getDeviceLocation.lat,
+                  lon: getDeviceLocation.lon,
                   height: parseInt(newHeight, 10),
                 },
               ]);
               setNewName('');
               setNewHeight('');
-              resetRaspberryLocation();
+              resetDeviceLocation();
             }
           }}
         >
@@ -182,7 +182,7 @@ const CalibrationContainer = ({
             </InputCol>
             <PrimaryButton
               disabled={
-                raspberryLocation === null || newName === '' || newHeight === ''
+                getDeviceLocation === null || newName === '' || newHeight === ''
               }
             >
               Add new
@@ -191,8 +191,8 @@ const CalibrationContainer = ({
         </form>
         <CancelButton onClick={() => onCancel()}>Cancel</CancelButton>
         <SecondaryButton
-          disabled={raspberryDevices.length === 0}
-          onClick={() => onSubmit(raspberryDevices)}
+          disabled={devices.length === 0}
+          onClick={() => onSubmit(devices)}
         >
           Submit
         </SecondaryButton>

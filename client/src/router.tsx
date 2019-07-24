@@ -30,14 +30,12 @@ const MainRow = styled.div`
 
 const Router = () => {
   // TODO: authenticate with auth-server
-  const [isAdmin, setIsAdmin] = useState(true);
-  const [calibrationPanelOpen, setCalibrationPanelOpen] = useState(false);
-  const [raspberryLocation, setRaspberryLocation] = useState<Location | null>(
+  const [isAdmin, setAdminMode] = useState(true);
+  const [isAdminPanelOpen, openAdminPanel] = useState(false);
+  const [getDeviceLocation, setDeviceLocation] = useState<Location | null>(
     null
   );
-  const [raspberryDevices, setRaspberryDevies] = useState<RaspberryLocation[]>(
-    []
-  );
+  const [devices, setDevices] = useState<RaspberryLocation[]>([]);
   const [newName, setNewName] = useState('');
   const [newHeight, setNewHeight] = useState('');
 
@@ -46,22 +44,22 @@ const Router = () => {
       <Fullscreen>
         <NavBar
           isAdmin={isAdmin}
-          setCalibrationPanelOpen={setCalibrationPanelOpen}
-          calibrationPanelOpen={calibrationPanelOpen}
+          openAdminPanel={openAdminPanel}
+          isAdminPanelOpen={isAdminPanelOpen}
         />
         <MainRow>
           <Route
             exact
             path="/"
             render={() =>
-              calibrationPanelOpen && (
+              isAdminPanelOpen && (
                 <CalibrationPanel
                   newHeight={newHeight}
                   setNewHeight={setNewHeight}
                   newName={newName}
                   onLogout={() => {
-                    setIsAdmin(false); // TODO: actually logout
-                    setCalibrationPanelOpen(false);
+                    setAdminMode(false); // TODO: actually logout
+                    openAdminPanel(false);
                   }}
                   setNewName={setNewName}
                   onSubmit={devices => {
@@ -70,14 +68,14 @@ const Router = () => {
                     );
                   }}
                   onCancel={() => {
-                    setCalibrationPanelOpen(false);
-                    setRaspberryLocation(null);
-                    setRaspberryDevies([]);
+                    openAdminPanel(false);
+                    setDeviceLocation(null);
+                    setDevices([]);
                   }}
-                  raspberryDevices={raspberryDevices}
-                  setRaspberryDevices={setRaspberryDevies}
-                  raspberryLocation={raspberryLocation}
-                  resetRaspberryLocation={() => setRaspberryLocation(null)}
+                  devices={devices}
+                  setDevices={setDevices}
+                  getDeviceLocation={getDeviceLocation}
+                  resetDeviceLocation={() => setDeviceLocation(null)}
                 />
               )
             }
@@ -90,10 +88,10 @@ const Router = () => {
               render={props => (
                 <MapContainer
                   {...props}
-                  raspberryDevices={raspberryDevices}
-                  raspberryLocation={raspberryLocation}
-                  setRaspberryLocation={setRaspberryLocation}
-                  calibrationPanelOpen={calibrationPanelOpen}
+                  devices={devices}
+                  getDeviceLocation={getDeviceLocation}
+                  setDeviceLocation={setDeviceLocation}
+                  isAdminPanelOpen={isAdminPanelOpen}
                 />
               )}
             />
