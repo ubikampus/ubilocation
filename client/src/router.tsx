@@ -11,7 +11,7 @@ import { apiRoot } from './common/environment';
 import MapContainer from './visualization/mapContainer';
 import CalibrationPanel, {
   RaspberryLocation,
-} from './visualization/calibrationPanel';
+} from './visualization/adminPanel';
 import { Location } from './common/typeUtil';
 import NavBar from './common/navBar';
 
@@ -62,7 +62,7 @@ const Router = () => {
                     openAdminPanel(false);
                   }}
                   setNewName={setNewName}
-                  onSubmit={devices => {
+                  onSubmit={_ => {
                     console.log(
                       'TODO: sent to mqtt bus after signing the message'
                     );

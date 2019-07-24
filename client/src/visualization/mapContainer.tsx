@@ -15,7 +15,7 @@ import Deserializer, {
 } from '../location/mqttDeserialize';
 import { useUbiMqtt } from '../location/mqttConnection';
 import BluetoothNameModal from './bluetoothNameModal';
-import { RaspberryLocation } from './calibrationPanel';
+import { RaspberryLocation } from './adminPanel';
 import { StaticUbiMarker, OfflineMarker, NonUserMarker } from './marker';
 import { Location } from '../common/typeUtil';
 
