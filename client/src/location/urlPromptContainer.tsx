@@ -28,12 +28,14 @@ const UrlPromptContainer = ({ history }: RouteComponentProps) => {
   };
 
   return (
-    <UrlPrompt
-      onPromptSubmit={onSubmit}
-      mqttQueryString={mqttQueryString}
-      topicText={topicText}
-      setTopicText={e => setTopicText(e.currentTarget.value)}
-    />
+    <div>
+      <UrlPrompt
+        onPromptSubmit={onSubmit}
+        mqttQueryString={mqttQueryString}
+        topicText={topicText}
+        setTopicText={e => setTopicText(e.currentTarget.value)}
+      />
+    </div>
   );
 };
 
