@@ -8,7 +8,7 @@ describe('tests for the login router', () => {
   test('login successful with valid credentials', async () => {
     await api
       .post('/login')
-      .send({ username: 'admin', password: '#Apollo11-July1969' })
+      .send({ username: 'admin', password: '#Apollo11' })
       .expect('Content-Type', /json/)
       .expect(200);
   });

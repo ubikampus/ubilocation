@@ -95,7 +95,6 @@ interface Props {
   getDeviceLocation: Location | null;
   setDeviceLocation(a: Location): void;
   devices: RaspberryLocation[];
-  isAdmin: boolean;
   roomReserved: boolean;
 }
 
