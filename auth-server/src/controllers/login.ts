@@ -6,6 +6,11 @@ const loginRouter = express.Router();
 const adminUsername = 'admin';
 const adminPassword = '#Apollo11';
 
+export interface Admin {
+  token: string;
+  username: string;
+}
+
 if (!process.env.SECRET) {
   throw new Error('SECRET env variable cannot be empty');
 }
@@ -25,7 +30,7 @@ loginRouter.post('/', (request: Request, response: Response) => {
 
   const token = jwt.sign(userForToken, SECRET);
 
-  response.status(200).send({ token, username: body.username });
+  response.status(200).send({ token, username: body.username } as Admin);
 });
 
 export default loginRouter;
