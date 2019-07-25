@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { animated } from 'react-spring';
 
-import Button from './button';
+import Button from '../common/button';
 import { Location } from '../common/typeUtil';
 
 const PrimaryButton = styled(Button)`

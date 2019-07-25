@@ -3,7 +3,7 @@ import queryString from 'query-string';
 import axios from 'axios';
 import { Style } from 'mapbox-gl';
 
-import { currentEnv } from '../common/environment';
+import { currentEnv } from '../../common/environment';
 import fallbackStyle from './fallbackMapStyle.json';
 import geojsonSource from './roomSource.json';
 import geojsonLayer from './roomLayer.json';

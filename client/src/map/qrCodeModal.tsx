@@ -2,7 +2,7 @@ import React from 'react';
 import QRcode from 'qrcode.react';
 
 import styled from 'styled-components';
-import Modal from './modal';
+import Modal from '../common/modal';
 
 interface Props {
   modalIsOpen: boolean;

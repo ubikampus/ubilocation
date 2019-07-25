@@ -7,7 +7,7 @@ import ReactModal from 'react-modal';
 import merge from 'lodash/merge';
 import cloneDeep from 'lodash/merge';
 
-import { currentEnv } from '../common/environment';
+import { currentEnv } from './environment';
 
 if (currentEnv.NODE_ENV !== 'test') {
   ReactModal.setAppElement('#app');

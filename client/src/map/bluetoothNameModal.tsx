@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import uniqBy from 'lodash/uniqBy';
 
-import Modal from './modal';
-import Button from './button';
+import Modal from '../common/modal';
+import Button from '../common/button';
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
 
 const NameHeader = styled.h3`

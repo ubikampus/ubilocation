@@ -4,8 +4,8 @@ import produce from 'immer';
 
 import { RouteComponentProps, withRouter } from 'react-router';
 
-import useMapboxStyle from './mapboxStyle';
-import { MapboxButton } from './button';
+import useMapboxStyle from './shapeDraw/mapboxStyle';
+import { MapboxButton } from '../common/button';
 import { MQTT_URL } from '../location/urlPromptContainer';
 import UbikampusMap from './ubikampusMap';
 import QrCodeModal from './qrCodeModal';
@@ -15,7 +15,7 @@ import Deserializer, {
 } from '../location/mqttDeserialize';
 import { useUbiMqtt, urlForLocation } from '../location/mqttConnection';
 import BluetoothNameModal from './bluetoothNameModal';
-import { RaspberryLocation } from './adminPanel';
+import { RaspberryLocation } from '../admin/adminPanel';
 import {
   StaticUbiMarker,
   OfflineMarker,

@@ -6,15 +6,15 @@ import AboutContainer from './aboutContainer';
 import {
   GenuineBusContainer,
   MockBusContainer,
-} from './visualization/screenContainer';
+} from './3dVisualisation/screenContainer';
 import UrlPromptContainer from './location/urlPromptContainer';
 import { apiRoot } from './common/environment';
-import MapContainer from './visualization/mapContainer';
-import AdminPanel, { RaspberryLocation } from './visualization/adminPanel';
+import MapContainer from './map/mapContainer';
+import AdminPanel, { RaspberryLocation } from './admin/adminPanel';
 import { Location } from './common/typeUtil';
 import NavBar from './common/navBar';
-import LoginPromptContainer from './visualization/loginPromptContainer';
-import AuthApi, { Admin } from './visualization/authApi';
+import LoginPromptContainer from './admin/loginPromptContainer';
+import AuthApi, { Admin } from './admin/authApi';
 
 const NotFound = () => <h3>404 page not found</h3>;
 
