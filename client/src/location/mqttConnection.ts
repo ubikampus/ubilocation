@@ -7,6 +7,7 @@ import Deserializer, {
   MqttMessage,
   mqttMessageToGeo,
 } from './mqttDeserialize';
+import queryString from 'query-string';
 import { currentEnv } from '../common/environment';
 import { DEFAULT_TOPIC } from '../location/urlPromptContainer';
 
@@ -29,6 +30,21 @@ export const refreshBeacons = (
     beacons: geoBeacons,
     lastKnownPosition: ourBeacon !== undefined ? ourBeacon : lastKnownPosition,
   };
+};
+
+export const urlForLocation = (
+  queryParams: object | null,
+  lon: number,
+  lat: number
+) => {
+  const url = document.location;
+
+  const nextQ = queryParams ? { ...queryParams, lat, lon } : { lat, lon };
+
+  const updatedQueryString =
+    url.origin + url.pathname + '?' + queryString.stringify(nextQ);
+
+  return updatedQueryString;
 };
 
 export const useUbiMqtt = (

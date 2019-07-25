@@ -1,4 +1,8 @@
-import { FakeMqttGenerator, refreshBeacons } from './mqttConnection';
+import {
+  FakeMqttGenerator,
+  refreshBeacons,
+  urlForLocation,
+} from './mqttConnection';
 import Deserializer, { mqttMessageToGeo } from './mqttDeserialize';
 import { exampleMqttMessage } from './mqttDeserializeTest';
 
@@ -38,5 +42,14 @@ describe('map beacon lifecycle', () => {
     const nextState = refreshBeacons(messages, 'huawei-153', lastPos);
     expect((nextState.lastKnownPosition as any).lat).toBe(1);
     expect((nextState.lastKnownPosition as any).lon).toBe(2);
+  });
+});
+
+describe('location query generation', () => {
+  it('preserves query params when generating QR code link', () => {
+    const oldParams = { old: 'val' };
+    const url = urlForLocation(oldParams, 24.0, 60.0);
+
+    expect(url).toContain('old=val');
   });
 });

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
+import { Transition } from 'react-spring/renderprops';
 import AboutContainer from './aboutContainer';
 import {
   GenuineBusContainer,
@@ -9,9 +10,7 @@ import {
 import UrlPromptContainer from './location/urlPromptContainer';
 import { apiRoot } from './common/environment';
 import MapContainer from './visualization/mapContainer';
-import CalibrationPanel, {
-  RaspberryLocation,
-} from './visualization/adminPanel';
+import AdminPanel, { RaspberryLocation } from './visualization/adminPanel';
 import { Location } from './common/typeUtil';
 import NavBar from './common/navBar';
 import LoginPromptContainer from './visualization/loginPromptContainer';
@@ -39,6 +38,7 @@ const Router = () => {
   const [devices, setDevices] = useState<RaspberryLocation[]>([]);
   const [newName, setNewName] = useState('');
   const [newHeight, setNewHeight] = useState('');
+  const [roomReserved, setRoomReserved] = useState(false);
 
   useEffect(() => {
     const loggedAdminUserJSON = window.localStorage.getItem(
@@ -63,43 +63,60 @@ const Router = () => {
           <Route
             exact
             path="/"
-            render={() =>
-              isAdminPanelOpen && (
-                <CalibrationPanel
-                  newHeight={newHeight}
-                  setNewHeight={setNewHeight}
-                  newName={newName}
-                  onLogout={() => {
-                    setAdmin(null);
-                    window.localStorage.removeItem('loggedUbimapsAdmin');
-                    openAdminPanel(false);
-                  }}
-                  setNewName={setNewName}
-                  onSubmit={_ => {
-                    console.log(
-                      'TODO: send to mqtt bus after signing the message'
-                    );
+            render={() => (
+              <Transition
+                items={isAdminPanelOpen}
+                from={{ marginLeft: -350 }}
+                enter={{ marginLeft: 0 }}
+                leave={{ marginLeft: -350 }}
+                config={{ mass: 1, tension: 275, friction: 25, clamp: true }}
+              >
+                {show =>
+                  show &&
+                  (props => (
+                    <AdminPanel
+                      style={props}
+                      toggleRoomReservation={() =>
+                        setRoomReserved(!roomReserved)
+                      }
+                      newHeight={newHeight}
+                      setNewHeight={setNewHeight}
+                      newName={newName}
+                      onLogout={() => {
+                        setAdmin(null);
+                        window.localStorage.removeItem('loggedUbimapsAdmin');
+                        openAdminPanel(false);
+                      }}
+                      setNewName={setNewName}
+                      onSubmit={_ => {
+                        console.log(
+                          'TODO: send to mqtt bus after signing the message'
+                        );
 
-                    if (admin) {
-                      const message = JSON.stringify(devices);
-                      AuthApi.sign(message, admin.token).then(signedMessage => {
-                        console.log('message:', message);
-                        console.log('signedMessage:', signedMessage);
-                      });
-                    }
-                  }}
-                  onCancel={() => {
-                    openAdminPanel(false);
-                    setDeviceLocation(null);
-                    setDevices([]);
-                  }}
-                  devices={devices}
-                  setDevices={setDevices}
-                  getDeviceLocation={getDeviceLocation}
-                  resetDeviceLocation={() => setDeviceLocation(null)}
-                />
-              )
-            }
+                        if (admin) {
+                          const message = JSON.stringify(devices);
+                          AuthApi.sign(message, admin.token).then(
+                            signedMessage => {
+                              console.log('message:', message);
+                              console.log('signedMessage:', signedMessage);
+                            }
+                          );
+                        }
+                      }}
+                      onCancel={() => {
+                        openAdminPanel(false);
+                        setDeviceLocation(null);
+                        setDevices([]);
+                      }}
+                      devices={devices}
+                      setDevices={setDevices}
+                      resetDeviceLocation={() => setDeviceLocation(null)}
+                      getDeviceLocation={getDeviceLocation}
+                    />
+                  ))
+                }
+              </Transition>
+            )}
           />
 
           <Switch>
@@ -109,6 +126,7 @@ const Router = () => {
               render={props => (
                 <MapContainer
                   {...props}
+                  roomReserved={roomReserved}
                   devices={devices}
                   getDeviceLocation={getDeviceLocation}
                   setDeviceLocation={setDeviceLocation}

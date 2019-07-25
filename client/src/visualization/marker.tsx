@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import styled from 'styled-components';
-import { Marker } from 'react-map-gl';
+import { Marker, Popup } from 'react-map-gl';
 
 import LocationPin from './locationPin';
+import { Location } from '../common/typeUtil';
+import { BeaconGeoLocation } from '../location/mqttDeserialize';
+import partition = require('lodash/partition');
 
 const StaticMarker = styled.div`
   svg {
@@ -53,3 +56,53 @@ export const NonUserMarker = styled(OfflineMarker)`
     width: 14px;
   }
 `;
+
+interface PinProps {
+  type: 'configure' | 'show' | 'none';
+  coords: Location;
+  onClick(a: MouseEvent<HTMLButtonElement>): void;
+}
+
+export const LocationPinMarker = ({ type, coords, onClick }: PinProps) => {
+  switch (type) {
+    case 'configure':
+      return (
+        <Popup anchor="bottom" longitude={coords.lon} latitude={coords.lat}>
+          <button onClick={onClick}>qr code</button>
+        </Popup>
+      );
+    case 'show':
+      return (
+        <NonUserMarker
+          latitude={coords.lat}
+          longitude={coords.lon}
+          className="mapboxgl-user-location-dot"
+        />
+      );
+    case 'none':
+      return null;
+  }
+};
+
+/**
+ * Why can there be multiple markers for the user? Because we cannot get unique
+ * Id for the device thanks to bluetooth security limits. Instead we can utilize
+ * the non-unique bluetooth name.
+ */
+export const divideMarkers = (
+  beacons: BeaconGeoLocation[],
+  bluetoothName: string | null,
+  lastKnownPosition: BeaconGeoLocation | null
+) => {
+  const [userMarkers, nonUserMarkers] = partition(
+    beacons,
+    beacon => beacon.beaconId === bluetoothName
+  );
+
+  const allUserMarkers =
+    lastKnownPosition && userMarkers.length === 0
+      ? [lastKnownPosition]
+      : userMarkers;
+
+  return { isOnline: userMarkers.length !== 0, allUserMarkers, nonUserMarkers };
+};

@@ -23,3 +23,14 @@ const Button = styled.button`
 `;
 
 export default Button;
+
+export const MapboxButton = styled.div`
+  && {
+    display: inline-block;
+  }
+
+  position: absolute;
+  bottom: 50px;
+  right: 10px;
+  z-index: 1000;
+`;
