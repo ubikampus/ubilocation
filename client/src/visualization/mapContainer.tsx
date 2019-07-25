@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Marker } from 'react-map-gl';
-import { Style, Layer } from 'mapbox-gl';
-import axios from 'axios';
 import produce from 'immer';
 
 import { RouteComponentProps, withRouter } from 'react-router';
-import styled from 'styled-components';
-import partition from 'lodash/partition';
-import queryString from 'query-string';
 
+import useMapboxStyle from './mapboxStyle';
+import { MapboxButton } from './button';
 import { MQTT_URL } from '../location/urlPromptContainer';
 import UbikampusMap from './ubikampusMap';
 import QrCodeModal from './qrCodeModal';
@@ -16,7 +13,7 @@ import Deserializer, {
   MapLocationQueryDecoder,
   BeaconGeoLocation,
 } from '../location/mqttDeserialize';
-import { useUbiMqtt } from '../location/mqttConnection';
+import { useUbiMqtt, urlForLocation } from '../location/mqttConnection';
 import BluetoothNameModal from './bluetoothNameModal';
 import { RaspberryLocation } from './adminPanel';
 import {
@@ -24,71 +21,17 @@ import {
   OfflineMarker,
   NonUserMarker,
   LocationPinMarker,
+  divideMarkers,
 } from './marker';
 import { Location } from '../common/typeUtil';
-import { currentEnv } from '../common/environment';
-import fallbackStyle from './fallbackMapStyle.json';
-import geojsonSource from './roomSource.json';
-import geojsonLayer from './roomLayer.json';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 17;
-const STYLE_URL =
-  'https://api.mapbox.com/styles/v1/ljljljlj/cjxf77ldr0wsz1dqmsl4zko9y';
 
 /**
  * When user lands to the page with a position.
  */
 const DEFAULT_TRACKED_ZOOM = 18;
-
-const MapboxButton = styled.div`
-  && {
-    display: inline-block;
-  }
-
-  position: absolute;
-  bottom: 50px;
-  right: 10px;
-  z-index: 1000;
-`;
-
-/**
- * Why can there be multiple markers for the user? Because we cannot get unique
- * Id for the device thanks to bluetooth security limits. Instead we can utilize
- * the non-unique bluetooth name.
- */
-export const divideMarkers = (
-  beacons: BeaconGeoLocation[],
-  bluetoothName: string | null,
-  lastKnownPosition: BeaconGeoLocation | null
-) => {
-  const [userMarkers, nonUserMarkers] = partition(
-    beacons,
-    beacon => beacon.beaconId === bluetoothName
-  );
-
-  const allUserMarkers =
-    lastKnownPosition && userMarkers.length === 0
-      ? [lastKnownPosition]
-      : userMarkers;
-
-  return { isOnline: userMarkers.length !== 0, allUserMarkers, nonUserMarkers };
-};
-
-export const urlForLocation = (
-  queryParams: object | null,
-  lon: number,
-  lat: number
-) => {
-  const url = document.location;
-
-  const nextQ = queryParams ? { ...queryParams, lat, lon } : { lat, lon };
-
-  const updatedQueryString =
-    url.origin + url.pathname + '?' + queryString.stringify(nextQ);
-
-  return updatedQueryString;
-};
 
 interface Props {
   isAdminPanelOpen: boolean;
@@ -98,13 +41,6 @@ interface Props {
   roomReserved: boolean;
 }
 
-/**
- * Use default Mapbox vector tiles if MAPBOX_TOKEN is found, otherwise fallback
- * to free Carto Light raster map.
- *
- * See https://wiki.openstreetmap.org/wiki/Tile_servers
- * and https://github.com/CartoDB/basemap-styles
- */
 const MapContainer = ({
   location,
   setDeviceLocation,
@@ -126,7 +62,7 @@ const MapContainer = ({
       ? { lat: queryParams.lat, lon: queryParams.lon }
       : KUMPULA_COORDS;
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [mapStyle, setMapStyle] = useState<Style | null>(null);
+  const mapStyle = useMapboxStyle();
   const [modalText, setModalText] = useState('');
   const [nameSelection, setNameSelection] = useState<null | string>(null);
 
@@ -153,24 +89,6 @@ const MapContainer = ({
         ? DEFAULT_TRACKED_ZOOM
         : DEFAULT_NONTRACKED_ZOOM,
   });
-
-  useEffect(() => {
-    const fetchStyle = async (token: string) => {
-      const { data: style } = await axios.get<Style>(
-        `${STYLE_URL}?${queryString.stringify({ access_token: token })}`
-      );
-      (style.sources as any).geojsonSource = geojsonSource;
-      (style.layers as any).push(geojsonLayer);
-      setMapStyle(style);
-    };
-
-    if (currentEnv.MAPBOX_TOKEN) {
-      fetchStyle(currentEnv.MAPBOX_TOKEN);
-    } else {
-      // there might be some way to remove this type cast
-      setMapStyle(fallbackStyle as Style);
-    }
-  }, []);
 
   const [nameModalOpen, setNameModalOpen] = useState(
     queryParams && queryParams.lat ? true : false
@@ -201,6 +119,12 @@ const MapContainer = ({
             ? 0
             : 1;
         });
+
+  const staticMarkers = [...devices, ...staticLocations];
+
+  const allStaticMarkers = getDeviceLocation
+    ? [...staticMarkers, getDeviceLocation]
+    : staticMarkers;
 
   return (
     <>
@@ -254,19 +178,13 @@ const MapContainer = ({
             onClick={openModal}
             type={pinType}
           />
-          {[...devices, ...staticLocations].map((device, i) => (
+          {allStaticMarkers.map((device, i) => (
             <StaticUbiMarker
               key={'raspberry-' + i}
               latitude={device.lat}
               longitude={device.lon}
             />
           ))}
-          {getDeviceLocation && (
-            <StaticUbiMarker
-              latitude={getDeviceLocation.lat}
-              longitude={getDeviceLocation.lon}
-            />
-          )}
           {allUserMarkers.map((marker, i) => (
             <UserMarker
               key={i}
