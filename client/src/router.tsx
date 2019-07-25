@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
 import AboutContainer from './aboutContainer';
@@ -14,6 +14,8 @@ import CalibrationPanel, {
 } from './visualization/adminPanel';
 import { Location } from './common/typeUtil';
 import NavBar from './common/navBar';
+import LoginPromptContainer from './visualization/loginPromptContainer';
+import AuthApi, { Admin } from './visualization/authApi';
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -29,8 +31,7 @@ const MainRow = styled.div`
 `;
 
 const Router = () => {
-  // TODO: authenticate with auth-server
-  const [isAdmin, setAdminMode] = useState(true);
+  const [admin, setAdmin] = useState<Admin | null>(null);
   const [isAdminPanelOpen, openAdminPanel] = useState(false);
   const [getDeviceLocation, setDeviceLocation] = useState<Location | null>(
     null
@@ -39,11 +40,22 @@ const Router = () => {
   const [newName, setNewName] = useState('');
   const [newHeight, setNewHeight] = useState('');
 
+  useEffect(() => {
+    const loggedAdminUserJSON = window.localStorage.getItem(
+      'loggedUbimapsAdmin'
+    );
+
+    if (loggedAdminUserJSON) {
+      const adminUser = JSON.parse(loggedAdminUserJSON);
+      setAdmin(adminUser);
+    }
+  }, []);
+
   return (
     <BrowserRouter basename={apiRoot()}>
       <Fullscreen>
         <NavBar
-          isAdmin={isAdmin}
+          isAdmin={admin != null}
           openAdminPanel={openAdminPanel}
           isAdminPanelOpen={isAdminPanelOpen}
         />
@@ -58,14 +70,23 @@ const Router = () => {
                   setNewHeight={setNewHeight}
                   newName={newName}
                   onLogout={() => {
-                    setAdminMode(false); // TODO: actually logout
+                    setAdmin(null);
+                    window.localStorage.removeItem('loggedUbimapsAdmin');
                     openAdminPanel(false);
                   }}
                   setNewName={setNewName}
                   onSubmit={_ => {
                     console.log(
-                      'TODO: sent to mqtt bus after signing the message'
+                      'TODO: send to mqtt bus after signing the message'
                     );
+
+                    if (admin) {
+                      const message = JSON.stringify(devices);
+                      AuthApi.sign(message, admin.token).then(signedMessage => {
+                        console.log('message:', message);
+                        console.log('signedMessage:', signedMessage);
+                      });
+                    }
                   }}
                   onCancel={() => {
                     openAdminPanel(false);
@@ -97,6 +118,14 @@ const Router = () => {
             />
             <Route exact path="/config" component={UrlPromptContainer} />
             <Route exact path="/about" component={AboutContainer} />
+
+            <Route
+              exact
+              path="/admin"
+              render={props => (
+                <LoginPromptContainer {...props} setAdmin={setAdmin} />
+              )}
+            />
 
             <Route exact path="/mockviz" component={MockBusContainer} />
             <Route exact path="/viz" component={GenuineBusContainer} />
