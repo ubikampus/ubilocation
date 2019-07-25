@@ -2,8 +2,7 @@ import React from 'react';
 import { withRouter } from 'react-router';
 import styled from 'styled-components';
 
-/** Containers
-–––––––––––––––––––––––––––––––––––––––––––––––––– --*/
+/** Containers */
 const Container = styled.div`
   max-width: 800px;
   justify-content: center;
@@ -15,8 +14,7 @@ const Article = styled.article`
   padding: 0 0 30px 0;
 `;
 
-/** Header
-–––––––––––––––––––––––––––––––––––––––––––––––––– --*/
+/** Header */
 const HeaderRow = styled.ul`
   display: flex;
   flex-direction: column;
@@ -56,8 +54,7 @@ const Button = styled.button`
   }
 `;
 
-/** Lightweight Navigation bar 
-–––––––––––––––––––––––––––––––––––––––––––––––––– --*/
+/** Lightweight navigation bar */
 const NavRow = styled.ul`
   display: flex;
   flex-direction: column;
@@ -85,8 +82,7 @@ const NavLink = styled.li`
   }
 `;
 
-/** Body
-–––––––––––––––––––––––––––––––––––––––––––––––––– --*/
+/** Content */
 const BodyRow = styled.ul`
   display: flex;
   padding: 0 0 15px 0;
