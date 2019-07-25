@@ -16,7 +16,7 @@ import CalibrationPanel, {
 } from './visualization/calibrationPanel';
 import { Location } from './common/typeUtil';
 import LoginPromptContainer from './visualization/loginPromptContainer';
-import AuthServerService, { Admin } from './visualization/authServerService';
+import AuthApi, { Admin } from './visualization/authApi';
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -191,12 +191,10 @@ const Router = () => {
 
                   if (admin) {
                     const message = JSON.stringify(devices);
-                    AuthServerService.sign(message, admin.token).then(
-                      signedMessage => {
-                        console.log('message:', message);
-                        console.log('signedMessage:', signedMessage);
-                      }
-                    );
+                    AuthApi.sign(message, admin.token).then(signedMessage => {
+                      console.log('message:', message);
+                      console.log('signedMessage:', signedMessage);
+                    });
                   }
                 }}
                 onCancel={() => {

@@ -1,7 +1,7 @@
 import React, { useState, FormEvent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import LoginPrompt from './loginPrompt';
-import AuthServerService, { Admin } from './authServerService';
+import AuthApi, { Admin } from './authApi';
 
 interface Props {
   setAdmin(a: Admin): void;
@@ -15,7 +15,7 @@ const LoginContainer = ({ history, setAdmin }: RouteComponentProps & Props) => {
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const adminUser = await AuthServerService.login({
+      const adminUser = await AuthApi.login({
         username,
         password,
       });
