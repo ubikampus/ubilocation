@@ -33,17 +33,4 @@ const fetchDeviceName = async (): Promise<string> => {
   }
 };
 
-const fetchName = async (): Promise<string | null> => {
-  try {
-    console.log('fetching bluetooth name...');
-    return await fetchDeviceName();
-  } catch (e) {
-    // This is needed because some web bluetooth exceptions are unconventional
-    const err = e.stack ? e : e.message;
-
-    console.log('could not fetch bt name:', err);
-    return null;
-  }
-};
-
-export default fetchName;
+export default fetchDeviceName;

@@ -160,15 +160,9 @@ const MapContainer = ({
             <TrackingContainer
               beacons={beacons}
               onClose={() => setNameModalOpen(false)}
-              setName={name => setBluetoothName(name)}
-              onTrackingConfirmed={name => {
+              confirmName={name => {
                 setBluetoothName(name);
                 setStaticLocations([]);
-                setNameModalOpen(false);
-              }}
-              onStaticLocationConfirmed={() => {
-                setStaticLocations([]);
-                setBluetoothName(null);
                 setNameModalOpen(false);
               }}
               onStaticSelected={name => {

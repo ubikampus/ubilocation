@@ -1,8 +1,9 @@
 /**
- * Generic modal component with reasonable default styles.
+ * Generic modal and modal subcomponents with reasonable default styles.
  */
 
 import React, { FC } from 'react';
+import styled from 'styled-components';
 import ReactModal from 'react-modal';
 import merge from 'lodash/merge';
 import cloneDeep from 'lodash/merge';
@@ -28,6 +29,22 @@ const modalStyles = {
     margin: '20px 10px',
   },
 };
+
+export const ModalParagraph = styled.p`
+  line-height: 1.25;
+  margin: 10px 0;
+`;
+
+export const ModalButtonRow = styled.div`
+  margin-top: 25px;
+`;
+
+export const ModalHeader = styled.h3`
+  margin-top: 0;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+`;
 
 const Modal: FC<ReactModal.Props> = ({ children, style, ...props }) => (
   <ReactModal style={merge(cloneDeep(modalStyles), style)} {...props}>

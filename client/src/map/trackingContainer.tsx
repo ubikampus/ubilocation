@@ -1,63 +1,93 @@
 import React, { useEffect, useState } from 'react';
+
+import Button from '../common/button';
+import Modal, {
+  ModalParagraph,
+  ModalButtonRow,
+  ModalHeader,
+} from '../common/modal';
 import fetchName from '../location/webbluetooth';
 import BluetoothNameModal from './bluetoothNameModal';
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
-import { BluetoothFetchResult } from './bluetoothTypes';
 
 interface Props {
-  setName(a: string | null): void;
+  confirmName(a: string): void;
   beacons: BeaconGeoLocation[];
   onStaticSelected(a: string): void;
-  onTrackingConfirmed(a: string): void;
-  onStaticLocationConfirmed(a: string): void;
   onClose(): void;
 }
 
-const TrackingContainer = ({
-  onClose,
-  setName,
-  beacons,
-  onStaticLocationConfirmed,
-  onTrackingConfirmed,
-}: Props) => {
-  const [bluetoothFetch, setBluetoothFetch] = useState<BluetoothFetchResult>({
-    kind: 'loading',
-  });
+const TrackingContainer = ({ onClose, confirmName, beacons }: Props) => {
+  const [bluetoothLoading, setBluetoothLoading] = useState(false);
+  const [bluetoothResult, setBluetoothResult] = useState<string | null>(null);
+  const [manualDeviceSelect, setManualDeviceSelect] = useState(false);
 
   const [isOpen, setIsOpen] = useState(true);
   const [nameSelection, setNameSelection] = useState<null | string>(null);
 
   useEffect(() => {
-    const fetch = async () => {
-      const name = await fetchName();
-      console.log('got bt name', name);
-      setName(name);
-
-      if (name !== null) {
-        setBluetoothFetch({ kind: 'success', name });
-      } else {
-        setBluetoothFetch({ kind: 'fail' });
-      }
-    };
-
-    fetch();
-
     return () => {
       setIsOpen(false);
     };
   }, []);
 
+  if (manualDeviceSelect) {
+    return (
+      <BluetoothNameModal
+        isOpen={isOpen}
+        closeModal={onClose}
+        bluetoothLoading={bluetoothLoading}
+        setNameSelection={setNameSelection}
+        bluetoothResult={bluetoothResult}
+        beacons={beacons}
+        nameSelection={nameSelection}
+        confirmName={confirmName}
+      />
+    );
+  }
+
   return (
-    <BluetoothNameModal
-      isOpen={isOpen}
-      closeModal={onClose}
-      bluetoothFetch={bluetoothFetch}
-      beacons={beacons}
-      onStaticLocationConfirmed={onStaticLocationConfirmed}
-      nameSelection={nameSelection}
-      setNameSelection={setNameSelection}
-      onTrackingConfirmed={onTrackingConfirmed}
-    />
+    <Modal isOpen={isOpen} onRequestClose={onClose}>
+      <ModalHeader>Ubikampus indoor positioning</ModalHeader>
+      {bluetoothLoading && <span>loading...</span>}
+      <ModalParagraph>Allow Ubimaps to track my location</ModalParagraph>
+      <ModalButtonRow>
+        <Button
+          onClick={async () => {
+            setBluetoothLoading(true);
+            try {
+              const name = await fetchName();
+
+              setBluetoothLoading(false);
+              console.log('got bt name', name);
+              setBluetoothLoading(false);
+              setBluetoothResult(name);
+              confirmName(name);
+            } catch (err) {
+              if (err.message && err.message.includes('User cancelled')) {
+                onClose();
+              } else {
+                /////// unknown error
+
+                // This is needed because some web bluetooth exceptions are unconventional
+                const error = err.stack ? err : err.message;
+                console.log('failed to fetch bt, using fallback', error);
+                setManualDeviceSelect(true);
+              }
+            }
+          }}
+        >
+          Yes
+        </Button>
+        <Button
+          onClick={() => {
+            onClose();
+          }}
+        >
+          No
+        </Button>
+      </ModalButtonRow>
+    </Modal>
   );
 };
 
