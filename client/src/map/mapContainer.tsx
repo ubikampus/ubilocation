@@ -163,6 +163,7 @@ const MapContainer = ({
               confirmName={name => {
                 setBluetoothName(name);
                 setStaticLocations([]);
+                setPinType('none');
                 setNameModalOpen(false);
               }}
               onStaticSelected={name => {

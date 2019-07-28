@@ -19,7 +19,6 @@ interface Props {
 
 const TrackingContainer = ({ onClose, confirmName, beacons }: Props) => {
   const [bluetoothLoading, setBluetoothLoading] = useState(false);
-  const [bluetoothResult, setBluetoothResult] = useState<string | null>(null);
   const [manualDeviceSelect, setManualDeviceSelect] = useState(false);
 
   const [isOpen, setIsOpen] = useState(true);
@@ -36,9 +35,7 @@ const TrackingContainer = ({ onClose, confirmName, beacons }: Props) => {
       <BluetoothNameModal
         isOpen={isOpen}
         closeModal={onClose}
-        bluetoothLoading={bluetoothLoading}
         setNameSelection={setNameSelection}
-        bluetoothResult={bluetoothResult}
         beacons={beacons}
         nameSelection={nameSelection}
         confirmName={confirmName}
@@ -58,10 +55,8 @@ const TrackingContainer = ({ onClose, confirmName, beacons }: Props) => {
             try {
               const name = await fetchName();
 
-              setBluetoothLoading(false);
               console.log('got bt name', name);
               setBluetoothLoading(false);
-              setBluetoothResult(name);
               confirmName(name);
             } catch (err) {
               if (err.message && err.message.includes('User cancelled')) {

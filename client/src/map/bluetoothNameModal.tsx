@@ -32,8 +32,6 @@ interface Props {
   nameSelection: null | string;
   beacons: BeaconGeoLocation[];
   confirmName(a: string): void;
-  bluetoothLoading: boolean;
-  bluetoothResult: string | null;
   closeModal(): void;
   setNameSelection(a: string): void;
 }

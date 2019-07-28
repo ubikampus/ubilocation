@@ -36,6 +36,6 @@ describe('web bluetooth', () => {
 
   it('returns empty if device doesnt support bluetooth', async () => {
     (navigator.bluetooth as any) = undefined;
-    expect(await fetchName()).toEqual(null);
+    await expect(fetchName()).rejects.toThrow(/not supported/);
   });
 });

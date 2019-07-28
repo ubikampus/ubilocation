@@ -72,13 +72,7 @@ export const LocationPinMarker = ({ type, coords, onClick }: PinProps) => {
         </Popup>
       );
     case 'show':
-      return (
-        <NonUserMarker
-          latitude={coords.lat}
-          longitude={coords.lon}
-          className="mapboxgl-user-location-dot"
-        />
-      );
+      return <StaticUbiMarker latitude={coords.lat} longitude={coords.lon} />;
     case 'none':
       return null;
   }
