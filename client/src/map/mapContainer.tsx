@@ -4,6 +4,7 @@ import produce from 'immer';
 
 import { RouteComponentProps, withRouter } from 'react-router';
 
+import TrackingContainer from './trackingContainer';
 import useMapboxStyle from './shapeDraw/mapboxStyle';
 import { MapboxButton } from '../common/button';
 import { MQTT_URL } from '../location/urlPromptContainer';
@@ -14,7 +15,6 @@ import Deserializer, {
   BeaconGeoLocation,
 } from '../location/mqttDeserialize';
 import { useUbiMqtt, urlForLocation } from '../location/mqttConnection';
-import BluetoothNameModal from './bluetoothNameModal';
 import { RaspberryLocation } from '../admin/adminPanel';
 import {
   StaticUbiMarker,
@@ -64,7 +64,6 @@ const MapContainer = ({
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const mapStyle = useMapboxStyle();
   const [modalText, setModalText] = useState('');
-  const [nameSelection, setNameSelection] = useState<null | string>(null);
 
   const initialPinType = fromQuery ? 'show' : 'none';
   const [pinCoordinates, setPinCoordinates] = useState(initialCoords);
@@ -157,22 +156,27 @@ const MapContainer = ({
             closeModal={closeModal}
             modalText={modalText}
           />
-          <BluetoothNameModal
-            promptForName // TODO: Don't prompt if web bluetooth succeeds.
-            setStaticLocation={name => {
-              const targetBeacons = beacons.filter(b => b.beaconId === name);
-              setStaticLocations(targetBeacons);
-            }}
-            isOpen={nameModalOpen}
-            closeModal={() => setNameModalOpen(false)}
-            beacons={beacons}
-            nameSelection={nameSelection}
-            setNameSelection={setNameSelection}
-            setBluetoothName={name => {
-              setBluetoothName(name);
-              setNameModalOpen(false);
-            }}
-          />
+          {nameModalOpen && (
+            <TrackingContainer
+              beacons={beacons}
+              onClose={() => setNameModalOpen(false)}
+              setName={name => setBluetoothName(name)}
+              onTrackingConfirmed={name => {
+                setBluetoothName(name);
+                setStaticLocations([]);
+                setNameModalOpen(false);
+              }}
+              onStaticLocationConfirmed={() => {
+                setStaticLocations([]);
+                setBluetoothName(null);
+                setNameModalOpen(false);
+              }}
+              onStaticSelected={name => {
+                const targetBeacons = beacons.filter(b => b.beaconId === name);
+                setStaticLocations(targetBeacons);
+              }}
+            />
+          )}
           <LocationPinMarker
             coords={pinCoordinates}
             onClick={openModal}

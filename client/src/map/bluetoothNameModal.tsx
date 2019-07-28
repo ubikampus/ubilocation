@@ -5,6 +5,7 @@ import uniqBy from 'lodash/uniqBy';
 import Modal from '../common/modal';
 import Button from '../common/button';
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
+import { BluetoothFetchResult } from './bluetoothTypes';
 
 const NameHeader = styled.h3`
   margin-top: 0;
@@ -41,13 +42,13 @@ const ButtonRow = styled.div`
 
 interface Props {
   isOpen: boolean;
-  promptForName: boolean; // TODO: use with web bluetooth
   nameSelection: null | string;
   beacons: BeaconGeoLocation[];
+  bluetoothFetch: BluetoothFetchResult;
   closeModal(): void;
   setNameSelection(a: string): void;
-  setStaticLocation(targetName: string | null): void;
-  setBluetoothName(a: string | null): void;
+  onTrackingConfirmed(a: string): void;
+  onStaticLocationConfirmed(a: string): void;
 }
 
 export const sortBeacons = (beacons: BeaconGeoLocation[]) => {
@@ -60,63 +61,65 @@ const BluetoothNameModal = ({
   isOpen,
   beacons,
   nameSelection,
-  promptForName,
   setNameSelection,
-  setBluetoothName,
-  setStaticLocation,
+  onTrackingConfirmed,
+  bluetoothFetch,
+  onStaticLocationConfirmed,
   closeModal,
-}: Props) => (
-  <Modal isOpen={isOpen} onRequestClose={closeModal}>
-    <NameHeader>Ubikampus indoor positioning</NameHeader>
-    {promptForName && (
-      <>
-        <InfoSection>
-          Please make sure the device bluetooth visibility is on, and select
-          your Bluetooth name
-        </InfoSection>
-        <NameList>
-          {sortBeacons(beacons).map((beacon, i) => (
-            <BluetoothName
-              key={beacon.beaconId + i}
-              active={beacon.beaconId === nameSelection}
-              onClick={() => {
-                setNameSelection(beacon.beaconId);
-              }}
-            >
-              {beacon.beaconId}
-            </BluetoothName>
-          ))}
-        </NameList>
-      </>
-    )}
-    <InfoSection>Allow Ubimaps to track my location</InfoSection>
-    <ButtonRow>
-      <Button
-        disabled={nameSelection === null && promptForName}
-        onClick={() => {
-          if (nameSelection) {
-            setBluetoothName(nameSelection);
-            setStaticLocation(null);
-            closeModal();
-          }
-        }}
-      >
-        Yes
-      </Button>
-      <Button
-        disabled={nameSelection === null && promptForName}
-        onClick={() => {
-          if (nameSelection) {
-            setStaticLocation(nameSelection);
-            setBluetoothName(null);
-            closeModal();
-          }
-        }}
-      >
-        No
-      </Button>
-    </ButtonRow>
-  </Modal>
-);
+}: Props) => {
+  const canSubmit = nameSelection !== null || bluetoothFetch.kind !== 'loading';
+  const newNameCandidate =
+    bluetoothFetch.kind === 'success' ? bluetoothFetch.name : nameSelection;
+  return (
+    <Modal isOpen={isOpen} onRequestClose={closeModal}>
+      <NameHeader>Ubikampus indoor positioning</NameHeader>
+      {bluetoothFetch.kind === 'loading' && <span>loading...</span>}
+      {bluetoothFetch.kind === 'fail' && (
+        <>
+          <InfoSection>
+            Please make sure the device bluetooth visibility is on, and select
+            your Bluetooth name
+          </InfoSection>
+          <NameList>
+            {sortBeacons(beacons).map((beacon, i) => (
+              <BluetoothName
+                key={beacon.beaconId + i}
+                active={beacon.beaconId === nameSelection}
+                onClick={() => {
+                  setNameSelection(beacon.beaconId);
+                }}
+              >
+                {beacon.beaconId}
+              </BluetoothName>
+            ))}
+          </NameList>
+        </>
+      )}
+      <InfoSection>Allow Ubimaps to track my location</InfoSection>
+      <ButtonRow>
+        <Button
+          disabled={!canSubmit}
+          onClick={() => {
+            if (newNameCandidate) {
+              onTrackingConfirmed(newNameCandidate);
+            }
+          }}
+        >
+          Yes
+        </Button>
+        <Button
+          disabled={!canSubmit}
+          onClick={() => {
+            if (newNameCandidate) {
+              onStaticLocationConfirmed(newNameCandidate);
+            }
+          }}
+        >
+          No
+        </Button>
+      </ButtonRow>
+    </Modal>
+  );
+};
 
 export default BluetoothNameModal;
