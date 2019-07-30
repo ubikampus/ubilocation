@@ -71,7 +71,8 @@ const MapContainer = ({
     initialPinType
   );
 
-  const btName = queryParams && queryParams.name ? queryParams.name : null;
+  const sharedBtName =
+    queryParams && queryParams.track ? queryParams.track : null;
 
   /**
    * Used when user selects "only current" from the location prompt.
@@ -118,8 +119,8 @@ const MapContainer = ({
     ? [...staticMarkers, getDeviceLocation]
     : staticMarkers;
 
-  const sharedLocationMarkers = btName
-    ? nonUserMarkers.filter(marker => marker.beaconId === btName)
+  const sharedLocationMarkers = sharedBtName
+    ? nonUserMarkers.filter(b => b.beaconId === sharedBtName)
     : [];
 
   return (
@@ -167,6 +168,7 @@ const MapContainer = ({
                 const targetBeacons = beacons.filter(b => b.beaconId === name);
                 setStaticLocations(targetBeacons);
               }}
+              currentBluetoothName={bluetoothName}
             />
           )}
           <LocationPinMarker
@@ -189,12 +191,12 @@ const MapContainer = ({
               className="mapboxgl-user-location-dot"
             />
           ))}
-          {btName
-            ? sharedLocationMarkers.map((marker, i) => (
+          {sharedBtName
+            ? sharedLocationMarkers.map((beacon, i) => (
                 <SharedLocationMarker
                   key={'sharedLocationMarker-' + i}
-                  latitude={marker.lat}
-                  longitude={marker.lon}
+                  latitude={beacon.lat}
+                  longitude={beacon.lon}
                   className="mapboxgl-user-location-dot"
                 />
               ))

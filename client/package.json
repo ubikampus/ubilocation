@@ -29,6 +29,7 @@
     "qrcode.react": "^0.9.3",
     "query-string": "^6.8.0",
     "react": "^16.8.6",
+    "react-clipboard.js": "^2.0.13",
     "react-dom": "^16.8.6",
     "react-icons": "^3.7.0",
     "react-map-gl": "^5.0.3",
