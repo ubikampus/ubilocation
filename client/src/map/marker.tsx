@@ -7,22 +7,24 @@ import { Location } from '../common/typeUtil';
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
 import partition = require('lodash/partition');
 
-const StaticMarker = styled.div`
+const StaticMarker = styled.div<{ red?: boolean }>`
   svg {
     height: 40px;
     width: auto;
-    fill: #4287f5;
+    fill: ${props => (props.red ? '#ec7272' : '#4287f5')};
   }
 `;
 
 interface StaticUbiMarkerProps {
   latitude: number;
   longitude: number;
+  red?: boolean;
 }
 
 export const StaticUbiMarker = ({
   latitude,
   longitude,
+  red,
 }: StaticUbiMarkerProps) => (
   <Marker
     offsetLeft={-20}
@@ -30,7 +32,7 @@ export const StaticUbiMarker = ({
     latitude={latitude}
     longitude={longitude}
   >
-    <StaticMarker>
+    <StaticMarker red={red}>
       <LocationPin />
     </StaticMarker>
   </Marker>
@@ -73,11 +75,7 @@ export const LocationPinMarker = ({ type, coords, onClick }: PinProps) => {
       );
     case 'show':
       return (
-        <NonUserMarker
-          latitude={coords.lat}
-          longitude={coords.lon}
-          className="mapboxgl-user-location-dot"
-        />
+        <StaticUbiMarker latitude={coords.lat} longitude={coords.lon} red />
       );
     case 'none':
       return null;
