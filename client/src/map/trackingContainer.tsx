@@ -25,7 +25,7 @@ const TrackingContainer = ({
   currentBluetoothName,
 }: Props) => {
   const [bluetoothLoading, setBluetoothLoading] = useState(false);
-  const [manualDeviceSelect, setManualDeviceSelect] = useState(false);
+  const [manualDeviceSelect, setManualDeviceSelect] = useState(true);
 
   const [isOpen, setIsOpen] = useState(true);
   const [nameSelection, setNameSelection] = useState<null | string>(null);
