@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import queryString from 'query-string';
 import axios from 'axios';
 import { Style } from 'mapbox-gl';
+import produce from 'immer';
 
 import { currentEnv } from '../../common/environment';
 import fallbackStyle from './fallbackMapStyle.json';
@@ -18,7 +19,7 @@ const STYLE_URL =
  * See https://wiki.openstreetmap.org/wiki/Tile_servers
  * and https://github.com/CartoDB/basemap-styles
  */
-const useMapboxStyle = () => {
+const useMapboxStyle = (roomReserved: boolean) => {
   const [style, setStyle] = useState<Style | null>(null);
 
   useEffect(() => {
@@ -39,7 +40,13 @@ const useMapboxStyle = () => {
     }
   }, []);
 
-  return style;
+  return style === null
+    ? null
+    : produce(style, draft => {
+        (draft.sources as any).geojsonSource.data.features[0].properties.colorMode = roomReserved
+          ? 0
+          : 1;
+      });
 };
 
 export default useMapboxStyle;

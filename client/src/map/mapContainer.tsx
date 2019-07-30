@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Marker } from 'react-map-gl';
-import produce from 'immer';
 
 import { RouteComponentProps, withRouter } from 'react-router';
 
+import TrackingContainer from './trackingContainer';
 import useMapboxStyle from './shapeDraw/mapboxStyle';
 import { MapboxButton } from '../common/button';
 import { MQTT_URL } from '../location/urlPromptContainer';
@@ -14,7 +14,6 @@ import Deserializer, {
   BeaconGeoLocation,
 } from '../location/mqttDeserialize';
 import { useUbiMqtt, urlForLocation } from '../location/mqttConnection';
-import BluetoothNameModal from './bluetoothNameModal';
 import { RaspberryLocation } from '../admin/adminPanel';
 import {
   StaticUbiMarker,
@@ -63,9 +62,8 @@ const MapContainer = ({
       ? { lat: queryParams.lat, lon: queryParams.lon }
       : KUMPULA_COORDS;
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const mapStyle = useMapboxStyle();
+  const mapStyle = useMapboxStyle(roomReserved);
   const [modalText, setModalText] = useState('');
-  const [nameSelection, setNameSelection] = useState<null | string>(null);
 
   const initialPinType = fromQuery ? 'show' : 'none';
   const [pinCoordinates, setPinCoordinates] = useState(initialCoords);
@@ -114,15 +112,6 @@ const MapContainer = ({
 
   const UserMarker = isOnline ? Marker : OfflineMarker;
 
-  const nextMapStyle =
-    mapStyle === null
-      ? null
-      : produce(mapStyle, draft => {
-          (draft.sources as any).geojsonSource.data.features[0].properties.colorMode = roomReserved
-            ? 0
-            : 1;
-        });
-
   const staticMarkers = [...devices, ...staticLocations];
 
   const allStaticMarkers = getDeviceLocation
@@ -141,9 +130,9 @@ const MapContainer = ({
           className="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate"
         />
       </MapboxButton>
-      {nextMapStyle && (
+      {mapStyle && (
         <UbikampusMap
-          mapStyle={nextMapStyle}
+          mapStyle={mapStyle}
           onClick={e => {
             const [lon, lat] = e.lngLat;
 
@@ -164,22 +153,22 @@ const MapContainer = ({
             closeModal={closeModal}
             modalText={modalText}
           />
-          <BluetoothNameModal
-            promptForName // TODO: Don't prompt if web bluetooth succeeds.
-            setStaticLocation={name => {
-              const targetBeacons = beacons.filter(b => b.beaconId === name);
-              setStaticLocations(targetBeacons);
-            }}
-            isOpen={nameModalOpen}
-            closeModal={() => setNameModalOpen(false)}
-            beacons={beacons}
-            nameSelection={nameSelection}
-            setNameSelection={setNameSelection}
-            setBluetoothName={name => {
-              setBluetoothName(name);
-              setNameModalOpen(false);
-            }}
-          />
+          {nameModalOpen && (
+            <TrackingContainer
+              beacons={beacons}
+              onClose={() => setNameModalOpen(false)}
+              confirmName={name => {
+                setBluetoothName(name);
+                setStaticLocations([]);
+                setPinType('none');
+                setNameModalOpen(false);
+              }}
+              onStaticSelected={name => {
+                const targetBeacons = beacons.filter(b => b.beaconId === name);
+                setStaticLocations(targetBeacons);
+              }}
+            />
+          )}
           <LocationPinMarker
             coords={pinCoordinates}
             onClick={openModal}

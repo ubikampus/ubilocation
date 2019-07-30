@@ -19,6 +19,7 @@
     "@turf/turf": "^5.1.6",
     "@types/react-modal": "^3.8.2",
     "@types/react-tabs": "^2.3.1",
+    "@types/web-bluetooth": "0.0.4",
     "axios": "^0.19.0",
     "babylonjs": "^4.0.3",
     "babylonjs-gui": "^4.0.3",
