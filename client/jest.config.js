@@ -10,7 +10,7 @@ module.exports = {
 
   // https://jestjs.io/docs/en/webpack.html
   moduleNameMapper: {
-    '\\.(jpg|jpeg|png|gif|babylon|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/src/fileMock.ts',
+    '\\.(jpg|jpeg|png|gif|babylon|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga|css)$': '<rootDir>/src/fileMock.ts',
   },
 
   setupFiles: [
