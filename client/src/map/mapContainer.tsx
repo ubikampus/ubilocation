@@ -20,6 +20,7 @@ import {
   StaticUbiMarker,
   OfflineMarker,
   NonUserMarker,
+  SharedLocationMarker,
   LocationPinMarker,
   divideMarkers,
 } from './marker';
@@ -71,6 +72,8 @@ const MapContainer = ({
   const [pinType, setPinType] = useState<'configure' | 'show' | 'none'>(
     initialPinType
   );
+
+  const btName = queryParams && queryParams.name ? queryParams.name : null;
 
   /**
    * Used when user selects "only current" from the location prompt.
@@ -125,6 +128,10 @@ const MapContainer = ({
   const allStaticMarkers = getDeviceLocation
     ? [...staticMarkers, getDeviceLocation]
     : staticMarkers;
+
+  const sharedLocationMarkers = btName
+    ? nonUserMarkers.filter(marker => marker.beaconId === btName)
+    : [];
 
   return (
     <>
@@ -193,14 +200,23 @@ const MapContainer = ({
               className="mapboxgl-user-location-dot"
             />
           ))}
-          {nonUserMarkers.map((beacon, i) => (
-            <NonUserMarker
-              key={i}
-              latitude={beacon.lat}
-              longitude={beacon.lon}
-              className="mapboxgl-user-location-dot"
-            />
-          ))}
+          {btName
+            ? sharedLocationMarkers.map((marker, i) => (
+                <SharedLocationMarker
+                  key={'sharedLocationMarker-' + i}
+                  latitude={marker.lat}
+                  longitude={marker.lon}
+                  className="mapboxgl-user-location-dot"
+                />
+              ))
+            : nonUserMarkers.map((beacon, i) => (
+                <NonUserMarker
+                  key={i}
+                  latitude={beacon.lat}
+                  longitude={beacon.lon}
+                  className="mapboxgl-user-location-dot"
+                />
+              ))}
         </UbikampusMap>
       )}
     </>

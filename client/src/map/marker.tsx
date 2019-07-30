@@ -57,6 +57,10 @@ export const NonUserMarker = styled(OfflineMarker)`
   }
 `;
 
+export const SharedLocationMarker = styled(NonUserMarker)`
+  background-color: green;
+`;
+
 interface PinProps {
   type: 'configure' | 'show' | 'none';
   coords: Location;
