@@ -108,6 +108,7 @@ interface Props {
   getDeviceLocation: Location | null;
   devices: RaspberryLocation[];
   setDevices(a: RaspberryLocation[]): void;
+  sendSignedMqttMessage(a: string): void;
   onCancel(): void;
   onSubmit(a: RaspberryLocation[]): void;
   resetDeviceLocation(): void;
@@ -124,6 +125,7 @@ const CalibrationContainer = ({
   getDeviceLocation,
   devices,
   setDevices,
+  sendSignedMqttMessage,
   onCancel,
   onSubmit,
   style,
@@ -156,15 +158,14 @@ const CalibrationContainer = ({
           onSubmit={e => {
             e.preventDefault();
             if (getDeviceLocation) {
-              setDevices([
-                ...devices,
-                {
-                  name: newName,
-                  lat: getDeviceLocation.lat,
-                  lon: getDeviceLocation.lon,
-                  height: parseInt(newHeight, 10),
-                },
-              ]);
+              const newDevice = {
+                name: newName,
+                lat: getDeviceLocation.lat,
+                lon: getDeviceLocation.lon,
+                height: parseInt(newHeight, 10),
+              };
+              setDevices([...devices, newDevice]);
+              sendSignedMqttMessage(JSON.stringify(newDevice));
               setNewName('');
               setNewHeight('');
               resetDeviceLocation();

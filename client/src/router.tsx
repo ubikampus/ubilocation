@@ -15,6 +15,7 @@ import { Location } from './common/typeUtil';
 import NavBar from './common/navBar';
 import LoginPromptContainer from './admin/loginPromptContainer';
 import AuthApi, { Admin } from './admin/authApi';
+import mqttService from './common/mqttService';
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -112,6 +113,7 @@ const Router = () => {
                       setDevices={setDevices}
                       resetDeviceLocation={() => setDeviceLocation(null)}
                       getDeviceLocation={getDeviceLocation}
+                      sendSignedMqttMessage={mqttService.sendSignedMqttMessage}
                     />
                   ))
                 }
