@@ -1,7 +1,8 @@
 import UbiMqtt from 'ubimqtt';
 import authApi from '../admin/authApi';
+import { MQTT_URL } from '../location/urlPromptContainer';
 
-const ubiMqttClient = new UbiMqtt('ws://localhost:9001/mqtt');
+const ubiMqttClient = new UbiMqtt(MQTT_URL);
 let connected = false;
 
 const getConnection = async (): Promise<any> => {
@@ -32,7 +33,7 @@ const sendSignedMqttMessage = async (message: string) => {
     const signedMessage = await authApi.sign(message, token);
     const connection = await getConnection();
     await connection.publish(
-      'ohtu/temp',
+      'ohtu/config',
       JSON.stringify(signedMessage),
       {},
       (error: any) => {
