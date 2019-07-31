@@ -24,6 +24,7 @@ import {
   divideMarkers,
 } from './marker';
 import { Location } from '../common/typeUtil';
+import ShareMyLocationModal from './shareMyLocationModal';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 17;
@@ -95,6 +96,8 @@ const MapContainer = ({
   const [nameModalOpen, setNameModalOpen] = useState(
     queryParams && queryParams.lat ? true : false
   );
+
+  const [shareLocationModalOpen, setShareLocationModalOpen] = useState(false);
 
   const mqttHost =
     queryParams && queryParams.host ? queryParams.host : MQTT_URL;
@@ -168,6 +171,13 @@ const MapContainer = ({
                 const targetBeacons = beacons.filter(b => b.beaconId === name);
                 setStaticLocations(targetBeacons);
               }}
+              currentBluetoothName={bluetoothName}
+            />
+          )}
+          {shareLocationModalOpen && (
+            <ShareMyLocationModal
+              isOpen={shareLocationModalOpen}
+              onClose={() => setShareLocationModalOpen(false)}
               currentBluetoothName={bluetoothName}
             />
           )}
