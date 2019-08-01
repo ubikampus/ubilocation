@@ -21,3 +21,8 @@ services:
     volumes:
       - ./auth-server:/auth-server
       - /auth-server/node_modules
+  bluetooth-tile-server:
+    build: maptiles
+    container_name: bluetooth-tileserver
+    ports:
+      - "8000:80"
