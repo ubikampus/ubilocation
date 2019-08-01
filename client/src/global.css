@@ -1,7 +1,7 @@
 /* These are the global defaults. Not for invidual components. */
 
 * {
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 /* CSS reset */
@@ -18,39 +18,39 @@ article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
 }
 
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
-	display: block;
+  display: block;
 }
 body {
-	line-height: 1;
-	background-color:transparent !important;
-	font-family: 'Raleway', sans-serif;
-  	color: #221f20;
+  line-height: 1;
+  background-color:transparent !important;
+  font-family: 'Raleway', sans-serif;
+    color: #221f20;
 }
 ol, ul {
-	list-style: none;
+  list-style: none;
 }
 blockquote, q {
-	quotes: none;
+  quotes: none;
 }
 blockquote:before, blockquote:after,
 q:before, q:after {
-	content: '';
-	content: none;
+  content: '';
+  content: none;
 }
 table {
-	border-collapse: collapse;
-	border-spacing: 0;
+  border-collapse: collapse;
+  border-spacing: 0;
   margin: 0;
 }
 a {
