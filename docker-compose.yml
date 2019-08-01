@@ -4,8 +4,6 @@ services:
   bluetooth-client:
     container_name: bluetooth-client
     build: client
-    environment:
-      MAPBOX_TOKEN: $MAPBOX_TOKEN
     ports:
       - "8080:8080"
     volumes:

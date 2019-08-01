@@ -24,7 +24,6 @@ const UbikampusMap: FC<Props> = ({
     {...viewport}
     mapStyle={mapStyle}
     width="100%"
-    mapboxApiAccessToken={currentEnv.MAPBOX_TOKEN}
     height="auto"
     getCursor={pointerCursor ? () => 'pointer' : undefined}
     style={{ flex: '1' }}

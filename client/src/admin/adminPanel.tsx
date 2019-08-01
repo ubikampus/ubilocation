@@ -120,7 +120,7 @@ interface Props {
   setNewHeight(a: string): void;
 }
 
-const CalibrationContainer = ({
+const AdminPanel = ({
   getDeviceLocation,
   devices,
   setDevices,
@@ -212,4 +212,4 @@ const CalibrationContainer = ({
   </Sidebar>
 );
 
-export default animated(CalibrationContainer);
+export default animated(AdminPanel);
