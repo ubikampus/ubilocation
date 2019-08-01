@@ -34,7 +34,7 @@ footer, header, hgroup, menu, nav, section {
 body {
 	line-height: 1;
 	background-color:transparent !important;
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'Raleway', sans-serif;
   	color: #221f20;
 }
 ol, ul {
@@ -58,5 +58,5 @@ a {
 }
 
 input {
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Raleway', sans-serif;
 }
