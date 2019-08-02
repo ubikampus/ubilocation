@@ -40,6 +40,8 @@ interface Props {
   setDeviceLocation(a: Location): void;
   devices: RaspberryLocation[];
   roomReserved: boolean;
+  shareLocationModalOpen: boolean;
+  closeShareLocationModal(): void;
 }
 
 const MapContainer = ({
@@ -49,6 +51,8 @@ const MapContainer = ({
   getDeviceLocation,
   devices,
   roomReserved,
+  shareLocationModalOpen,
+  closeShareLocationModal,
 }: RouteComponentProps & Props) => {
   const parser = new Deserializer();
 
@@ -96,8 +100,6 @@ const MapContainer = ({
   const [nameModalOpen, setNameModalOpen] = useState(
     queryParams && queryParams.lat ? true : false
   );
-
-  const [shareLocationModalOpen, setShareLocationModalOpen] = useState(false);
 
   const mqttHost =
     queryParams && queryParams.host ? queryParams.host : MQTT_URL;
@@ -177,7 +179,7 @@ const MapContainer = ({
           {shareLocationModalOpen && (
             <ShareMyLocationModal
               isOpen={shareLocationModalOpen}
-              onClose={() => setShareLocationModalOpen(false)}
+              onClose={closeShareLocationModal}
               currentBluetoothName={bluetoothName}
             />
           )}

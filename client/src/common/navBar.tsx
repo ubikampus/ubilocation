@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { NavLink, withRouter, RouteComponentProps } from 'react-router-dom';
-import { TiCog } from 'react-icons/ti';
+import { TiCog, TiLocationArrow } from 'react-icons/ti';
 import btlogo from '../../asset/bluetooth_logo.svg';
 
 const AdminCog = styled.div`
@@ -102,6 +102,7 @@ interface Props {
   isAdmin: boolean;
   openAdminPanel(a: boolean): void;
   isAdminPanelOpen: boolean;
+  openShareLocationModal(): void;
 }
 
 const NavBar = ({
@@ -110,6 +111,7 @@ const NavBar = ({
   openAdminPanel,
   location: { pathname },
   history,
+  openShareLocationModal,
 }: Props & RouteComponentProps) => (
   <NavContainer>
     <Items>
@@ -125,6 +127,19 @@ const NavBar = ({
       </LinkBox>
     </Items>
     <Search placeholder="Search .." />
+    <SidepanelButton
+      onClick={() => {
+        if (pathname !== '/') {
+          history.push('/');
+        }
+        openShareLocationModal();
+      }}
+    >
+      <AdminChip>Location sharing</AdminChip>
+      <AdminCog>
+        <TiLocationArrow />
+      </AdminCog>
+    </SidepanelButton>
     {isAdmin && (
       <SidepanelButton
         onClick={() => {
