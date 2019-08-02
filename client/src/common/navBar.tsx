@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { NavLink, withRouter, RouteComponentProps } from 'react-router-dom';
 import { TiCog, TiLocationArrow } from 'react-icons/ti';
 import btlogo from '../../asset/bluetooth_logo.svg';
+import ShareLocationDropdown from './../map/shareLocationDropdown';
 
 const AdminCog = styled.div`
   color: white;
@@ -102,7 +103,9 @@ interface Props {
   isAdmin: boolean;
   openAdminPanel(a: boolean): void;
   isAdminPanelOpen: boolean;
-  openShareLocationModal(): void;
+  shareLocationDropdownOpen: boolean;
+  openShareLocationDropdown(a: boolean): void;
+  openShareLocationModal(a: boolean): void;
 }
 
 const NavBar = ({
@@ -111,6 +114,8 @@ const NavBar = ({
   openAdminPanel,
   location: { pathname },
   history,
+  shareLocationDropdownOpen,
+  openShareLocationDropdown,
   openShareLocationModal,
 }: Props & RouteComponentProps) => (
   <NavContainer>
@@ -127,19 +132,32 @@ const NavBar = ({
       </LinkBox>
     </Items>
     <Search placeholder="Search .." />
-    <SidepanelButton
-      onClick={() => {
-        if (pathname !== '/') {
-          history.push('/');
-        }
-        openShareLocationModal();
-      }}
-    >
-      <AdminChip>Location sharing</AdminChip>
-      <AdminCog>
-        <TiLocationArrow />
-      </AdminCog>
-    </SidepanelButton>
+
+    <div>
+      <SidepanelButton
+        onClick={() => {
+          openShareLocationDropdown(!shareLocationDropdownOpen);
+        }}
+      >
+        <AdminChip>Location sharing</AdminChip>
+        <AdminCog>
+          <TiLocationArrow />
+        </AdminCog>
+      </SidepanelButton>
+      <ShareLocationDropdown
+        isOpen={shareLocationDropdownOpen}
+        openDropdown={openShareLocationDropdown}
+        onOpenShareLocationModal={() => {
+          if (pathname !== '/') {
+            history.push('/');
+          }
+          openShareLocationDropdown(false);
+          openShareLocationModal(true);
+        }}
+        onOpenPublishLocationModal={() => {}}
+      />
+    </div>
+
     {isAdmin && (
       <SidepanelButton
         onClick={() => {

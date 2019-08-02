@@ -24,7 +24,7 @@ import {
   divideMarkers,
 } from './marker';
 import { Location } from '../common/typeUtil';
-import ShareMyLocationModal from './shareMyLocationModal';
+import ShareLocationModal from './shareLocationModal';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 17;
@@ -41,7 +41,7 @@ interface Props {
   devices: RaspberryLocation[];
   roomReserved: boolean;
   shareLocationModalOpen: boolean;
-  closeShareLocationModal(): void;
+  openShareLocationModal(a: boolean): void;
 }
 
 const MapContainer = ({
@@ -52,7 +52,7 @@ const MapContainer = ({
   devices,
   roomReserved,
   shareLocationModalOpen,
-  closeShareLocationModal,
+  openShareLocationModal,
 }: RouteComponentProps & Props) => {
   const parser = new Deserializer();
 
@@ -177,9 +177,9 @@ const MapContainer = ({
             />
           )}
           {shareLocationModalOpen && (
-            <ShareMyLocationModal
+            <ShareLocationModal
               isOpen={shareLocationModalOpen}
-              onClose={closeShareLocationModal}
+              onClose={() => openShareLocationModal(false)}
               currentBluetoothName={bluetoothName}
             />
           )}

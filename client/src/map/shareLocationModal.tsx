@@ -37,7 +37,7 @@ interface Props {
   currentBluetoothName: null | string;
 }
 
-const ShareMyLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
+const ShareLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
   const shareLink = `${baseUrl}/?track=${currentBluetoothName}`;
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose}>
@@ -65,4 +65,4 @@ const ShareMyLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
   );
 };
 
-export default ShareMyLocation;
+export default ShareLocation;
