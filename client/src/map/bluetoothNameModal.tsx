@@ -34,7 +34,6 @@ interface Props {
   confirmName(a: string): void;
   closeModal(): void;
   setNameSelection(a: string): void;
-  currentBluetoothName: null | string;
 }
 
 export const sortBeacons = (beacons: BeaconGeoLocation[]) => {
@@ -50,7 +49,6 @@ const BluetoothNameModal = ({
   setNameSelection,
   confirmName,
   closeModal,
-  currentBluetoothName,
 }: Props) => {
   return (
     <Modal isOpen={isOpen} onRequestClose={closeModal}>

@@ -173,7 +173,6 @@ const MapContainer = ({
                 const targetBeacons = beacons.filter(b => b.beaconId === name);
                 setStaticLocations(targetBeacons);
               }}
-              currentBluetoothName={bluetoothName}
             />
           )}
           {shareLocationModalOpen && (

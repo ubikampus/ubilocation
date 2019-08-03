@@ -15,15 +15,9 @@ interface Props {
   beacons: BeaconGeoLocation[];
   onStaticSelected(a: string): void;
   onClose(): void;
-  currentBluetoothName: null | string;
 }
 
-const TrackingContainer = ({
-  onClose,
-  confirmName,
-  beacons,
-  currentBluetoothName,
-}: Props) => {
+const TrackingContainer = ({ onClose, confirmName, beacons }: Props) => {
   const [bluetoothLoading, setBluetoothLoading] = useState(false);
   const [manualDeviceSelect, setManualDeviceSelect] = useState(false);
 
@@ -45,7 +39,6 @@ const TrackingContainer = ({
         beacons={beacons}
         nameSelection={nameSelection}
         confirmName={confirmName}
-        currentBluetoothName={currentBluetoothName}
       />
     );
   }
