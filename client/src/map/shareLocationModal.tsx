@@ -39,29 +39,43 @@ const HighlightedParagraph = styled(ModalParagraph)`
   color: red;
 `;
 
-/*
-const LinkTable = styled.div`
-  display: table;
-`;
-
-const LinkRow = styled.div`
-  display: table-row;
-`;
-*/
-
-const LinkField = styled.input`
-  /*display: table-cell;*/
+/**
+ * Credit: UrlInput and CopyButton are based on similar components on GitHub
+ */
+const UrlInput = styled.input`
   width: 80%;
-  /*box-sizing: border-box;*/
-  /*font-size: 13px;
-  padding: 7px 8px;*/
+  font-size: 12px;
+  line-height: 20px;
+  padding: 3px 5px;
+  border: 1px solid #d1d5da;
+  border-radius: 3px 0 0 3px;
+  color: #24292e;
+`;
+
+const ButtonGroup = styled.span`
+  /* ... */
 `;
 
 const CopyButton = styled(Clipboard)`
-  /*display: table-cell;*/
-  /*padding: 6px 12px;
-  width: 1%;
-  vertical-align: middle;*/
+  font-size: 12px;
+  line-height: 20px;
+  padding: 3px 10px;
+  margin-left: -1px;
+  border: 1px solid rgba(27, 31, 35, 0.2);
+  border-radius: 0 3px 3px 0;
+  background-color: #eff3f6;
+  cursor: pointer;
+`;
+
+const CopyIcon = styled(GoClippy)`
+  /**
+   * This doesn't seem to work...
+   * The icon is not centered vertically - it's a little off.
+   */
+  display: inline-block;
+  vertical-align: middle;
+  width: 14px;
+  height: 16px;
 `;
 
 interface Props {
@@ -89,10 +103,12 @@ const ShareLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
           </ModalParagraph>
           {currentBluetoothName ? (
             <div>
-              <LinkField value={shareLink} readOnly={true} />
-              <CopyButton data-clipboard-text={shareLink}>
-                <GoClippy />
-              </CopyButton>
+              <UrlInput value={shareLink} readOnly={true} />
+              <ButtonGroup>
+                <CopyButton data-clipboard-text={shareLink}>
+                  <CopyIcon />
+                </CopyButton>
+              </ButtonGroup>
             </div>
           ) : (
             <HighlightedParagraph>
