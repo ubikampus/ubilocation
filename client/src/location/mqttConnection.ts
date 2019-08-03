@@ -61,10 +61,6 @@ export const useUbiMqtt = (
   ] = useState<null | BeaconGeoLocation>(null);
 
   useEffect(() => {
-    if (!currentEnv.MAPBOX_TOKEN) {
-      console.error('mapbox api token missing, falling back to raster maps...');
-    }
-
     const ubiClient = new UbiMqtt(host, { silent: true });
     ubiClient.connect((error: any) => {
       if (error) {

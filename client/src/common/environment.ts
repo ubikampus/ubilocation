@@ -11,7 +11,6 @@ const EnvDecoder = t.type({
      */
     t.literal('test'),
   ]),
-  MAPBOX_TOKEN: t.union([t.undefined, t.string]),
 });
 
 export type Env = t.TypeOf<typeof EnvDecoder>;
@@ -22,7 +21,6 @@ export type Env = t.TypeOf<typeof EnvDecoder>;
 const loadEnv = (): Env => {
   return unsafeDecode(EnvDecoder, {
     NODE_ENV: DEFINE_NODE_ENV,
-    MAPBOX_TOKEN: DEFINE_MAPBOX_TOKEN,
   });
 };
 
