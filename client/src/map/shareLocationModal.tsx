@@ -5,6 +5,9 @@ import { GoClippy, GoBroadcast } from 'react-icons/go';
 import { FaBroadcastTower } from 'react-icons/fa';
 import Modal, { ModalHeader, ModalParagraph } from '../common/modal';
 
+/**
+ * TODO: This URL should probably be an environment variable
+ */
 const baseUrl = 'http://localhost:8080';
 
 const FlexContainer = styled.div`
@@ -40,7 +43,7 @@ const HighlightedParagraph = styled(ModalParagraph)`
 `;
 
 /**
- * Credit: UrlInput and CopyButton are based on similar components on GitHub
+ * Credit: UrlInput and CopyButton are based on similar components on the GitHub web page
  */
 const UrlInput = styled.input`
   width: 80%;
