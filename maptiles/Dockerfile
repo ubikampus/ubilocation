@@ -9,7 +9,7 @@ RUN mkdir /build && curl -L -o /build/floorplan_v5.tif "https://drive.google.com
 WORKDIR /build
 
 # This is the actual GeoTIFF -> mbtiles conversion
-RUN gdal_translate -of MBTILES -co BLOCKSIZE=512 floorplan_v5.tif floorplan_v5.mbtiles
+RUN gdal_translate -of MBTILES -co BLOCKSIZE=2048 -co ZOOM_LEVEL_STRATEGY=UPPER floorplan_v5.tif floorplan_v5.mbtiles
 
 # Add different zoom levels.
 # TODO: minimum zoom level is 16, how do we add smaller zoom levels?
