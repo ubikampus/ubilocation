@@ -24,6 +24,9 @@
   "data": {
     "helsinki": {
       "mbtiles": "helsinki.mbtiles"
+    },
+    "helsinkiraster": {
+      "mbtiles": "floorplan_v5.mbtiles"
     }
   }
 }

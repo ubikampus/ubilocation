@@ -21,6 +21,10 @@
     "openmaptiles": {
       "type": "vector",
       "url": "http://localhost:8000/data/helsinki.json"
+    },
+    "library_floorplan": {
+      "type": "raster",
+      "url": "http://localhost:8000/data/helsinkiraster.json"
     }
   },
   "sprite": "https://openmaptiles.github.io/positron-gl-style/sprite",
@@ -1061,6 +1065,12 @@
           "stops": [[3, "rgb(157,169,177)"], [4, "rgb(153, 153, 153)"]]
         }
       }
+    },
+    {
+      "id": "library",
+      "type": "raster",
+      "source": "library_floorplan",
+      "source-layer": "library_floorplan"
     }
   ],
   "id": "positron"
