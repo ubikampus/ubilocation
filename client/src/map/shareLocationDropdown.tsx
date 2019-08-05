@@ -9,11 +9,10 @@ import styled from 'styled-components';
 
 const DropdownContent = styled.div`
   /**
-   * Make this dropdown appear below the 'Share location' link.
-   * There's a small problem with this, however: the position is slightly off
-   * compared to where we would like it to be.
+   * Make this dropdown appear below the 'Location sharing' link in the navbar.
    */
   position: absolute;
+  top: 48px;
   background-color: #68a0fd;
   border-radius: 0 0 8px 8px;
   /**
