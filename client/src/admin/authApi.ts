@@ -15,14 +15,14 @@ export interface Admin {
   username: string;
 }
 
-export interface Signature {
-  protected: any;
+export interface Signature<T> {
+  protected: T;
   signature: string;
 }
 
-export interface SignedMessage {
+export interface SignedMessage<T = any> {
   payload: string;
-  signatures: Signature[];
+  signatures: Array<Signature<T>>;
 }
 
 const login = async (credentials: Credentials): Promise<Admin> => {

@@ -26,6 +26,7 @@ import {
 import { Location } from '../common/typeUtil';
 import ShareLocationModal from './shareLocationModal';
 import { Style } from 'mapbox-gl';
+import PublicShareModal from './publicShareModal';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 17;
@@ -42,10 +43,14 @@ interface Props {
   devices: RaspberryLocation[];
   roomReserved: boolean;
   shareLocationModalOpen: boolean;
+  publicShareOpen: boolean;
+  openPublicShare(a: boolean): void;
   openShareLocationModal(a: boolean): void;
 }
 
 const MapContainer = ({
+  openPublicShare,
+  publicShareOpen,
   location,
   setDeviceLocation,
   isAdminPanelOpen,
@@ -180,6 +185,17 @@ const MapContainer = ({
             isOpen={shareLocationModalOpen}
             onClose={() => openShareLocationModal(false)}
             currentBluetoothName={bluetoothName}
+          />
+        )}
+        {publicShareOpen && (
+          <PublicShareModal
+            publishLocation={nickname => {
+              // TODO
+              console.log('publishing our location as user', nickname.payload);
+              openPublicShare(false);
+            }}
+            onClose={() => openPublicShare(false)}
+            isOpen={publicShareOpen}
           />
         )}
         <LocationPinMarker

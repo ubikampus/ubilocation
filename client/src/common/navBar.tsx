@@ -100,15 +100,19 @@ const SidepanelButton = styled.div`
 `;
 
 interface Props {
+  openPublicShare(a: boolean): void;
   isAdmin: boolean;
   openAdminPanel(a: boolean): void;
   isAdminPanelOpen: boolean;
+  publicShareOpen: boolean;
   shareLocationDropdownOpen: boolean;
   openShareLocationDropdown(a: boolean): void;
   openShareLocationModal(a: boolean): void;
 }
 
 const NavBar = ({
+  openPublicShare,
+  publicShareOpen,
   isAdmin,
   isAdminPanelOpen,
   openAdminPanel,
@@ -154,7 +158,7 @@ const NavBar = ({
           openShareLocationDropdown(false);
           openShareLocationModal(true);
         }}
-        onOpenPublishLocationModal={() => {}}
+        onOpenPublishLocationModal={() => openPublicShare(true)}
       />
     </div>
 

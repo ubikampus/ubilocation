@@ -43,6 +43,7 @@ const Router = () => {
   const [shareLocationDropdownOpen, openShareLocationDropdown] = useState(
     false
   );
+  const [publicShareOpen, openPublicShare] = useState(false);
 
   useEffect(() => {
     const loggedAdminUserJSON = window.localStorage.getItem(
@@ -65,6 +66,8 @@ const Router = () => {
           shareLocationDropdownOpen={shareLocationDropdownOpen}
           openShareLocationDropdown={openShareLocationDropdown}
           openShareLocationModal={openShareLocationModal}
+          publicShareOpen={publicShareOpen}
+          openPublicShare={openPublicShare}
         />
         <MainRow>
           <Route
@@ -133,6 +136,8 @@ const Router = () => {
               render={props => (
                 <MapContainer
                   {...props}
+                  openPublicShare={openPublicShare}
+                  publicShareOpen={publicShareOpen}
                   roomReserved={roomReserved}
                   devices={devices}
                   getDeviceLocation={getDeviceLocation}
