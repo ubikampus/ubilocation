@@ -4,11 +4,11 @@ import Modal, {
   ModalHeader,
   ModalParagraph,
   ModalButtonRow,
+  UbiLogo,
 } from '../common/modal';
 import { SignedMessage } from '../admin/authApi';
 import styled from 'styled-components';
 import Button from '../common/button';
-import ubiukko from './ubi_ukko.png';
 
 type Nickname = string;
 
@@ -40,13 +40,6 @@ const Nickname = styled.span`
   font-family: monospace;
 `;
 
-const UbiLogo = styled.img`
-  height: 70px;
-  align-self: center;
-  margin-right: 25px;
-  margin-left: 10px;
-`;
-
 const MainRow = styled.div`
   display: flex;
 `;
@@ -69,7 +62,7 @@ const PublicShareModal = ({ isOpen, onClose, publishLocation }: Props) => {
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose}>
       <MainRow>
-        <UbiLogo src={ubiukko} />
+        <UbiLogo />
         <div>
           <ModalHeader>Share location for all users</ModalHeader>
           <ModalParagraph>
