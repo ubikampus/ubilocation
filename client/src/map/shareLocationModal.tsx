@@ -36,36 +36,36 @@ const HighlightedParagraph = styled(ModalParagraph)`
 `;
 
 /**
- * Credit: UrlInput and CopyButton are based on similar components on the GitHub web page
+ * Credit: UrlInput and CopyButton are based on similar components on the
+ * GitHub web page
  */
+const UrlRow = styled.div`
+  display: flex;
+  height: 28px;
+`;
+
 const UrlInput = styled.input`
-  width: 80%;
+  flex: 1;
   font-size: 12px;
-  line-height: 20px;
   padding: 3px 5px;
-  border: 1px solid #d1d5da;
   border-radius: 3px 0 0 3px;
+  border: 1px solid #d1d5da;
   color: #24292e;
 `;
 
 const CopyButton = styled(Clipboard)`
-  font-size: 12px;
-  line-height: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  cursor: pointer;
   padding: 3px 10px;
   margin-left: -1px;
   border: 1px solid rgba(27, 31, 35, 0.2);
   border-radius: 0 3px 3px 0;
   background-color: #eff3f6;
-  cursor: pointer;
 `;
 
 const CopyIcon = styled(GoClippy)`
-  /**
-   * This doesn't seem to work...
-   * The icon is not centered vertically - it's a little off.
-   */
-  display: inline-block;
-  vertical-align: middle;
   width: 14px;
   height: 16px;
 `;
@@ -96,14 +96,12 @@ const ShareLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
             location.
           </ModalParagraph>
           {currentBluetoothName ? (
-            <div>
+            <UrlRow>
               <UrlInput value={shareLink} readOnly={true} />
-              <span>
-                <CopyButton data-clipboard-text={shareLink}>
-                  <CopyIcon />
-                </CopyButton>
-              </span>
-            </div>
+              <CopyButton data-clipboard-text={shareLink}>
+                <CopyIcon />
+              </CopyButton>
+            </UrlRow>
           ) : (
             <HighlightedParagraph>
               Before we can generate a link for you, you need to enable location
