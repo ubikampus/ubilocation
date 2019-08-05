@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Clipboard from 'react-clipboard.js';
+import queryString from 'query-string';
 import { GoClippy, GoBroadcast } from 'react-icons/go';
 import { FaBroadcastTower } from 'react-icons/fa';
 import Modal, { ModalHeader, ModalParagraph } from '../common/modal';
@@ -76,7 +77,9 @@ interface Props {
 }
 
 const ShareLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
-  const shareLink = `${baseUrl}/?track=${currentBluetoothName}`;
+  const queryStr = queryString.stringify({ track: currentBluetoothName });
+  const shareLink = `${baseUrl}/?${queryStr}`;
+
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose}>
       <FlexContainer>
