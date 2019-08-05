@@ -15,14 +15,6 @@ const FlexContainer = styled.div`
   flex-direction: row;
 `;
 
-const IconColumn = styled.div`
-  /* ... */
-`;
-
-const ContentColumn = styled.div`
-  /* ... */
-`;
-
 const BroadcastdIcon = styled.div`
   height: auto;
   width: 100px;
@@ -53,10 +45,6 @@ const UrlInput = styled.input`
   border: 1px solid #d1d5da;
   border-radius: 3px 0 0 3px;
   color: #24292e;
-`;
-
-const ButtonGroup = styled.span`
-  /* ... */
 `;
 
 const CopyButton = styled(Clipboard)`
@@ -92,12 +80,12 @@ const ShareLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose}>
       <FlexContainer>
-        <IconColumn>
+        <div>
           <BroadcastdIcon>
             <GoBroadcast />
           </BroadcastdIcon>
-        </IconColumn>
-        <ContentColumn>
+        </div>
+        <div>
           <ModifiedModalHeader>Share real-time location</ModifiedModalHeader>
           <ModalParagraph>
             Copy the link below and share it as you see fit. Please note that
@@ -107,11 +95,11 @@ const ShareLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
           {currentBluetoothName ? (
             <div>
               <UrlInput value={shareLink} readOnly={true} />
-              <ButtonGroup>
+              <span>
                 <CopyButton data-clipboard-text={shareLink}>
                   <CopyIcon />
                 </CopyButton>
-              </ButtonGroup>
+              </span>
             </div>
           ) : (
             <HighlightedParagraph>
@@ -119,7 +107,7 @@ const ShareLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
               tracking.
             </HighlightedParagraph>
           )}
-        </ContentColumn>
+        </div>
       </FlexContainer>
     </Modal>
   );
