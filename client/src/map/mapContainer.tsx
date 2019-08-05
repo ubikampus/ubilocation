@@ -24,9 +24,7 @@ import {
   divideMarkers,
 } from './marker';
 import { Location } from '../common/typeUtil';
-import ShareLocationModal from './shareLocationModal';
 import { Style } from 'mapbox-gl';
-import PublicShareModal from './publicShareModal';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 17;
@@ -37,28 +35,24 @@ const DEFAULT_NONTRACKED_ZOOM = 17;
 const DEFAULT_TRACKED_ZOOM = 18;
 
 interface Props {
+  bluetoothName: string | null;
+  setBluetoothName(a: string | null): void;
   isAdminPanelOpen: boolean;
   getDeviceLocation: Location | null;
   setDeviceLocation(a: Location): void;
   devices: RaspberryLocation[];
   roomReserved: boolean;
-  shareLocationModalOpen: boolean;
-  publicShareOpen: boolean;
-  openPublicShare(a: boolean): void;
-  openShareLocationModal(a: boolean): void;
 }
 
 const MapContainer = ({
-  openPublicShare,
-  publicShareOpen,
   location,
   setDeviceLocation,
   isAdminPanelOpen,
   getDeviceLocation,
   devices,
   roomReserved,
-  shareLocationModalOpen,
-  openShareLocationModal,
+  bluetoothName,
+  setBluetoothName,
 }: RouteComponentProps & Props) => {
   const parser = new Deserializer();
 
@@ -106,7 +100,6 @@ const MapContainer = ({
 
   const mqttHost =
     queryParams && queryParams.host ? queryParams.host : MQTT_URL;
-  const [bluetoothName, setBluetoothName] = useState<string | null>(null);
   const { beacons, lastKnownPosition } = useUbiMqtt(
     mqttHost,
     bluetoothName,
@@ -178,24 +171,6 @@ const MapContainer = ({
               const targetBeacons = beacons.filter(b => b.beaconId === name);
               setStaticLocations(targetBeacons);
             }}
-          />
-        )}
-        {shareLocationModalOpen && (
-          <ShareLocationModal
-            isOpen={shareLocationModalOpen}
-            onClose={() => openShareLocationModal(false)}
-            currentBluetoothName={bluetoothName}
-          />
-        )}
-        {publicShareOpen && (
-          <PublicShareModal
-            publishLocation={nickname => {
-              // TODO
-              console.log('publishing our location as user', nickname.payload);
-              openPublicShare(false);
-            }}
-            onClose={() => openPublicShare(false)}
-            isOpen={publicShareOpen}
           />
         )}
         <LocationPinMarker

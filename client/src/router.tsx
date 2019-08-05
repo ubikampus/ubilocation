@@ -15,6 +15,8 @@ import { Location } from './common/typeUtil';
 import NavBar from './common/navBar';
 import LoginPromptContainer from './admin/loginPromptContainer';
 import AuthApi, { Admin } from './admin/authApi';
+import ShareLocationModal from './map/shareLocationModal';
+import PublicShareModal from './map/publicShareModal';
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -44,6 +46,7 @@ const Router = () => {
     false
   );
   const [publicShareOpen, openPublicShare] = useState(false);
+  const [bluetoothName, setBluetoothName] = useState<string | null>(null);
 
   useEffect(() => {
     const loggedAdminUserJSON = window.localStorage.getItem(
@@ -58,6 +61,24 @@ const Router = () => {
 
   return (
     <BrowserRouter basename={apiRoot()}>
+      {shareLocationModalOpen && (
+        <ShareLocationModal
+          isOpen={shareLocationModalOpen}
+          onClose={() => openShareLocationModal(false)}
+          currentBluetoothName={bluetoothName}
+        />
+      )}
+      {publicShareOpen && (
+        <PublicShareModal
+          publishLocation={nickname => {
+            // TODO
+            console.log('publishing our location as user', nickname.payload);
+            openPublicShare(false);
+          }}
+          onClose={() => openPublicShare(false)}
+          isOpen={publicShareOpen}
+        />
+      )}
       <Fullscreen>
         <NavBar
           isAdmin={admin != null}
@@ -136,15 +157,13 @@ const Router = () => {
               render={props => (
                 <MapContainer
                   {...props}
-                  openPublicShare={openPublicShare}
-                  publicShareOpen={publicShareOpen}
+                  bluetoothName={bluetoothName}
+                  setBluetoothName={setBluetoothName}
                   roomReserved={roomReserved}
                   devices={devices}
                   getDeviceLocation={getDeviceLocation}
                   setDeviceLocation={setDeviceLocation}
                   isAdminPanelOpen={isAdminPanelOpen}
-                  shareLocationModalOpen={shareLocationModalOpen}
-                  openShareLocationModal={openShareLocationModal}
                 />
               )}
             />
