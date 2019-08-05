@@ -90,16 +90,20 @@ const Router = () => {
                       }}
                       setNewName={setNewName}
                       onSubmit={_ => {
-                        console.log(
-                          'TODO: send to mqtt bus after signing the message'
-                        );
-
                         if (admin) {
-                          const message = JSON.stringify(devices);
+                          const formattedDevices = devices.map(d => {
+                            return {
+                              observerId: d.name,
+                              position: [d.lon, d.lat, d.height],
+                            };
+                          });
+
+                          const message = JSON.stringify(formattedDevices);
                           AuthApi.sign(message, admin.token).then(
                             signedMessage => {
-                              console.log('message:', message);
-                              console.log('signedMessage:', signedMessage);
+                              mqttClient.sendSignedMqttMessage(
+                                JSON.stringify(signedMessage)
+                              );
                             }
                           );
                         }
@@ -113,7 +117,6 @@ const Router = () => {
                       setDevices={setDevices}
                       resetDeviceLocation={() => setDeviceLocation(null)}
                       getDeviceLocation={getDeviceLocation}
-                      sendSignedMqttMessage={mqttClient.sendSignedMqttMessage}
                     />
                   ))
                 }
