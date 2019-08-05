@@ -155,6 +155,7 @@ export const MapLocationQueryDecoder = t.type({
   lon: t.union([t.undefined, t.number]),
   host: t.union([t.string, t.undefined]),
   topic: t.union([t.string, t.undefined]),
+  track: t.union([t.string, t.undefined]),
 });
 
 export const VizQueryDecoder = t.type({ host: t.string, topic: t.string });

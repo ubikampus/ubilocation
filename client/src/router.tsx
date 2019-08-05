@@ -39,6 +39,10 @@ const Router = () => {
   const [newName, setNewName] = useState('');
   const [newHeight, setNewHeight] = useState('');
   const [roomReserved, setRoomReserved] = useState(false);
+  const [shareLocationModalOpen, openShareLocationModal] = useState(false);
+  const [shareLocationDropdownOpen, openShareLocationDropdown] = useState(
+    false
+  );
 
   useEffect(() => {
     const loggedAdminUserJSON = window.localStorage.getItem(
@@ -58,6 +62,9 @@ const Router = () => {
           isAdmin={admin != null}
           openAdminPanel={openAdminPanel}
           isAdminPanelOpen={isAdminPanelOpen}
+          shareLocationDropdownOpen={shareLocationDropdownOpen}
+          openShareLocationDropdown={openShareLocationDropdown}
+          openShareLocationModal={openShareLocationModal}
         />
         <MainRow>
           <Route
@@ -131,6 +138,8 @@ const Router = () => {
                   getDeviceLocation={getDeviceLocation}
                   setDeviceLocation={setDeviceLocation}
                   isAdminPanelOpen={isAdminPanelOpen}
+                  shareLocationModalOpen={shareLocationModalOpen}
+                  openShareLocationModal={openShareLocationModal}
                 />
               )}
             />

@@ -19,10 +19,12 @@ import {
   StaticUbiMarker,
   OfflineMarker,
   NonUserMarker,
+  SharedLocationMarker,
   LocationPinMarker,
   divideMarkers,
 } from './marker';
 import { Location } from '../common/typeUtil';
+import ShareLocationModal from './shareLocationModal';
 import { Style } from 'mapbox-gl';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
@@ -39,6 +41,8 @@ interface Props {
   setDeviceLocation(a: Location): void;
   devices: RaspberryLocation[];
   roomReserved: boolean;
+  shareLocationModalOpen: boolean;
+  openShareLocationModal(a: boolean): void;
 }
 
 const MapContainer = ({
@@ -48,6 +52,8 @@ const MapContainer = ({
   getDeviceLocation,
   devices,
   roomReserved,
+  shareLocationModalOpen,
+  openShareLocationModal,
 }: RouteComponentProps & Props) => {
   const parser = new Deserializer();
 
@@ -116,6 +122,13 @@ const MapContainer = ({
     ? [...staticMarkers, getDeviceLocation]
     : staticMarkers;
 
+  const trackedBtName =
+    queryParams && queryParams.track ? queryParams.track : null;
+
+  const sharedLocationMarkers = trackedBtName
+    ? nonUserMarkers.filter(b => b.beaconId === trackedBtName)
+    : [];
+
   return (
     <>
       <MapboxButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
@@ -162,6 +175,13 @@ const MapContainer = ({
             }}
           />
         )}
+        {shareLocationModalOpen && (
+          <ShareLocationModal
+            isOpen={shareLocationModalOpen}
+            onClose={() => openShareLocationModal(false)}
+            currentBluetoothName={bluetoothName}
+          />
+        )}
         <LocationPinMarker
           coords={pinCoordinates}
           onClick={openModal}
@@ -182,14 +202,23 @@ const MapContainer = ({
             className="mapboxgl-user-location-dot"
           />
         ))}
-        {nonUserMarkers.map((beacon, i) => (
-          <NonUserMarker
-            key={i}
-            latitude={beacon.lat}
-            longitude={beacon.lon}
-            className="mapboxgl-user-location-dot"
-          />
-        ))}
+        {trackedBtName
+          ? sharedLocationMarkers.map((beacon, i) => (
+              <SharedLocationMarker
+                key={'sharedLocationMarker-' + i}
+                latitude={beacon.lat}
+                longitude={beacon.lon}
+                className="mapboxgl-user-location-dot"
+              />
+            ))
+          : nonUserMarkers.map((beacon, i) => (
+              <NonUserMarker
+                key={i}
+                latitude={beacon.lat}
+                longitude={beacon.lon}
+                className="mapboxgl-user-location-dot"
+              />
+            ))}
       </UbikampusMap>
     </>
   );

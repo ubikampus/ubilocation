@@ -27,6 +27,8 @@ describe('<MapContainer />', () => {
           getDeviceLocation={null}
           setDeviceLocation={() => {}}
           devices={[]}
+          shareLocationModalOpen={false}
+          openShareLocationModal={() => {}}
         />
       </MemoryRouter>
     );
