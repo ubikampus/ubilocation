@@ -138,6 +138,8 @@ export default class Deserializer {
   /**
    * Parse query string into regular javascript object.
    *
+   * TODO: move into another module
+   *
    * @param type Decoder for the deserialized object
    * @param queryString see https://en.wikipedia.org/wiki/Query_string
    */

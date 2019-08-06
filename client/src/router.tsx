@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Route,
+  Switch,
+  RouteComponentProps,
+} from 'react-router-dom';
 import styled from 'styled-components';
 import { Transition } from 'react-spring/renderprops';
 import AboutContainer from './aboutContainer';
@@ -17,6 +22,9 @@ import LoginPromptContainer from './admin/loginPromptContainer';
 import AuthApi, { Admin } from './admin/authApi';
 import ShareLocationModal from './map/shareLocationModal';
 import PublicShareModal from './map/publicShareModal';
+import Deserializer, {
+  MapLocationQueryDecoder,
+} from './location/mqttDeserialize';
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -32,6 +40,8 @@ const MainRow = styled.div`
 `;
 
 const Router = () => {
+  const parser = new Deserializer();
+
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [isAdminPanelOpen, openAdminPanel] = useState(false);
   const [getDeviceLocation, setDeviceLocation] = useState<Location | null>(
@@ -48,6 +58,14 @@ const Router = () => {
   const [publicShareOpen, openPublicShare] = useState(false);
   const [bluetoothName, setBluetoothName] = useState<string | null>(null);
 
+  const queryParams = parser.parseQuery(
+    MapLocationQueryDecoder,
+    document.location.search
+  );
+  const [nameModalOpen, setNameModalOpen] = useState(
+    queryParams && queryParams.lat ? true : false
+  );
+
   useEffect(() => {
     const loggedAdminUserJSON = window.localStorage.getItem(
       'loggedUbimapsAdmin'
@@ -61,7 +79,7 @@ const Router = () => {
 
   return (
     <BrowserRouter basename={apiRoot()}>
-      {shareLocationModalOpen && (
+      {shareLocationModalOpen && bluetoothName && (
         <ShareLocationModal
           isOpen={shareLocationModalOpen}
           onClose={() => openShareLocationModal(false)}
@@ -81,6 +99,8 @@ const Router = () => {
       )}
       <Fullscreen>
         <NavBar
+          setNameModalOpen={setNameModalOpen}
+          bluetoothName={bluetoothName}
           isAdmin={admin != null}
           openAdminPanel={openAdminPanel}
           isAdminPanelOpen={isAdminPanelOpen}
@@ -157,6 +177,8 @@ const Router = () => {
               render={props => (
                 <MapContainer
                   {...props}
+                  nameModalOpen={nameModalOpen}
+                  setNameModalOpen={setNameModalOpen}
                   bluetoothName={bluetoothName}
                   setBluetoothName={setBluetoothName}
                   roomReserved={roomReserved}

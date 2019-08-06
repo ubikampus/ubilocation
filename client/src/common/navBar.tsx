@@ -100,6 +100,8 @@ const SidepanelButton = styled.div`
 `;
 
 interface Props {
+  bluetoothName: string | null;
+  setNameModalOpen(a: boolean): void;
   openPublicShare(a: boolean): void;
   isAdmin: boolean;
   openAdminPanel(a: boolean): void;
@@ -112,7 +114,8 @@ interface Props {
 
 const NavBar = ({
   openPublicShare,
-  publicShareOpen,
+  setNameModalOpen,
+  bluetoothName,
   isAdmin,
   isAdminPanelOpen,
   openAdminPanel,
@@ -152,13 +155,23 @@ const NavBar = ({
         isOpen={shareLocationDropdownOpen}
         openDropdown={openShareLocationDropdown}
         onOpenShareLocationModal={() => {
-          if (pathname !== '/') {
-            history.push('/');
+          if (bluetoothName === null) {
+            setNameModalOpen(true);
+          } else {
+            if (pathname !== '/') {
+              history.push('/');
+            }
+            openShareLocationDropdown(false);
+            openShareLocationModal(true);
           }
-          openShareLocationDropdown(false);
-          openShareLocationModal(true);
         }}
-        onOpenPublishLocationModal={() => openPublicShare(true)}
+        onOpenPublishLocationModal={() => {
+          if (bluetoothName === null) {
+            setNameModalOpen(true);
+          } else {
+            openPublicShare(true);
+          }
+        }}
       />
     </div>
 

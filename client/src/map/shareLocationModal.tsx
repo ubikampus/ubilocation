@@ -61,7 +61,7 @@ const CopyIcon = styled(GoClippy)`
 interface Props {
   isOpen: boolean;
   onClose(): void;
-  currentBluetoothName: null | string;
+  currentBluetoothName: string;
 }
 
 const ShareLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
@@ -79,19 +79,12 @@ const ShareLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
             anybody who has the link will be able to track your real-time
             location.
           </ModalParagraph>
-          {currentBluetoothName ? (
-            <UrlRow>
-              <UrlInput value={shareLink} readOnly={true} />
-              <CopyButton data-clipboard-text={shareLink}>
-                <CopyIcon />
-              </CopyButton>
-            </UrlRow>
-          ) : (
-            <HighlightedParagraph>
-              Before we can generate a link for you, you need to enable location
-              tracking.
-            </HighlightedParagraph>
-          )}
+          <UrlRow>
+            <UrlInput value={shareLink} readOnly={true} />
+            <CopyButton data-clipboard-text={shareLink}>
+              <CopyIcon />
+            </CopyButton>
+          </UrlRow>
         </div>
       </FlexContainer>
     </Modal>

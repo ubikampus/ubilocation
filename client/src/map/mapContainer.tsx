@@ -36,6 +36,8 @@ const DEFAULT_TRACKED_ZOOM = 18;
 
 interface Props {
   bluetoothName: string | null;
+  nameModalOpen: boolean;
+  setNameModalOpen(a: boolean): void;
   setBluetoothName(a: string | null): void;
   isAdminPanelOpen: boolean;
   getDeviceLocation: Location | null;
@@ -53,6 +55,8 @@ const MapContainer = ({
   roomReserved,
   bluetoothName,
   setBluetoothName,
+  nameModalOpen,
+  setNameModalOpen,
 }: RouteComponentProps & Props) => {
   const parser = new Deserializer();
 
@@ -93,10 +97,6 @@ const MapContainer = ({
         ? DEFAULT_TRACKED_ZOOM
         : DEFAULT_NONTRACKED_ZOOM,
   });
-
-  const [nameModalOpen, setNameModalOpen] = useState(
-    queryParams && queryParams.lat ? true : false
-  );
 
   const mqttHost =
     queryParams && queryParams.host ? queryParams.host : MQTT_URL;

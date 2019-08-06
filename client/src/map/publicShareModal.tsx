@@ -8,7 +8,7 @@ import Modal, {
 } from '../common/modal';
 import { SignedMessage } from '../admin/authApi';
 import styled from 'styled-components';
-import Button from '../common/button';
+import Button, { PrimaryButton } from '../common/button';
 
 type Nickname = string;
 
@@ -82,9 +82,9 @@ const PublicShareModal = ({ isOpen, onClose, publishLocation }: Props) => {
       </MainRow>
 
       <ModalButtonRow>
-        <Button onClick={() => nickname && publishLocation(nickname)}>
+        <PrimaryButton onClick={() => nickname && publishLocation(nickname)}>
           Ok
-        </Button>
+        </PrimaryButton>
         <Button onClick={() => onClose()}>Cancel</Button>
       </ModalButtonRow>
     </Modal>
