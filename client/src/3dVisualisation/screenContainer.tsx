@@ -7,10 +7,10 @@ import { RouteComponentProps } from 'react-router';
 import { default as UbiMqtt } from 'ubimqtt';
 import { FakeMqttGenerator } from '../location/mqttConnection';
 import Deserializer, {
-  VizQueryDecoder,
   mqttMessageToBabylon,
 } from '../location/mqttDeserialize';
 import Screen3D from './screen3d';
+import { VizQueryDecoder, parseQuery } from '../common/urlParse';
 
 export const MockBusContainer = () => {
   const canvasRef: MutableRefObject<HTMLCanvasElement> = useRef(null) as any;
@@ -37,7 +37,7 @@ export const GenuineBusContainer = ({
   const canvasRef: MutableRefObject<HTMLCanvasElement> = useRef(null) as any;
   const parser = new Deserializer();
 
-  const params = parser.parseQuery(VizQueryDecoder, search);
+  const params = parseQuery(VizQueryDecoder, search);
 
   useEffect(() => {
     const screen = new Screen3D(canvasRef.current);

@@ -46,32 +46,6 @@ describe('MQTT parsing', () => {
   });
 });
 
-describe('query string parsing', () => {
-  it('should throw if required number is missing', () => {
-    const queryDecoder = t.type({
-      lat: t.number,
-      lon: t.number,
-    });
-
-    const parser = new Deserializer();
-
-    expect(() => {
-      parser.parseQuery(queryDecoder, '?lon=60.1');
-    }).toThrow();
-  });
-
-  it('should parse float in the query string', () => {
-    const decoder = t.type({
-      lat: t.number,
-    });
-
-    const parser = new Deserializer();
-
-    expect(parser.parseQuery(decoder, '?lat=50.5').lat).toBeCloseTo(50.5);
-    expect(parser.parseQuery(decoder, 'lat=50.1').lat).toBeCloseTo(50.1);
-  });
-});
-
 describe('geographic coordinate conversion', () => {
   it('should convert zero coordinates nearby to the origo', () => {
     const input = exampleMqttMessage(1);

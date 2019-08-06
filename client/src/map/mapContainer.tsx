@@ -9,10 +9,7 @@ import { MapboxButton } from '../common/button';
 import { MQTT_URL } from '../location/urlPromptContainer';
 import UbikampusMap from './ubikampusMap';
 import QrCodeModal from './qrCodeModal';
-import Deserializer, {
-  MapLocationQueryDecoder,
-  BeaconGeoLocation,
-} from '../location/mqttDeserialize';
+import { BeaconGeoLocation } from '../location/mqttDeserialize';
 import { useUbiMqtt, urlForLocation } from '../location/mqttConnection';
 import { RaspberryLocation } from '../admin/adminPanel';
 import {
@@ -25,6 +22,7 @@ import {
 } from './marker';
 import { Location } from '../common/typeUtil';
 import { Style } from 'mapbox-gl';
+import { MapLocationQueryDecoder, parseQuery } from '../common/urlParse';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 17;
@@ -58,12 +56,10 @@ const MapContainer = ({
   nameModalOpen,
   setNameModalOpen,
 }: RouteComponentProps & Props) => {
-  const parser = new Deserializer();
-
   const queryParams =
     location.search === ''
       ? null
-      : parser.parseQuery(MapLocationQueryDecoder, location.search);
+      : parseQuery(MapLocationQueryDecoder, location.search);
 
   const fromQuery = !!(queryParams && queryParams.lat && queryParams.lon);
   const initialCoords =
