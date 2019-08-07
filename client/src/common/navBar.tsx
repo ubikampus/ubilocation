@@ -124,75 +124,78 @@ const NavBar = ({
   shareLocationDropdownOpen,
   openShareLocationDropdown,
   openShareLocationModal,
-}: Props & RouteComponentProps) => (
-  <NavContainer>
-    <Items>
-      <Logo />
-      <LinkBox to="/" exact>
-        <Content>Map</Content>
-      </LinkBox>
-      <LinkBox to="/config">
-        <Content>Settings</Content>
-      </LinkBox>
-      <LinkBox to="/about">
-        <Content>About</Content>
-      </LinkBox>
-    </Items>
-    <Search placeholder="Search .." />
+}: Props & RouteComponentProps) => {
+  const withBluetoothName = (after: () => void) => () => {
+    if (bluetoothName === null) {
+      setNameModalOpen(true);
+    } else {
+      if (pathname !== '/') {
+        history.push('/');
+      }
 
-    <div>
-      <SidepanelButton
-        onClick={() => {
-          openShareLocationDropdown(!shareLocationDropdownOpen);
-        }}
-      >
-        <AdminChip>Location sharing</AdminChip>
-        <AdminCog>
-          <TiLocationArrow />
-        </AdminCog>
-      </SidepanelButton>
-      <ShareLocationDropdown
-        isOpen={shareLocationDropdownOpen}
-        openDropdown={openShareLocationDropdown}
-        onOpenShareLocationModal={() => {
-          if (bluetoothName === null) {
-            setNameModalOpen(true);
-          } else {
-            if (pathname !== '/') {
-              history.push('/');
-            }
+      after();
+    }
+  };
+
+  return (
+    <NavContainer>
+      <Items>
+        <Logo />
+        <LinkBox to="/" exact>
+          <Content>Map</Content>
+        </LinkBox>
+        <LinkBox to="/config">
+          <Content>Settings</Content>
+        </LinkBox>
+        <LinkBox to="/about">
+          <Content>About</Content>
+        </LinkBox>
+      </Items>
+      <Search placeholder="Search .." />
+
+      <div>
+        <SidepanelButton
+          onClick={() => {
+            openShareLocationDropdown(!shareLocationDropdownOpen);
+          }}
+        >
+          <AdminChip>Location sharing</AdminChip>
+          <AdminCog>
+            <TiLocationArrow />
+          </AdminCog>
+        </SidepanelButton>
+        <ShareLocationDropdown
+          isOpen={shareLocationDropdownOpen}
+          openDropdown={openShareLocationDropdown}
+          onOpenShareLocationModal={withBluetoothName(() => {
             openShareLocationDropdown(false);
             openShareLocationModal(true);
-          }
-        }}
-        onOpenPublishLocationModal={() => {
-          if (bluetoothName === null) {
-            setNameModalOpen(true);
-          } else {
+          })}
+          onOpenPublishLocationModal={withBluetoothName(() => {
             openPublicShare(true);
-          }
-        }}
-      />
-    </div>
+          })}
+        />
+      </div>
 
-    {isAdmin && (
-      <SidepanelButton
-        onClick={() => {
-          if (pathname !== '/') {
-            history.push('/');
-            openAdminPanel(true);
-          } else {
-            openAdminPanel(!isAdminPanelOpen);
-          }
-        }}
-      >
-        <AdminChip>Admin panel</AdminChip>
-        <AdminCog>
-          <TiCog />
-        </AdminCog>
-      </SidepanelButton>
-    )}
-  </NavContainer>
-);
+      {isAdmin && (
+        <SidepanelButton
+          onClick={() => {
+            if (pathname !== '/') {
+              history.push('/');
+              openAdminPanel(true);
+            } else {
+              openAdminPanel(!isAdminPanelOpen);
+            }
+          }}
+        >
+          <AdminChip>Admin panel</AdminChip>
+          <AdminCog>
+            <TiCog />
+          </AdminCog>
+        </SidepanelButton>
+      )}
+    </NavContainer>
+  );
+};
 
 export default withRouter(NavBar);
