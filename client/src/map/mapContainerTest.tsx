@@ -22,10 +22,13 @@ describe('<MapContainer />', () => {
     mount(
       <MemoryRouter initialEntries={['/map?lat=1&lon=2&host=abc&topic=aihe']}>
         <MapContainer
+          beacons={[]}
+          pinType="none"
+          lastKnownPosition={null}
+          staticLocations={[]}
+          setPinType={() => {}}
           isAdminPanelOpen={false}
           bluetoothName="phone-1234"
-          setBluetoothName={() => {}}
-          nameModalOpen={false}
           setNameModalOpen={() => {}}
           roomReserved={false}
           getDeviceLocation={null}
