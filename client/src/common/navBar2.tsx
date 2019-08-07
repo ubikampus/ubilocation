@@ -6,6 +6,7 @@ import btlogo from '../../asset/bluetooth_logo.svg';
 import { HamburgerSqueeze } from 'react-animated-burgers';
 import { useState } from 'react';
 
+/** Container */
 const Navigation = styled.header`
   z-index: 1000;
 
@@ -16,8 +17,11 @@ const Navigation = styled.header`
 
   background-color: #4287f5;
   font-size: 0.8125rem;
+  font-weight: 700;
   font-family: 'Comfortaa', Helvetica, sans-serif;
 `;
+
+/** Upper nav */
 
 const TopNav = styled.nav`
   height: 48px;
@@ -29,13 +33,15 @@ const TopNav = styled.nav`
   color: #ffffff;
 `;
 
+/** Left menu */
+
 const TopNavLeftMenu = styled.ul`
   height: inherit;
   display: inherit;
   align-items: center;
 `;
 
-const TopNavLeftMenuLink = styled(NavLink)`
+const LeftMenuItem = styled(NavLink)`
   border-top: 3px solid transparent;
   border-bottom: 3px solid transparent;
 
@@ -73,27 +79,71 @@ const LinkText = styled.li`
   }
 `;
 
+/** Right menu */
+
 const TopRightMenu = styled.ul`
   display: inherit;
 
-  background-color: teal;
-
-  @media (max-width: 550px) {
+  @media (max-width: 575px) {
     display: none;
   }
 `;
 
-const RightMenuItem = styled.li``;
+const RightMenuItem = styled.li`
+  cursor: pointer;
+  padding: 0 10px 0 10px;
+  display: inherit;
+  align-items: center;
+
+  font-size: 12px;
+`;
+
+const SearchBar = styled.input`
+  border: none;
+  padding: 0.5em;
+  text-align: left;
+  border-radius: 20px;
+
+  background: #68a0fc;
+
+  ::placeholder {
+    color: #ffffff;
+    padding-left: 1em;
+    padding-right: 1em;
+    font-size: 12px;
+  }
+`;
+
+const RightMenuItemText = styled.div`
+  white-space: pre;
+  margin-right: 5px;
+
+  /* Collapse to an icon on medium screens */
+  @media (max-width: 750px) {
+    font-size: 0px !important;
+  }
+`;
+
+const Icon = styled.div`
+  width: 30px;
+
+  & > svg {
+    height: 100%;
+    width: 100%;
+  }
+`;
 
 const Button = styled.button`
   display: none;
 
   background-color: lightcoral;
 
-  @media (max-width: 550px) {
+  @media (max-width: 575px) {
     display: inline-block;
   }
 `;
+
+/** Mobile */
 
 const Mobile = styled.nav`
   height: 48px;
@@ -106,6 +156,15 @@ const MobileMenu = styled.ul`
 
   background-color: teal;
 `;
+
+const MobileMenuItem = styled.li`
+  display: inherit;
+  align-items: center;
+
+  font-size: 12px;
+`;
+
+/** End */
 
 interface Props {
   isAdmin: boolean;
@@ -126,27 +185,41 @@ const NavBar2 = ({
     <Navigation>
       <TopNav>
         <TopNavLeftMenu>
-          <TopNavLeftMenuLink to="/" exact>
+          <LeftMenuItem to="/" exact>
             <Logo />
-          </TopNavLeftMenuLink>
+          </LeftMenuItem>
 
-          <TopNavLeftMenuLink to="/" exact>
+          <LeftMenuItem to="/" exact>
             <LinkText>Map</LinkText>
-          </TopNavLeftMenuLink>
+          </LeftMenuItem>
 
-          <TopNavLeftMenuLink to="/config">
+          <LeftMenuItem to="/config">
             <LinkText>Config</LinkText>
-          </TopNavLeftMenuLink>
+          </LeftMenuItem>
 
-          <TopNavLeftMenuLink to="/about">
+          <LeftMenuItem to="/about">
             <LinkText>About</LinkText>
-          </TopNavLeftMenuLink>
-
+          </LeftMenuItem>
         </TopNavLeftMenu>
 
         <TopRightMenu>
-          <RightMenuItem>Item 1</RightMenuItem>
-          <RightMenuItem>Item 2</RightMenuItem>
+          <RightMenuItem>
+            <SearchBar placeholder="Search .." />
+          </RightMenuItem>
+
+          <RightMenuItem>
+            <RightMenuItemText>Location Sharing</RightMenuItemText>
+            <Icon>
+                <TiCog />
+            </Icon>
+          </RightMenuItem>
+
+          <RightMenuItem>
+              <RightMenuItemText>Admin Panel</RightMenuItemText>
+              <Icon>
+                <TiCog />
+              </Icon>
+          </RightMenuItem>
         </TopRightMenu>
 
         <Button>///</Button>
@@ -155,8 +228,8 @@ const NavBar2 = ({
       <Mobile>
         MobileNav
         <MobileMenu>
-          <RightMenuItem>Item 1</RightMenuItem>
-          <RightMenuItem>Item 2</RightMenuItem>
+          <MobileMenuItem>Item 1</MobileMenuItem>
+          <MobileMenuItem>Item 2</MobileMenuItem>
         </MobileMenu>
       </Mobile>
     </Navigation>
