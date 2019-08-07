@@ -6,61 +6,104 @@ import btlogo from '../../asset/bluetooth_logo.svg';
 import { HamburgerSqueeze } from 'react-animated-burgers';
 import { useState } from 'react';
 
-const Container = styled.header`
+const Navigation = styled.header`
+  z-index: 1000;
+
   width: 100%;
   height: auto;
   display: flex;
-  background-color: lightyellow;
   flex-direction: column;
+
+  background-color: #4287f5;
+  font-size: 0.8125rem;
+  font-family: 'Comfortaa', Helvetica, sans-serif;
 `;
 
-const DesktopNavbar = styled.nav`
-  align-items: center;
-  justify-content: flex-start;
-  display: inherit;
+const TopNav = styled.nav`
   height: 48px;
-  background-color: lightgreen;
+  margin: 0 1em 0 1em;
+  display: inherit;
+  align-items: center;
+  justify-content: space-between;
+
+  color: #ffffff;
 `;
 
-const Logo = styled.div``;
-
-const LeftMenu = styled.ul`
+const TopNavLeftMenu = styled.ul`
+  height: inherit;
   display: inherit;
-
-  justify-content: center;
-  align-items: flex-start;
-  background-color: pink;
+  align-items: center;
 `;
 
-const LeftItem = styled.li``;
+const TopNavLeftMenuLink = styled(NavLink)`
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
 
-const RightMenu = styled.ul`
+  color: #bed4f7;
+
+  &.active {
+    > li {
+      color: #ffffff;
+      border-bottom: 3px solid #ffffff;
+    }
+  }
+`;
+
+const Logo = styled.div`
+  padding: 10px;
+  height: 25px;
+  width: 25px;
+
+  background-image: url("${btlogo}");
+`;
+
+const LinkText = styled.li`
+  padding: 15px;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+
+  color: #bed4f7;
+
+  &:active {
+    color: #ffffff;
+    border-bottom: 3px solid #ffffff;
+  }
+  &:hover {
+    color: #ffffff;
+  }
+`;
+
+const TopRightMenu = styled.ul`
   display: inherit;
-  background-color: salmon;
+
+  background-color: teal;
 
   @media (max-width: 550px) {
     display: none;
   }
 `;
 
-const RightItem = styled.li``;
+const RightMenuItem = styled.li``;
 
 const Button = styled.button`
-  background-color: lightcoral;
   display: none;
+
+  background-color: lightcoral;
 
   @media (max-width: 550px) {
     display: inline-block;
   }
 `;
 
-const MobileNavbar = styled.nav`
+const Mobile = styled.nav`
   height: 48px;
+
   background-color: lightblue;
 `;
 
 const MobileMenu = styled.ul`
   display: inherit;
+
   background-color: teal;
 `;
 
@@ -80,32 +123,43 @@ const NavBar2 = ({
 }: Props & RouteComponentProps) => {
   const [isActive, setActive] = useState(false);
   return (
-    <Container>
-      <DesktopNavbar>
-        <Logo>Logo</Logo>
+    <Navigation>
+      <TopNav>
+        <TopNavLeftMenu>
+          <TopNavLeftMenuLink to="/" exact>
+            <Logo />
+          </TopNavLeftMenuLink>
 
-        <LeftMenu>
-          <LeftItem>Item 1</LeftItem>
-          <LeftItem>Item 2</LeftItem>
-        </LeftMenu>
+          <TopNavLeftMenuLink to="/" exact>
+            <LinkText>Map</LinkText>
+          </TopNavLeftMenuLink>
 
-        <RightMenu>
-          <RightItem>Item 1</RightItem>
-          <RightItem>Item 2</RightItem>
-        </RightMenu>
+          <TopNavLeftMenuLink to="/config">
+            <LinkText>Config</LinkText>
+          </TopNavLeftMenuLink>
+
+          <TopNavLeftMenuLink to="/about">
+            <LinkText>About</LinkText>
+          </TopNavLeftMenuLink>
+
+        </TopNavLeftMenu>
+
+        <TopRightMenu>
+          <RightMenuItem>Item 1</RightMenuItem>
+          <RightMenuItem>Item 2</RightMenuItem>
+        </TopRightMenu>
 
         <Button>///</Button>
-      </DesktopNavbar>
+      </TopNav>
 
-      <MobileNavbar>
+      <Mobile>
         MobileNav
-         <MobileMenu>
-          <RightItem>Item 1</RightItem>
-          <RightItem>Item 2</RightItem>
+        <MobileMenu>
+          <RightMenuItem>Item 1</RightMenuItem>
+          <RightMenuItem>Item 2</RightMenuItem>
         </MobileMenu>
-      </MobileNavbar>
-
-    </Container>
+      </Mobile>
+    </Navigation>
   );
 };
 
