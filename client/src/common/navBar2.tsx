@@ -1,5 +1,6 @@
 import React from 'react';
-import { TiCog } from 'react-icons/ti';
+import { TiCog, TiLocationArrow, TiZoom } from 'react-icons/ti';
+import { IoIosSearch } from "react-icons/io";
 import { NavLink, RouteComponentProps, withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import btlogo from '../../asset/bluetooth_logo.svg';
@@ -133,35 +134,45 @@ const Icon = styled.div`
   }
 `;
 
-const Button = styled.button`
+/** Mobile */
+
+const Hamburger = styled.div`
+  width: 100%;
+  display: inherit;
+  justify-content: flex-end;
+
+  @media (min-width: 575px) {
   display: none;
-
-  background-color: lightcoral;
-
-  @media (max-width: 575px) {
-    display: inline-block;
   }
 `;
 
-/** Mobile */
-
 const Mobile = styled.nav`
-  height: 48px;
-
-  background-color: lightblue;
-`;
-
-const MobileMenu = styled.ul`
-  display: inherit;
-
-  background-color: teal;
-`;
-
-const MobileMenuItem = styled.li`
+  height: auto;
   display: inherit;
   align-items: center;
 
-  font-size: 12px;
+  color: #ffffff;
+  background-color: salmon;
+`;
+
+const MobileMenu = styled.ul`
+  width: 100%;
+  display: inherit;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
+const MobileMenuItem = styled.li`
+  width: 100%;
+  display: inherit;
+  align-items: center;
+
+  &:hover {
+    background-color: pink;
+  }
+  &:active {
+    background-color: pink;
+  }
 `;
 
 /** End */
@@ -193,10 +204,6 @@ const NavBar2 = ({
             <LinkText>Map</LinkText>
           </LeftMenuItem>
 
-          <LeftMenuItem to="/config">
-            <LinkText>Config</LinkText>
-          </LeftMenuItem>
-
           <LeftMenuItem to="/about">
             <LinkText>About</LinkText>
           </LeftMenuItem>
@@ -208,28 +215,43 @@ const NavBar2 = ({
           </RightMenuItem>
 
           <RightMenuItem>
+            <Icon><TiLocationArrow /></Icon>
             <RightMenuItemText>Location Sharing</RightMenuItemText>
-            <Icon>
-                <TiCog />
-            </Icon>
           </RightMenuItem>
 
           <RightMenuItem>
-              <RightMenuItemText>Admin Panel</RightMenuItemText>
-              <Icon>
-                <TiCog />
-              </Icon>
+            <Icon><TiCog /></Icon>
+            <RightMenuItemText>Admin Panel</RightMenuItemText>
           </RightMenuItem>
         </TopRightMenu>
 
-        <Button>///</Button>
+        <Hamburger>
+        <HamburgerSqueeze 
+          isActive={isActive} 
+          toggleButton={() => setActive(!isActive)}
+          buttonWidth={30} 
+          buttonColor="#4287f5" 
+          barColor="white"
+        />
+      </Hamburger>
       </TopNav>
 
       <Mobile>
-        MobileNav
         <MobileMenu>
-          <MobileMenuItem>Item 1</MobileMenuItem>
-          <MobileMenuItem>Item 2</MobileMenuItem>
+        <MobileMenuItem>
+          <Icon><IoIosSearch /></Icon>
+            Search
+          </MobileMenuItem>
+
+          <MobileMenuItem>
+            <Icon><TiLocationArrow /></Icon>
+            Location Sharing
+          </MobileMenuItem>
+          
+          <MobileMenuItem>
+            <Icon><TiCog /></Icon>
+            Admin Panel
+          </MobileMenuItem>
         </MobileMenu>
       </Mobile>
     </Navigation>
