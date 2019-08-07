@@ -38,14 +38,14 @@ export const ModalParagraph = styled.p`
 `;
 
 export const ModalButtonRow = styled.div`
-  margin-top: 25px;
+  margin-top: 5px;
 `;
 
 export const ModalHeader = styled.h3`
   margin-top: 0;
   font-size: 18px;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
 
 const UbiLogoImg = styled.img`
