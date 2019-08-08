@@ -2,9 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import Clipboard from 'react-clipboard.js';
 import queryString from 'query-string';
-import { GoClippy, GoBroadcast } from 'react-icons/go';
-import { FaBroadcastTower } from 'react-icons/fa';
-import Modal, { ModalHeader, ModalParagraph } from '../common/modal';
+import { GoClippy } from 'react-icons/go';
+import Modal, { ModalHeader, ModalParagraph, UbiLogo } from '../common/modal';
 
 /**
  * TODO: This URL should probably be an environment variable
@@ -14,17 +13,6 @@ const baseUrl = 'http://localhost:8080';
 const FlexContainer = styled.div`
   display: flex;
   flex-direction: row;
-`;
-
-const BroadcastdIcon = styled.div`
-  height: auto;
-  width: 100px;
-  padding: 30px 15px 0 0;
-
-  & > svg {
-    height: 100%;
-    width: 100%;
-  }
 `;
 
 const ModifiedModalHeader = styled(ModalHeader)`
@@ -73,7 +61,7 @@ const CopyIcon = styled(GoClippy)`
 interface Props {
   isOpen: boolean;
   onClose(): void;
-  currentBluetoothName: null | string;
+  currentBluetoothName: string;
 }
 
 const ShareLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
@@ -83,11 +71,7 @@ const ShareLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose}>
       <FlexContainer>
-        <div>
-          <BroadcastdIcon>
-            <GoBroadcast />
-          </BroadcastdIcon>
-        </div>
+        <UbiLogo />
         <div>
           <ModifiedModalHeader>Share real-time location</ModifiedModalHeader>
           <ModalParagraph>
@@ -95,19 +79,12 @@ const ShareLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
             anybody who has the link will be able to track your real-time
             location.
           </ModalParagraph>
-          {currentBluetoothName ? (
-            <UrlRow>
-              <UrlInput value={shareLink} readOnly={true} />
-              <CopyButton data-clipboard-text={shareLink}>
-                <CopyIcon />
-              </CopyButton>
-            </UrlRow>
-          ) : (
-            <HighlightedParagraph>
-              Before we can generate a link for you, you need to enable location
-              tracking.
-            </HighlightedParagraph>
-          )}
+          <UrlRow>
+            <UrlInput value={shareLink} readOnly={true} />
+            <CopyButton data-clipboard-text={shareLink}>
+              <CopyIcon />
+            </CopyButton>
+          </UrlRow>
         </div>
       </FlexContainer>
     </Modal>

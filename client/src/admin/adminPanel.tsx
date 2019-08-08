@@ -2,24 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import { animated } from 'react-spring';
 
-import Button from '../common/button';
+import Button, { PrimaryButton, SecondaryButton } from '../common/button';
 import { Location } from '../common/typeUtil';
-
-const PrimaryButton = styled(Button)`
-  background: #4287f5;
-  color: white;
-
-  &&:hover {
-    color: #eee;
-  }
-`;
 
 const CancelButton = styled(Button)`
   background: white;
-`;
-
-const SecondaryButton = styled(Button)`
-  background: #f3f6f7;
 `;
 
 export interface RaspberryLocation {

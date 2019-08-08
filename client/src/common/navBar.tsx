@@ -100,15 +100,22 @@ const SidepanelButton = styled.div`
 `;
 
 interface Props {
+  bluetoothName: string | null;
+  setNameModalOpen(a: boolean): void;
+  openPublicShare(a: boolean): void;
   isAdmin: boolean;
   openAdminPanel(a: boolean): void;
   isAdminPanelOpen: boolean;
+  publicShareOpen: boolean;
   shareLocationDropdownOpen: boolean;
   openShareLocationDropdown(a: boolean): void;
   openShareLocationModal(a: boolean): void;
 }
 
 const NavBar = ({
+  openPublicShare,
+  setNameModalOpen,
+  bluetoothName,
   isAdmin,
   isAdminPanelOpen,
   openAdminPanel,
@@ -117,65 +124,78 @@ const NavBar = ({
   shareLocationDropdownOpen,
   openShareLocationDropdown,
   openShareLocationModal,
-}: Props & RouteComponentProps) => (
-  <NavContainer>
-    <Items>
-      <Logo />
-      <LinkBox to="/" exact>
-        <Content>Map</Content>
-      </LinkBox>
-      <LinkBox to="/config">
-        <Content>Settings</Content>
-      </LinkBox>
-      <LinkBox to="/about">
-        <Content>About</Content>
-      </LinkBox>
-    </Items>
-    <Search placeholder="Search .." />
+}: Props & RouteComponentProps) => {
+  const withBluetoothName = (after: () => void) => () => {
+    if (pathname !== '/') {
+      history.push('/');
+    }
 
-    <div>
-      <SidepanelButton
-        onClick={() => {
-          openShareLocationDropdown(!shareLocationDropdownOpen);
-        }}
-      >
-        <AdminChip>Location sharing</AdminChip>
-        <AdminCog>
-          <TiLocationArrow />
-        </AdminCog>
-      </SidepanelButton>
-      <ShareLocationDropdown
-        isOpen={shareLocationDropdownOpen}
-        openDropdown={openShareLocationDropdown}
-        onOpenShareLocationModal={() => {
-          if (pathname !== '/') {
-            history.push('/');
-          }
-          openShareLocationDropdown(false);
-          openShareLocationModal(true);
-        }}
-        onOpenPublishLocationModal={() => {}}
-      />
-    </div>
+    if (bluetoothName === null) {
+      setNameModalOpen(true);
+    } else {
+      after();
+    }
+  };
 
-    {isAdmin && (
-      <SidepanelButton
-        onClick={() => {
-          if (pathname !== '/') {
-            history.push('/');
-            openAdminPanel(true);
-          } else {
-            openAdminPanel(!isAdminPanelOpen);
-          }
-        }}
-      >
-        <AdminChip>Admin panel</AdminChip>
-        <AdminCog>
-          <TiCog />
-        </AdminCog>
-      </SidepanelButton>
-    )}
-  </NavContainer>
-);
+  return (
+    <NavContainer>
+      <Items>
+        <Logo />
+        <LinkBox to="/" exact>
+          <Content>Map</Content>
+        </LinkBox>
+        <LinkBox to="/config">
+          <Content>Settings</Content>
+        </LinkBox>
+        <LinkBox to="/about">
+          <Content>About</Content>
+        </LinkBox>
+      </Items>
+      <Search placeholder="Search .." />
+
+      <div>
+        <SidepanelButton
+          onClick={() => {
+            openShareLocationDropdown(!shareLocationDropdownOpen);
+          }}
+        >
+          <AdminChip>Location sharing</AdminChip>
+          <AdminCog>
+            <TiLocationArrow />
+          </AdminCog>
+        </SidepanelButton>
+        <ShareLocationDropdown
+          isOpen={shareLocationDropdownOpen}
+          openDropdown={openShareLocationDropdown}
+          onOpenShareLocationModal={withBluetoothName(() => {
+            openShareLocationDropdown(false);
+            openShareLocationModal(true);
+          })}
+          onOpenPublishLocationModal={withBluetoothName(() => {
+            openPublicShare(true);
+          })}
+        />
+      </div>
+
+      {isAdmin && (
+        <SidepanelButton
+          onClick={() => {
+            if (pathname !== '/') {
+              history.push('/');
+              openAdminPanel(true);
+            } else {
+              openAdminPanel(!isAdminPanelOpen);
+            }
+          }}
+        >
+          <AdminChip>Admin panel</AdminChip>
+          <AdminCog>
+            <TiCog />
+          </AdminCog>
+        </SidepanelButton>
+      )}
+    </NavContainer>
+  );
+};
 
 export default withRouter(NavBar);

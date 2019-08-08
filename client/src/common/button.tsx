@@ -22,6 +22,19 @@ const Button = styled.button`
   }
 `;
 
+export const SecondaryButton = styled(Button)`
+  background: #f3f6f7;
+`;
+
+export const PrimaryButton = styled(Button)`
+  background: #4287f5;
+  color: white;
+
+  &&:hover {
+    color: #eee;
+  }
+`;
+
 export default Button;
 
 export const MapboxButton = styled.div`
