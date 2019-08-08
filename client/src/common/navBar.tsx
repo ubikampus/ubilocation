@@ -126,13 +126,13 @@ const NavBar = ({
   openShareLocationModal,
 }: Props & RouteComponentProps) => {
   const withBluetoothName = (after: () => void) => () => {
+    if (pathname !== '/') {
+      history.push('/');
+    }
+
     if (bluetoothName === null) {
       setNameModalOpen(true);
     } else {
-      if (pathname !== '/') {
-        history.push('/');
-      }
-
       after();
     }
   };
