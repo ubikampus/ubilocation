@@ -37,7 +37,7 @@ const Navigation = styled.nav`
 /** Desktop navigation */
 const TopNav = styled.nav`
   height: 48px;
-  margin: 0 1em 0 1em;
+  margin-right: 1em;
   display: inherit;
   align-items: center;
   justify-content: space-between;
@@ -67,14 +67,15 @@ const LeftMenuItem = styled(NavLink)`
 `;
 
 const Logo = styled.div`
-  padding: 10px;
   height: 25px;
   width: 25px;
+  padding: 10px 15px 10px 10px;
+  margin: 0 10px 0 10px;
 
   background-image: url("${btlogo}");
 `;
 
-const LinkText = styled.li`
+const LeftMenuText = styled.li`
   padding: 15px;
   border-top: 3px solid transparent;
   border-bottom: 3px solid transparent;
@@ -100,7 +101,7 @@ const TopRightMenu = styled.ul`
 `;
 
 const RightMenuItem = styled.li`
-  padding: 0 10px 0 10px;
+  padding: 10px;
   display: inherit;
   align-items: center;
 
@@ -124,8 +125,8 @@ const SearchBar = styled.input`
   }
 `;
 
-const RightMenuItemText = styled.div`
-  margin-right: 5px;
+const RightMenuText = styled.div`
+  /*margin-right: 5px;*/
 
   /* Collapse to an icon on medium screens */
   @media (max-width: 750px) {
@@ -194,8 +195,7 @@ const MobileMenuItem = styled.li`
   }
 `;
 
-const MobileMenuText = styled.div`
-`;
+const MobileMenuText = styled.div``;
 
 const MobileSearch = styled.input`
   border: none;
@@ -203,7 +203,7 @@ const MobileSearch = styled.input`
   font: inherit;
   color: inherit;
   background: inherit;
-  
+
   ::placeholder {
     color: #ffffff;
   }
@@ -232,11 +232,11 @@ const NavBar2 = ({
           </LeftMenuItem>
 
           <LeftMenuItem to="/" exact>
-            <LinkText>Map</LinkText>
+            <LeftMenuText>Map</LeftMenuText>
           </LeftMenuItem>
 
           <LeftMenuItem to="/about">
-            <LinkText>About</LinkText>
+            <LeftMenuText>About</LeftMenuText>
           </LeftMenuItem>
         </TopNavLeftMenu>
 
@@ -249,7 +249,7 @@ const NavBar2 = ({
             <Icon>
               <TiLocationArrow />
             </Icon>
-            <RightMenuItemText>Location Sharing</RightMenuItemText>
+            <RightMenuText>Location Sharing</RightMenuText>
           </RightMenuItem>
 
           {isAdmin && (
@@ -266,7 +266,7 @@ const NavBar2 = ({
               <Icon>
                 <TiCog />
               </Icon>
-              <RightMenuItemText>Admin Panel</RightMenuItemText>
+              <RightMenuText>Admin Panel</RightMenuText>
             </RightMenuItem>
           )}
         </TopRightMenu>
