@@ -3,6 +3,7 @@ import { TiCog, TiLocationArrow, TiZoom } from 'react-icons/ti';
 import { IoIosSearch } from 'react-icons/io';
 import { NavLink, RouteComponentProps, withRouter } from 'react-router-dom';
 import styled from 'styled-components';
+import { Transition } from 'react-spring/renderprops';
 import btlogo from '../../asset/bluetooth_logo.svg';
 import { HamburgerSqueeze } from 'react-animated-burgers';
 import { useState } from 'react';
@@ -28,8 +29,7 @@ const Navigation = styled.nav`
   font-family: 'Comfortaa', Helvetica, sans-serif;
 `;
 
-/** Upper nav */
-
+/** Desktop navigation */
 const TopNav = styled.nav`
   height: 48px;
   margin: 0 1em 0 1em;
@@ -41,7 +41,6 @@ const TopNav = styled.nav`
 `;
 
 /** Left menu */
-
 const TopNavLeftMenu = styled.ul`
   height: inherit;
   display: inherit;
@@ -87,7 +86,6 @@ const LinkText = styled.li`
 `;
 
 /** Right menu */
-
 const TopRightMenu = styled.ul`
   display: inherit;
 
@@ -141,7 +139,6 @@ const Icon = styled.div`
 `;
 
 /** Mobile */
-
 const Hamburger = styled.div`
   width: 100%;
   display: inherit;
@@ -156,7 +153,9 @@ const Mobile = styled.nav<{ active: boolean }>`
   height: auto;
   display: inherit;
   align-items: center;
-  display: ${props => (props.active ? 'block' : 'none')};
+  display: ${props => (props.active ? 'inherit' : 'none')};
+  -webkit-transition: width 2s, height 4s; /* For Safari 3.1 to 6.0 */
+  transition: width 2s, height 4s;
 
   color: #ffffff;
   background-color: salmon;
@@ -177,6 +176,7 @@ const MobileMenuItem = styled.li`
   width: 100%;
   display: inherit;
   align-items: center;
+  cursor: pointer;
 
   &:hover {
     background-color: pink;
@@ -190,8 +190,6 @@ const MobileMenuText = styled.div`
   white-space: pre;
   padding: 5px;
 `;
-
-/** End */
 
 interface Props {
   isAdmin: boolean;
@@ -236,12 +234,23 @@ const NavBar2 = ({
             <RightMenuItemText>Location Sharing</RightMenuItemText>
           </RightMenuItem>
 
-          <RightMenuItem>
-            <Icon>
-              <TiCog />
-            </Icon>
-            <RightMenuItemText>Admin Panel</RightMenuItemText>
-          </RightMenuItem>
+          {isAdmin && (
+            <RightMenuItem
+              onClick={() => {
+                if (pathname !== '/') {
+                  history.push('/');
+                  openAdminPanel(true);
+                } else {
+                  openAdminPanel(!isAdminPanelOpen);
+                }
+              }}
+            >
+              <Icon>
+                <TiCog />
+              </Icon>
+              <RightMenuItemText>Admin Panel</RightMenuItemText>
+            </RightMenuItem>
+          )}
         </TopRightMenu>
 
         <Hamburger>
@@ -271,12 +280,23 @@ const NavBar2 = ({
             <MobileMenuText>Location Sharing</MobileMenuText>
           </MobileMenuItem>
 
-          <MobileMenuItem>
-            <Icon>
-              <TiCog />
-            </Icon>
-            <MobileMenuText>Admin Panel</MobileMenuText>
-          </MobileMenuItem>
+          {isAdmin && (
+            <MobileMenuItem
+              onClick={() => {
+                if (pathname !== '/') {
+                  history.push('/');
+                  openAdminPanel(true);
+                } else {
+                  openAdminPanel(!isAdminPanelOpen);
+                }
+              }}
+            >
+              <Icon>
+                <TiCog />
+              </Icon>
+              <MobileMenuText>Admin Panel</MobileMenuText>
+            </MobileMenuItem>
+          )}
         </MobileMenu>
       </Mobile>
     </Navigation>
