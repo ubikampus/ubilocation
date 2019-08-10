@@ -22,11 +22,16 @@ const Navigation = styled.nav`
   height: auto;
   display: flex;
   flex-direction: column;
+  white-space: pre;
 
-  background-color: #4287f5;
   font-size: 0.8125rem;
   font-weight: 700;
   font-family: 'Comfortaa', Helvetica, sans-serif;
+  background-color: #4287f5;
+
+  & > nav > ul > li {
+    cursor: pointer;
+  }
 `;
 
 /** Desktop navigation */
@@ -95,7 +100,6 @@ const TopRightMenu = styled.ul`
 `;
 
 const RightMenuItem = styled.li`
-  cursor: pointer;
   padding: 0 10px 0 10px;
   display: inherit;
   align-items: center;
@@ -109,6 +113,7 @@ const SearchBar = styled.input`
   text-align: left;
   border-radius: 20px;
 
+  color: inherit;
   background: #68a0fc;
 
   ::placeholder {
@@ -120,7 +125,6 @@ const SearchBar = styled.input`
 `;
 
 const RightMenuItemText = styled.div`
-  white-space: pre;
   margin-right: 5px;
 
   /* Collapse to an icon on medium screens */
@@ -139,7 +143,7 @@ const Icon = styled.div`
 `;
 
 /** Mobile */
-const Hamburger = styled.div`
+const HamburgerMenu = styled.div`
   width: 100%;
   display: inherit;
   justify-content: flex-end;
@@ -176,19 +180,33 @@ const MobileMenuItem = styled.li`
   width: 100%;
   display: inherit;
   align-items: center;
-  cursor: pointer;
+  padding: 5px;
 
   &:hover {
-    background-color: pink;
+    background-color: #ffa9a9;
   }
   &:active {
-    background-color: pink;
+    background-color: #ffa9a9;
+  }
+  & > div > svg {
+    height: 80%;
+    width: 80%;
   }
 `;
 
 const MobileMenuText = styled.div`
-  white-space: pre;
-  padding: 5px;
+`;
+
+const MobileSearch = styled.input`
+  border: none;
+
+  font: inherit;
+  color: inherit;
+  background: inherit;
+  
+  ::placeholder {
+    color: #ffffff;
+  }
 `;
 
 interface Props {
@@ -253,7 +271,7 @@ const NavBar2 = ({
           )}
         </TopRightMenu>
 
-        <Hamburger>
+        <HamburgerMenu>
           <HamburgerSqueeze
             isActive={isActive}
             toggleButton={() => setActive(!isActive)}
@@ -261,7 +279,7 @@ const NavBar2 = ({
             buttonColor="#4287f5"
             barColor="white"
           />
-        </Hamburger>
+        </HamburgerMenu>
       </TopNav>
 
       <Mobile active={isActive}>
@@ -270,7 +288,7 @@ const NavBar2 = ({
             <Icon>
               <IoIosSearch />
             </Icon>
-            <MobileMenuText>Search</MobileMenuText>
+            <MobileSearch placeholder="Search .." />
           </MobileMenuItem>
 
           <MobileMenuItem>
