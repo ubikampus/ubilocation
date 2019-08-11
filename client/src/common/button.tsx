@@ -3,13 +3,13 @@ import styled from 'styled-components';
 const Button = styled.button`
   border: none;
   margin: 5px;
-  border-radius: 5px;
-  padding: 10px 25px;
-  color: #595959;
+  border-radius: 100px;
+  padding: 7px 25px;
+  color: white;
 
   cursor: pointer;
   font-weight: 700;
-  background-color: #e9e9e9;
+  background-color: #4287f5;
   font-family: inherit;
 
   &[disabled] {
@@ -18,12 +18,18 @@ const Button = styled.button`
   }
 
   &:not([disabled]):hover {
-    color: #0c0c0c;
+    color: #f0f0f0;
   }
 `;
 
 export const SecondaryButton = styled(Button)`
-  background: #f3f6f7;
+  background: white;
+  color: #4287f5;
+  border: 1px solid #4287f5;
+
+  &:not([disabled]):hover {
+    color: #72a0ea;
+  }
 `;
 
 export const PrimaryButton = styled(Button)`

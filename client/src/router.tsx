@@ -38,6 +38,27 @@ const MainRow = styled.div`
   height: 100%;
 `;
 
+export const isTrackingPromptOpen = (
+  bluetoothName: string | null,
+  shareLocationModalOpen: boolean,
+  publicShareOpen: boolean,
+  trackingPromptOpen: boolean
+) => {
+  if (trackingPromptOpen) {
+    return true;
+  }
+
+  if (shareLocationModalOpen && bluetoothName === null) {
+    return true;
+  }
+
+  if (publicShareOpen && bluetoothName === null) {
+    return true;
+  }
+
+  return false;
+};
+
 const Router = () => {
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [isAdminPanelOpen, openAdminPanel] = useState(false);
@@ -80,7 +101,7 @@ const Router = () => {
     queryParams && queryParams.topic ? queryParams.topic : undefined
   );
 
-  const [nameModalOpen, setNameModalOpen] = useState(
+  const [trackingPromptOpen, setTrackingPrompt] = useState(
     queryParams && queryParams.lat ? true : false
   );
 
@@ -104,7 +125,7 @@ const Router = () => {
           currentBluetoothName={bluetoothName}
         />
       )}
-      {publicShareOpen && (
+      {publicShareOpen && bluetoothName && (
         <PublicShareModal
           publishLocation={nickname => {
             // TODO
@@ -115,15 +136,24 @@ const Router = () => {
           isOpen={publicShareOpen}
         />
       )}
-      {nameModalOpen && (
+      {isTrackingPromptOpen(
+        bluetoothName,
+        shareLocationModalOpen,
+        publicShareOpen,
+        trackingPromptOpen
+      ) && (
         <TrackingContainer
           beacons={beacons}
-          onClose={() => setNameModalOpen(false)}
+          onClose={() => {
+            setTrackingPrompt(false);
+            openShareLocationModal(false);
+            openPublicShare(false);
+          }}
           confirmName={name => {
             setBluetoothName(name);
             setStaticLocations([]);
             setPinType('none');
-            setNameModalOpen(false);
+            setTrackingPrompt(false);
           }}
           onStaticSelected={name => {
             const targetBeacons = beacons.filter(b => b.beaconId === name);
@@ -133,7 +163,7 @@ const Router = () => {
       )}
       <Fullscreen>
         <NavBar
-          setNameModalOpen={setNameModalOpen}
+          setTrackingPrompt={setTrackingPrompt}
           bluetoothName={bluetoothName}
           isAdmin={admin != null}
           openAdminPanel={openAdminPanel}
@@ -216,7 +246,7 @@ const Router = () => {
                   setPinType={setPinType}
                   lastKnownPosition={lastKnownPosition}
                   staticLocations={staticLocations}
-                  setNameModalOpen={setNameModalOpen}
+                  setTrackingPrompt={setTrackingPrompt}
                   bluetoothName={bluetoothName}
                   roomReserved={roomReserved}
                   devices={devices}

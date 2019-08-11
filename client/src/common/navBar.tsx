@@ -208,7 +208,7 @@ const MobileSearch = styled.input`
 
 interface Props {
   bluetoothName: string | null;
-  setNameModalOpen(a: boolean): void;
+  setTrackingPrompt(a: boolean): void;
   openPublicShare(a: boolean): void;
   isAdmin: boolean;
   openAdminPanel(a: boolean): void;
@@ -221,7 +221,7 @@ interface Props {
 
 const NavBar = ({
   openPublicShare,
-  setNameModalOpen,
+  setTrackingPrompt,
   bluetoothName,
   isAdmin,
   isAdminPanelOpen,
@@ -234,16 +234,12 @@ const NavBar = ({
 }: Props & RouteComponentProps) => {
   const [isActive, setActive] = useState(false);
 
-  const withBluetoothName = (after: () => void) => () => {
+  const withIndexPage = (after: () => void) => () => {
     if (pathname !== '/') {
       history.push('/');
     }
 
-    if (bluetoothName === null) {
-      setNameModalOpen(true);
-    } else {
-      after();
-    }
+    after();
   };
 
   return (
@@ -282,11 +278,11 @@ const NavBar = ({
           <ShareLocationDropdown
             isOpen={shareLocationDropdownOpen}
             openDropdown={openShareLocationDropdown}
-            onOpenShareLocationModal={withBluetoothName(() => {
+            onOpenShareLocationModal={withIndexPage(() => {
               openShareLocationDropdown(false);
               openShareLocationModal(true);
             })}
-            onOpenPublishLocationModal={withBluetoothName(() => {
+            onOpenPublishLocationModal={withIndexPage(() => {
               openPublicShare(true);
             })}
           />

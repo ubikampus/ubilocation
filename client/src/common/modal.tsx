@@ -28,7 +28,7 @@ const modalStyles = {
     border: 'none',
     flex: '0 1 400px',
     position: 'static',
-    margin: '20px 10px',
+    margin: '140px 10px 20px 10px',
   },
 };
 
@@ -38,6 +38,8 @@ export const ModalParagraph = styled.p`
 `;
 
 export const ModalButtonRow = styled.div`
+  display: flex;
+  justify-content: flex-end;
   margin-top: 5px;
 `;
 

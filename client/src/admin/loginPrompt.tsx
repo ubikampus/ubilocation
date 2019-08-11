@@ -2,6 +2,7 @@ import React, { ChangeEvent, FormEvent } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { PrimaryButton } from '../common/button';
 
 /**
  * Credit: The CSS styles on this page are based on
@@ -16,7 +17,7 @@ const Background = styled.div`
 
 const LoginPage = styled.div`
   margin: auto;
-  width: 320px;
+  max-width: 330px;
   padding: 45px 0;
   text-align: center;
 `;
@@ -27,7 +28,7 @@ const LoginHeader = styled.h1`
 
 const LoginForm = styled.form`
   padding: 26px 24px 26px;
-  margin: 15px 0 20px;
+  margin: 15px 10px 20px;
   background: white;
   max-width: 320px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.13);
@@ -43,16 +44,9 @@ const FormInput = styled.input`
   border: 1px solid #ddd;
 `;
 
-const FormButton = styled.button`
+const FormButton = styled(PrimaryButton)`
   width: 100%;
-  padding: 10px;
-  border: 0;
-  font-size: 14px;
-  color: white;
-  background: #5599ff;
-  &:hover {
-    background: #2a7fff;
-  }
+  margin: 0;
 `;
 
 const Notification = styled.div`

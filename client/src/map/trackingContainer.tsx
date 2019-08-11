@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import Button from '../common/button';
+import Button, { SecondaryButton } from '../common/button';
 import Modal, {
   ModalParagraph,
   ModalButtonRow,
@@ -49,6 +49,13 @@ const TrackingContainer = ({ onClose, confirmName, beacons }: Props) => {
       {bluetoothLoading && <span>loading...</span>}
       <ModalParagraph>Allow Ubimaps to track my location</ModalParagraph>
       <ModalButtonRow>
+        <SecondaryButton
+          onClick={() => {
+            onClose();
+          }}
+        >
+          No
+        </SecondaryButton>
         <Button
           onClick={async () => {
             setBluetoothLoading(true);
@@ -73,13 +80,6 @@ const TrackingContainer = ({ onClose, confirmName, beacons }: Props) => {
           }}
         >
           Yes
-        </Button>
-        <Button
-          onClick={() => {
-            onClose();
-          }}
-        >
-          No
         </Button>
       </ModalButtonRow>
     </Modal>

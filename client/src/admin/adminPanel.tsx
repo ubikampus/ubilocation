@@ -2,11 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import { animated } from 'react-spring';
 
-import Button, { PrimaryButton, SecondaryButton } from '../common/button';
+import { PrimaryButton, SecondaryButton } from '../common/button';
+import { TiChevronLeft } from 'react-icons/ti';
 import { Location } from '../common/typeUtil';
 
-const CancelButton = styled(Button)`
-  background: white;
+const CancelButton = styled(SecondaryButton)`
+  border: none;
 `;
 
 export interface RaspberryLocation {
@@ -33,10 +34,6 @@ const InputRow = styled.div`
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-`;
-
-const LogoutButton = styled(Button)`
-  margin-top: auto;
 `;
 
 const InputCol = styled.div`
@@ -107,6 +104,27 @@ interface Props {
   setNewHeight(a: string): void;
 }
 
+const HeaderRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const HideButton = styled.div`
+  width: 30px;
+  height: 30px;
+  margin-top: -10px;
+  margin-right: -10px;
+  padding: 5px;
+
+  color: #4d4d4d;
+  cursor: pointer;
+
+  & > svg {
+    height: 100%;
+    width: 100%;
+  }
+`;
+
 const AdminPanel = ({
   getDeviceLocation,
   devices,
@@ -125,7 +143,12 @@ const AdminPanel = ({
   <Sidebar style={style}>
     <SidebarContent>
       <div>
-        <CalibrationHeader>Set Raspberry Pi locations</CalibrationHeader>
+        <HeaderRow>
+          <CalibrationHeader>Set Raspberry Pi locations</CalibrationHeader>
+          <HideButton>
+            <TiChevronLeft onClick={() => onCancel()} />
+          </HideButton>
+        </HeaderRow>
         <InfoSection>
           Click location on map, and enter name and height in millimeters for
           the Raspberry Pi. Height should be given relative to the second floor.

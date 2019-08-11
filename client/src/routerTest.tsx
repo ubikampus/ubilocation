@@ -1,6 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import Router from './router';
+
+import Router, { isTrackingPromptOpen } from './router';
 
 const mockConnect = jest.fn();
 
@@ -19,5 +20,37 @@ describe('<Router />', () => {
     });
 
     mount(<Router />);
+  });
+
+  it('shows tracking prompt if sharing location without known name', () => {
+    const bluetoothName = null;
+    const shareLocationModalOpen = true;
+    const publicShareOpen = false;
+    const trackingPromptOpen = false;
+
+    expect(
+      isTrackingPromptOpen(
+        bluetoothName,
+        shareLocationModalOpen,
+        publicShareOpen,
+        trackingPromptOpen
+      )
+    ).toBe(true);
+  });
+
+  it('shows tracking prompt if publishing location without known name', () => {
+    const bluetoothName = null;
+    const shareLocationModalOpen = false;
+    const publicShareOpen = true;
+    const trackingPromptOpen = false;
+
+    expect(
+      isTrackingPromptOpen(
+        bluetoothName,
+        shareLocationModalOpen,
+        publicShareOpen,
+        trackingPromptOpen
+      )
+    ).toBe(true);
   });
 });
