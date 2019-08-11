@@ -117,20 +117,19 @@ export const mqttMessageToGeo = (message: MqttMessage): BeaconGeoLocation => {
 export default class Deserializer {
   /**
    * Convert raw mqtt message into static type, crash on unexpected input.
+   *
+   * Sometimes server returns invalid JSON with "NaN" values, null is returned
+   * then.
    */
-  deserializeMessage(rawMessage: string): MqttMessage[] {
+  deserializeMessage(rawMessage: string): MqttMessage[] | null {
     let parsed;
     try {
       parsed = JSON.parse(rawMessage);
     } catch (err) {
-      console.error('error parsing json', err);
-      console.error('json:', rawMessage);
-      return [];
+      console.log('received invalid JSON from location server');
+      return null;
     }
 
-    return parsed.map((obj: unknown) => {
-      const message = unsafeDecode(MqttMessageDecoder, obj);
-      return message;
-    });
+    return unsafeDecode(t.array(MqttMessageDecoder), parsed);
   }
 }

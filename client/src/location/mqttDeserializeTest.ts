@@ -42,7 +42,7 @@ describe('MQTT parsing', () => {
   it('should return empty list for odd input', () => {
     const parser = new Deserializer();
     const res = parser.deserializeMessage('asdfasdf');
-    expect(res.length).toBe(0);
+    expect(res).toBe(null);
   });
 });
 
