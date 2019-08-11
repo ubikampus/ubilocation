@@ -208,7 +208,6 @@ const MobileSearch = styled.input`
 
 interface Props {
   bluetoothName: string | null;
-  setTrackingPrompt(a: boolean): void;
   openPublicShare(a: boolean): void;
   isAdmin: boolean;
   openAdminPanel(a: boolean): void;
@@ -221,8 +220,6 @@ interface Props {
 
 const NavBar = ({
   openPublicShare,
-  setTrackingPrompt,
-  bluetoothName,
   isAdmin,
   isAdminPanelOpen,
   openAdminPanel,

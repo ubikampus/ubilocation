@@ -82,10 +82,10 @@ const PublicShareModal = ({ isOpen, onClose, publishLocation }: Props) => {
       </MainRow>
 
       <ModalButtonRow>
+        <SecondaryButton onClick={() => onClose()}>Cancel</SecondaryButton>
         <PrimaryButton onClick={() => nickname && publishLocation(nickname)}>
           Ok
         </PrimaryButton>
-        <SecondaryButton onClick={() => onClose()}>Cancel</SecondaryButton>
       </ModalButtonRow>
     </Modal>
   );

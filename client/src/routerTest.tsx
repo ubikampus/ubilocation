@@ -26,14 +26,14 @@ describe('<Router />', () => {
     const bluetoothName = null;
     const shareLocationModalOpen = true;
     const publicShareOpen = false;
-    const trackingPromptOpen = false;
+    const centralizeActive = false;
 
     expect(
       isTrackingPromptOpen(
         bluetoothName,
         shareLocationModalOpen,
         publicShareOpen,
-        trackingPromptOpen
+        centralizeActive
       )
     ).toBe(true);
   });
@@ -42,14 +42,14 @@ describe('<Router />', () => {
     const bluetoothName = null;
     const shareLocationModalOpen = false;
     const publicShareOpen = true;
-    const trackingPromptOpen = false;
+    const centralizeActive = false;
 
     expect(
       isTrackingPromptOpen(
         bluetoothName,
         shareLocationModalOpen,
         publicShareOpen,
-        trackingPromptOpen
+        centralizeActive
       )
     ).toBe(true);
   });

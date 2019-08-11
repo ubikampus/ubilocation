@@ -42,9 +42,9 @@ export const isTrackingPromptOpen = (
   bluetoothName: string | null,
   shareLocationModalOpen: boolean,
   publicShareOpen: boolean,
-  trackingPromptOpen: boolean
+  centralizeActive: boolean
 ) => {
-  if (trackingPromptOpen) {
+  if (centralizeActive) {
     return true;
   }
 
@@ -101,7 +101,7 @@ const Router = () => {
     queryParams && queryParams.topic ? queryParams.topic : undefined
   );
 
-  const [trackingPromptOpen, setTrackingPrompt] = useState(
+  const [centralizeActive, setCentralizeActive] = useState(
     queryParams && queryParams.lat ? true : false
   );
 
@@ -140,12 +140,12 @@ const Router = () => {
         bluetoothName,
         shareLocationModalOpen,
         publicShareOpen,
-        trackingPromptOpen
+        centralizeActive
       ) && (
         <TrackingContainer
           beacons={beacons}
           onClose={() => {
-            setTrackingPrompt(false);
+            setCentralizeActive(false);
             openShareLocationModal(false);
             openPublicShare(false);
           }}
@@ -153,7 +153,7 @@ const Router = () => {
             setBluetoothName(name);
             setStaticLocations([]);
             setPinType('none');
-            setTrackingPrompt(false);
+            setCentralizeActive(false);
           }}
           onStaticSelected={name => {
             const targetBeacons = beacons.filter(b => b.beaconId === name);
@@ -163,7 +163,6 @@ const Router = () => {
       )}
       <Fullscreen>
         <NavBar
-          setTrackingPrompt={setTrackingPrompt}
           bluetoothName={bluetoothName}
           isAdmin={admin != null}
           openAdminPanel={openAdminPanel}
@@ -241,12 +240,13 @@ const Router = () => {
               render={props => (
                 <MapContainer
                   {...props}
+                  isAdmin={admin !== null}
                   beacons={beacons}
                   pinType={pinType}
                   setPinType={setPinType}
                   lastKnownPosition={lastKnownPosition}
                   staticLocations={staticLocations}
-                  setTrackingPrompt={setTrackingPrompt}
+                  setCentralizeActive={setCentralizeActive}
                   bluetoothName={bluetoothName}
                   roomReserved={roomReserved}
                   devices={devices}
