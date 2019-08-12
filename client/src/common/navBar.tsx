@@ -245,7 +245,7 @@ const NavBar = ({
       after();
     }
   };
-  
+
   return (
     <Navigation>
       <TopNav>
@@ -330,7 +330,7 @@ const NavBar = ({
             <MobileSearch placeholder="Search .." />
           </MobileMenuItem>
 
-          <MobileMenuItem >
+          <MobileMenuItem>
             <Icon>
               <TiLocationArrow />
             </Icon>
