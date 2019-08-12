@@ -8,6 +8,8 @@ import ReactModal from 'react-modal';
 import merge from 'lodash/merge';
 import cloneDeep from 'lodash/merge';
 
+import ubiukko from './ubiukko.png';
+
 import { currentEnv } from './environment';
 
 if (currentEnv.NODE_ENV !== 'test') {
@@ -36,15 +38,30 @@ export const ModalParagraph = styled.p`
 `;
 
 export const ModalButtonRow = styled.div`
-  margin-top: 25px;
+  margin-top: 5px;
 `;
 
 export const ModalHeader = styled.h3`
   margin-top: 0;
   font-size: 18px;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
+
+const UbiLogoImg = styled.img`
+  height: 70px;
+  margin-right: 25px;
+  margin-left: 10px;
+  align-self: center;
+`;
+
+interface UbiLogoProps {
+  className?: string;
+}
+
+export const UbiLogo = ({ className }: UbiLogoProps) => (
+  <UbiLogoImg className={className} src={ubiukko} />
+);
 
 const Modal: FC<ReactModal.Props> = ({ children, style, ...props }) => (
   <ReactModal style={merge(cloneDeep(modalStyles), style)} {...props}>

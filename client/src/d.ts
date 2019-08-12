@@ -7,4 +7,3 @@ declare module 'styled-react-modal';
 declare module 'react-animated-burgers';
 
 declare var DEFINE_NODE_ENV: string;
-declare var DEFINE_MAPBOX_TOKEN: string;

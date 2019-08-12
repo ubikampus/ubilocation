@@ -8,12 +8,6 @@ const styledComponentsTransformer = require('typescript-plugin-styled-components
 
 const isProd = process.env.NODE_ENV === 'production';
 
-if (!process.env.MAPBOX_TOKEN) {
-  console.error(
-    'MAPBOX_TOKEN is missing from .env file, falling back to raster maps'
-  );
-}
-
 module.exports = {
   mode: isProd ? 'production' : 'development',
   devtool: isProd ? undefined : 'inline-source-map',
@@ -57,14 +51,14 @@ module.exports = {
   plugins: [
     new ForkTsCheckerWebpackPlugin({ reportFiles: 'src/**/*.{ts,tsx}', tslint: true }),
     new HtmlWebpackPlugin({
-      template: 'index.html'
+      template: 'index.html',
+      favicon: 'asset/ubi_ukko_small.png',
     }),
 
     // something weird going on with EnvironmentPlugin? Lets use defineplugin
     // instead
     new webpack.DefinePlugin({
       DEFINE_NODE_ENV: JSON.stringify(isProd ? 'production' : 'development'),
-      DEFINE_MAPBOX_TOKEN: JSON.stringify(process.env.MAPBOX_TOKEN),
     }),
     new CopyPlugin(['asset/404.html'])
   ]

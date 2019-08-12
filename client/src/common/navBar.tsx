@@ -1,11 +1,14 @@
 import React from 'react';
-import { TiCog, TiLocationArrow, TiZoom } from 'react-icons/ti';
-import { IoIosSearch } from 'react-icons/io';
-import { NavLink, RouteComponentProps, withRouter } from 'react-router-dom';
-import styled from 'styled-components';
-import btlogo from '../../asset/bluetooth_logo.svg';
-import { HamburgerSqueeze } from 'react-animated-burgers';
 import { useState } from 'react';
+import { NavLink, withRouter, RouteComponentProps } from 'react-router-dom';
+
+import styled from 'styled-components';
+import { IoIosSearch } from 'react-icons/io';
+import { TiCog, TiLocationArrow } from 'react-icons/ti';
+import { HamburgerSqueeze } from 'react-animated-burgers';
+
+import btlogo from '../../asset/bluetooth_logo.svg';
+import ShareLocationDropdown from './../map/shareLocationDropdown';
 
 /** Container */
 const Navigation = styled.nav`
@@ -156,8 +159,8 @@ const Mobile = styled.nav<{ active: boolean }>`
   align-items: center;
   display: ${props => (props.active ? 'inherit' : 'none')};
 
-  color: #ffffff;
-  background-color: salmon;
+  color: white;
+  background-color: #7db2ff;
 
   @media (min-width: 575px) {
     display: none;
@@ -178,10 +181,10 @@ const MobileMenuItem = styled.li`
   padding: 5px;
 
   &:hover {
-    background-color: #ffa9a9;
+    background-color: #94bfff;
   }
   &:active {
-    background-color: #ffa9a9;
+    background-color: #94bfff;
   }
   & > div > svg {
     height: 80%;
@@ -195,28 +198,54 @@ const MobileSearch = styled.input`
   border: none;
 
   font: inherit;
-  color: inherit;
+  color: white;
   background: inherit;
 
   ::placeholder {
-    color: #ffffff;
+    color: white;
   }
 `;
 
 interface Props {
+  bluetoothName: string | null;
+  setNameModalOpen(a: boolean): void;
+  openPublicShare(a: boolean): void;
   isAdmin: boolean;
   openAdminPanel(a: boolean): void;
   isAdminPanelOpen: boolean;
+  publicShareOpen: boolean;
+  shareLocationDropdownOpen: boolean;
+  openShareLocationDropdown(a: boolean): void;
+  openShareLocationModal(a: boolean): void;
 }
 
 const NavBar = ({
+  openPublicShare,
+  setNameModalOpen,
+  bluetoothName,
   isAdmin,
   isAdminPanelOpen,
   openAdminPanel,
   location: { pathname },
   history,
+  shareLocationDropdownOpen,
+  openShareLocationDropdown,
+  openShareLocationModal,
 }: Props & RouteComponentProps) => {
   const [isActive, setActive] = useState(false);
+
+  const withBluetoothName = (after: () => void) => () => {
+    if (pathname !== '/') {
+      history.push('/');
+    }
+
+    if (bluetoothName === null) {
+      setNameModalOpen(true);
+    } else {
+      after();
+    }
+  };
+  
   return (
     <Navigation>
       <TopNav>
@@ -239,12 +268,28 @@ const NavBar = ({
             <SearchBar placeholder="Search .." />
           </RightMenuItem>
 
-          <RightMenuItem>
+          <RightMenuItem
+            onClick={() => {
+              openShareLocationDropdown(!shareLocationDropdownOpen);
+            }}
+          >
             <Icon>
               <TiLocationArrow />
             </Icon>
             <RightMenuText>Location Sharing</RightMenuText>
           </RightMenuItem>
+
+          <ShareLocationDropdown
+            isOpen={shareLocationDropdownOpen}
+            openDropdown={openShareLocationDropdown}
+            onOpenShareLocationModal={withBluetoothName(() => {
+              openShareLocationDropdown(false);
+              openShareLocationModal(true);
+            })}
+            onOpenPublishLocationModal={withBluetoothName(() => {
+              openPublicShare(true);
+            })}
+          />
 
           {isAdmin && (
             <RightMenuItem
@@ -285,7 +330,7 @@ const NavBar = ({
             <MobileSearch placeholder="Search .." />
           </MobileMenuItem>
 
-          <MobileMenuItem>
+          <MobileMenuItem >
             <Icon>
               <TiLocationArrow />
             </Icon>

@@ -1,7 +1,8 @@
 import React, { FC } from 'react';
 import ReactMapGl, { ViewState, PointerEvent } from 'react-map-gl';
 import { Style } from 'mapbox-gl';
-import { currentEnv } from '../common/environment';
+
+const MIN_ZOOM = 9;
 
 interface Props {
   onClick(event: PointerEvent): void;
@@ -24,12 +25,12 @@ const UbikampusMap: FC<Props> = ({
     {...viewport}
     mapStyle={mapStyle}
     width="100%"
-    mapboxApiAccessToken={currentEnv.MAPBOX_TOKEN}
     height="auto"
+    minZoom={MIN_ZOOM}
     getCursor={pointerCursor ? () => 'pointer' : undefined}
     style={{ flex: '1' }}
-    onViewportChange={vp => {
-      setViewport(vp);
+    onViewportChange={nextViewport => {
+      setViewport(nextViewport);
     }}
     onClick={e => onClick(e)}
   >
