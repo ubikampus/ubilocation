@@ -9,6 +9,7 @@
     "test": "jest --silent",
     "coverage": "jest --silent --verbose --coverage",
     "start": "webpack-dev-server",
+    "prepush": "npm run lint && npm run test",
     "travis": "npm run coverage && npm run lint && npm run build && curl -sS https://codecov.io/bash | bash -s -- -F client",
     "lint": "tslint -p ."
   },
@@ -80,7 +81,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "docker-compose exec -T bluetooth-client npm run lint && npm test"
+      "pre-push": "docker-compose exec -T bluetooth-client npm run prepush"
     }
   }
 }

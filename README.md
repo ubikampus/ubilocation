@@ -22,7 +22,8 @@ project. See main repo
    [Tslint](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-tslint-plugin)
    and [Styled
    components](https://marketplace.visualstudio.com/items?itemName=jpoissonnier.vscode-styled-components)
-1. `docker-compose up`
+1. `docker-compose up` (use `docker-compose up --build --renew-anon-volumes` if
+   there are changes to dependencies)
 1. Open browser at localhost:8080
 
 See `scripts` section in package.json for other development commands. For
