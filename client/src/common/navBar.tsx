@@ -1,49 +1,65 @@
 import React from 'react';
-import styled from 'styled-components';
+import { useState } from 'react';
 import { NavLink, withRouter, RouteComponentProps } from 'react-router-dom';
+
+import styled from 'styled-components';
+import { IoIosSearch } from 'react-icons/io';
 import { TiCog, TiLocationArrow } from 'react-icons/ti';
+import { HamburgerSqueeze } from 'react-animated-burgers';
+
 import btlogo from '../../asset/bluetooth_logo.svg';
 import ShareLocationDropdown from './../map/shareLocationDropdown';
 
-const AdminCog = styled.div`
-  color: white;
-  height: auto;
-  width: 30px;
+/** Container */
+const Navigation = styled.nav`
+  top: 0;
+  z-index: 1000;
+  position: sticky;
+  position: -o-sticky;
+  position: -ms-sticky;
+  position: -moz-sticky;
+  position: -webkit-sticky;
 
-  & > svg {
-    height: 100%;
-    width: 100%;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  white-space: pre;
+
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-family: 'Comfortaa', Helvetica, sans-serif;
+  background-color: #4287f5;
+
+  & > nav > ul > li {
+    cursor: pointer;
   }
 `;
 
-const NavContainer = styled.nav`
+/** Desktop navigation */
+const TopNav = styled.nav`
   height: 48px;
-  width: 100%;
-  display: flex;
-  z-index: 1000;
-  align-items: center;
-  justify-content: flex-start;
-  background-color: #4287f5;
-  font-family: 'Comfortaa', cursive;
-  font-size: 13px;
-`;
-
-const Logo = styled.div`
-  height: 25px;
-  width: 25px;
-  margin-left: 1em;
   margin-right: 1em;
-  background-image: url("${btlogo}");
-`;
-
-const Items = styled.ul`
-  display: flex;
-  width: 100%;
+  display: inherit;
   align-items: center;
-  list-style-type: none;
+  justify-content: space-between;
+
+  color: #ffffff;
 `;
 
-const LinkBox = styled(NavLink)`
+/** Left menu */
+const TopNavLeftMenu = styled.ul`
+  height: inherit;
+  display: inherit;
+  align-items: center;
+`;
+
+const LeftMenuItem = styled(NavLink)`
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+
+  color: #bed4f7;
+
   &.active {
     > li {
       color: #ffffff;
@@ -52,12 +68,22 @@ const LinkBox = styled(NavLink)`
   }
 `;
 
-const Content = styled.li`
-  text-align: center;
+const Logo = styled.div`
+  height: 25px;
+  width: 25px;
+  padding: 10px 15px 10px 10px;
+  margin: 0 10px 0 10px;
+
+  background-image: url("${btlogo}");
+`;
+
+const LeftMenuText = styled.li`
   padding: 15px;
-  color: #bed4f7;
   border-top: 3px solid transparent;
   border-bottom: 3px solid transparent;
+
+  color: #bed4f7;
+
   &:active {
     color: #ffffff;
     border-bottom: 3px solid #ffffff;
@@ -67,36 +93,117 @@ const Content = styled.li`
   }
 `;
 
-const Search = styled.input`
-  padding: 0.5em;
-  margin: 1.5em;
-  color: #ffffff;
+/** Right menu */
+const TopRightMenu = styled.ul`
+  display: inherit;
+
+  @media (max-width: 575px) {
+    display: none;
+  }
+`;
+
+const RightMenuItem = styled.li`
+  padding: 10px;
+  display: inherit;
+  align-items: center;
+
+  font-size: 12px;
+`;
+
+const SearchBar = styled.input`
   border: none;
-  border-radius: 20px;
-  background: #68a0fc;
+  padding: 0.5em;
   text-align: left;
+  border-radius: 20px;
+
+  color: inherit;
+  background: #68a0fc;
+
   ::placeholder {
     color: #ffffff;
     padding-left: 1em;
     padding-right: 1em;
     font-size: 12px;
-    opacity: 1;
   }
 `;
 
-const AdminChip = styled.div`
-  font-size: 11px;
-  margin-right: 5px;
-  white-space: pre;
-  font-weight: 700;
-  color: white;
+const RightMenuText = styled.div`
+  /* Collapse to an icon on medium screens */
+  @media (max-width: 750px) {
+    font-size: 0px !important;
+  }
 `;
 
-const SidepanelButton = styled.div`
-  display: flex;
+const Icon = styled.div`
+  width: 30px;
+
+  & > svg {
+    height: 100%;
+    width: 100%;
+  }
+`;
+
+/** Mobile */
+const HamburgerMenu = styled.div`
+  width: 100%;
+  display: inherit;
+  justify-content: flex-end;
+
+  @media (min-width: 575px) {
+    display: none;
+  }
+`;
+
+const Mobile = styled.nav<{ active: boolean }>`
+  height: auto;
   align-items: center;
-  cursor: pointer;
-  margin-right: 15px;
+  display: ${props => (props.active ? 'inherit' : 'none')};
+
+  color: white;
+  background-color: #7db2ff;
+
+  @media (min-width: 575px) {
+    display: none;
+  }
+`;
+
+const MobileMenu = styled.ul`
+  width: 100%;
+  display: inherit;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
+const MobileMenuItem = styled.li`
+  width: 100%;
+  display: inherit;
+  align-items: center;
+  padding: 5px;
+
+  &:hover {
+    background-color: #94bfff;
+  }
+  &:active {
+    background-color: #94bfff;
+  }
+  & > div > svg {
+    height: 80%;
+    width: 80%;
+  }
+`;
+
+const MobileMenuText = styled.div``;
+
+const MobileSearch = styled.input`
+  border: none;
+
+  font: inherit;
+  color: white;
+  background: inherit;
+
+  ::placeholder {
+    color: white;
+  }
 `;
 
 interface Props {
@@ -125,6 +232,8 @@ const NavBar = ({
   openShareLocationDropdown,
   openShareLocationModal,
 }: Props & RouteComponentProps) => {
+  const [isActive, setActive] = useState(false);
+
   const withBluetoothName = (after: () => void) => () => {
     if (pathname !== '/') {
       history.push('/');
@@ -138,63 +247,116 @@ const NavBar = ({
   };
 
   return (
-    <NavContainer>
-      <Items>
-        <Logo />
-        <LinkBox to="/" exact>
-          <Content>Map</Content>
-        </LinkBox>
-        <LinkBox to="/config">
-          <Content>Settings</Content>
-        </LinkBox>
-        <LinkBox to="/about">
-          <Content>About</Content>
-        </LinkBox>
-      </Items>
-      <Search placeholder="Search .." />
+    <Navigation>
+      <TopNav>
+        <TopNavLeftMenu>
+          <LeftMenuItem to="/" exact>
+            <Logo />
+          </LeftMenuItem>
 
-      <div>
-        <SidepanelButton
-          onClick={() => {
-            openShareLocationDropdown(!shareLocationDropdownOpen);
-          }}
-        >
-          <AdminChip>Location sharing</AdminChip>
-          <AdminCog>
-            <TiLocationArrow />
-          </AdminCog>
-        </SidepanelButton>
-        <ShareLocationDropdown
-          isOpen={shareLocationDropdownOpen}
-          openDropdown={openShareLocationDropdown}
-          onOpenShareLocationModal={withBluetoothName(() => {
-            openShareLocationDropdown(false);
-            openShareLocationModal(true);
-          })}
-          onOpenPublishLocationModal={withBluetoothName(() => {
-            openPublicShare(true);
-          })}
-        />
-      </div>
+          <LeftMenuItem to="/" exact>
+            <LeftMenuText>Map</LeftMenuText>
+          </LeftMenuItem>
 
-      {isAdmin && (
-        <SidepanelButton
-          onClick={() => {
-            if (pathname !== '/') {
-              history.push('/');
-              openAdminPanel(true);
-            } else {
-              openAdminPanel(!isAdminPanelOpen);
-            }
-          }}
-        >
-          <AdminChip>Admin panel</AdminChip>
-          <AdminCog>
-            <TiCog />
-          </AdminCog>
-        </SidepanelButton>
-      )}
-    </NavContainer>
+          <LeftMenuItem to="/about">
+            <LeftMenuText>About</LeftMenuText>
+          </LeftMenuItem>
+        </TopNavLeftMenu>
+
+        <TopRightMenu>
+          <RightMenuItem>
+            <SearchBar placeholder="Search .." />
+          </RightMenuItem>
+
+          <RightMenuItem
+            onClick={() => {
+              openShareLocationDropdown(!shareLocationDropdownOpen);
+            }}
+          >
+            <Icon>
+              <TiLocationArrow />
+            </Icon>
+            <RightMenuText>Location Sharing</RightMenuText>
+          </RightMenuItem>
+
+          <ShareLocationDropdown
+            isOpen={shareLocationDropdownOpen}
+            openDropdown={openShareLocationDropdown}
+            onOpenShareLocationModal={withBluetoothName(() => {
+              openShareLocationDropdown(false);
+              openShareLocationModal(true);
+            })}
+            onOpenPublishLocationModal={withBluetoothName(() => {
+              openPublicShare(true);
+            })}
+          />
+
+          {isAdmin && (
+            <RightMenuItem
+              onClick={() => {
+                if (pathname !== '/') {
+                  history.push('/');
+                  openAdminPanel(true);
+                } else {
+                  openAdminPanel(!isAdminPanelOpen);
+                }
+              }}
+            >
+              <Icon>
+                <TiCog />
+              </Icon>
+              <RightMenuText>Admin Panel</RightMenuText>
+            </RightMenuItem>
+          )}
+        </TopRightMenu>
+
+        <HamburgerMenu>
+          <HamburgerSqueeze
+            isActive={isActive}
+            toggleButton={() => setActive(!isActive)}
+            buttonWidth={30}
+            buttonColor="#4287f5"
+            barColor="white"
+          />
+        </HamburgerMenu>
+      </TopNav>
+
+      <Mobile active={isActive}>
+        <MobileMenu>
+          <MobileMenuItem>
+            <Icon>
+              <IoIosSearch />
+            </Icon>
+            <MobileSearch placeholder="Search .." />
+          </MobileMenuItem>
+
+          <MobileMenuItem>
+            <Icon>
+              <TiLocationArrow />
+            </Icon>
+            <MobileMenuText>Location Sharing</MobileMenuText>
+          </MobileMenuItem>
+
+          {isAdmin && (
+            <MobileMenuItem
+              onClick={() => {
+                if (pathname !== '/') {
+                  history.push('/');
+                  openAdminPanel(true);
+                } else {
+                  openAdminPanel(!isAdminPanelOpen);
+                }
+              }}
+            >
+              <Icon>
+                <TiCog />
+              </Icon>
+              <MobileMenuText>Admin Panel</MobileMenuText>
+            </MobileMenuItem>
+          )}
+        </MobileMenu>
+      </Mobile>
+    </Navigation>
   );
 };
 
