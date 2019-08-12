@@ -14,8 +14,6 @@ import AdminPanel, { RaspberryLocation } from './admin/adminPanel';
 import { Location } from './common/typeUtil';
 import NavBar from './common/navBar';
 
-import NavBar2 from './common/navBar2';
-
 import LoginPromptContainer from './admin/loginPromptContainer';
 import AuthApi, { Admin } from './admin/authApi';
 
@@ -57,7 +55,7 @@ const Router = () => {
   return (
     <BrowserRouter basename={apiRoot()}>
       <Fullscreen>
-        <NavBar2
+        <NavBar
           isAdmin={admin != null}
           openAdminPanel={openAdminPanel}
           isAdminPanelOpen={isAdminPanelOpen}

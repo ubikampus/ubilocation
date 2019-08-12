@@ -3,7 +3,6 @@ import { TiCog, TiLocationArrow, TiZoom } from 'react-icons/ti';
 import { IoIosSearch } from 'react-icons/io';
 import { NavLink, RouteComponentProps, withRouter } from 'react-router-dom';
 import styled from 'styled-components';
-import { Transition } from 'react-spring/renderprops';
 import btlogo from '../../asset/bluetooth_logo.svg';
 import { HamburgerSqueeze } from 'react-animated-burgers';
 import { useState } from 'react';
@@ -126,8 +125,6 @@ const SearchBar = styled.input`
 `;
 
 const RightMenuText = styled.div`
-  /*margin-right: 5px;*/
-
   /* Collapse to an icon on medium screens */
   @media (max-width: 750px) {
     font-size: 0px !important;
@@ -156,11 +153,8 @@ const HamburgerMenu = styled.div`
 
 const Mobile = styled.nav<{ active: boolean }>`
   height: auto;
-  display: inherit;
   align-items: center;
   display: ${props => (props.active ? 'inherit' : 'none')};
-  -webkit-transition: width 2s, height 4s; /* For Safari 3.1 to 6.0 */
-  transition: width 2s, height 4s;
 
   color: #ffffff;
   background-color: salmon;
