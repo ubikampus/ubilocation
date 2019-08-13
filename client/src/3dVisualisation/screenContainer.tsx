@@ -53,10 +53,12 @@ export const GenuineBusContainer = ({
           params.topic,
           null,
           (topic: string, rawMessage: string) => {
-            const parsed = parser.deserializeMessage(rawMessage);
+            const locationMessages = parser.deserializeMessage(rawMessage);
 
-            if (parsed) {
-              screen.updateBeacons(parsed.map(i => mqttMessageToBabylon(i)));
+            if (locationMessages) {
+              screen.updateBeacons(
+                locationMessages.map(i => mqttMessageToBabylon(i))
+              );
             }
           },
           (subErr: any) => {

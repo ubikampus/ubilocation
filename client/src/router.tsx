@@ -40,19 +40,19 @@ const MainRow = styled.div`
 
 export const isTrackingPromptOpen = (
   bluetoothName: string | null,
-  shareLocationModalOpen: boolean,
-  publicShareOpen: boolean,
-  centralizeActive: boolean
+  isShareLocationModalOpen: boolean,
+  isPublicShareOpen: boolean,
+  isCentralizationButtonActive: boolean
 ) => {
-  if (centralizeActive) {
+  if (isCentralizationButtonActive) {
     return true;
   }
 
-  if (shareLocationModalOpen && bluetoothName === null) {
+  if (isShareLocationModalOpen && bluetoothName === null) {
     return true;
   }
 
-  if (publicShareOpen && bluetoothName === null) {
+  if (isPublicShareOpen && bluetoothName === null) {
     return true;
   }
 
@@ -69,8 +69,8 @@ const Router = () => {
   const [newName, setNewName] = useState('');
   const [newHeight, setNewHeight] = useState('');
   const [roomReserved, setRoomReserved] = useState(false);
-  const [shareLocationModalOpen, openShareLocationModal] = useState(false);
-  const [shareLocationDropdownOpen, openShareLocationDropdown] = useState(
+  const [isShareLocationModalOpen, openShareLocationModal] = useState(false);
+  const [isShareLocationDropdownOpen, openShareLocationDropdown] = useState(
     false
   );
   const [publicShareOpen, openPublicShare] = useState(false);
@@ -118,9 +118,9 @@ const Router = () => {
 
   return (
     <BrowserRouter basename={apiRoot()}>
-      {shareLocationModalOpen && bluetoothName && (
+      {isShareLocationModalOpen && bluetoothName && (
         <ShareLocationModal
-          isOpen={shareLocationModalOpen}
+          isOpen={isShareLocationModalOpen}
           onClose={() => openShareLocationModal(false)}
           currentBluetoothName={bluetoothName}
         />
@@ -138,7 +138,7 @@ const Router = () => {
       )}
       {isTrackingPromptOpen(
         bluetoothName,
-        shareLocationModalOpen,
+        isShareLocationModalOpen,
         publicShareOpen,
         centralizeActive
       ) && (
@@ -167,7 +167,7 @@ const Router = () => {
           isAdmin={admin != null}
           openAdminPanel={openAdminPanel}
           isAdminPanelOpen={isAdminPanelOpen}
-          shareLocationDropdownOpen={shareLocationDropdownOpen}
+          isShareLocationDropdownOpen={isShareLocationDropdownOpen}
           openShareLocationDropdown={openShareLocationDropdown}
           openShareLocationModal={openShareLocationModal}
           publicShareOpen={publicShareOpen}

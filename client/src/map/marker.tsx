@@ -72,7 +72,7 @@ interface PinProps {
   onClick(a: MouseEvent<HTMLButtonElement>): void;
 }
 
-export const LocationPinMarker = ({
+export const LocationMarker = ({
   onClose,
   type,
   coords,

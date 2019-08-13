@@ -213,7 +213,7 @@ interface Props {
   openAdminPanel(a: boolean): void;
   isAdminPanelOpen: boolean;
   publicShareOpen: boolean;
-  shareLocationDropdownOpen: boolean;
+  isShareLocationDropdownOpen: boolean;
   openShareLocationDropdown(a: boolean): void;
   openShareLocationModal(a: boolean): void;
 }
@@ -225,13 +225,13 @@ const NavBar = ({
   openAdminPanel,
   location: { pathname },
   history,
-  shareLocationDropdownOpen,
+  isShareLocationDropdownOpen,
   openShareLocationDropdown,
   openShareLocationModal,
 }: Props & RouteComponentProps) => {
   const [isActive, setActive] = useState(false);
 
-  const withIndexPage = (after: () => void) => () => {
+  const navigateHomeAndRun = (after: () => void) => () => {
     if (pathname !== '/') {
       history.push('/');
     }
@@ -263,7 +263,7 @@ const NavBar = ({
 
           <RightMenuItem
             onClick={() => {
-              openShareLocationDropdown(!shareLocationDropdownOpen);
+              openShareLocationDropdown(!isShareLocationDropdownOpen);
             }}
           >
             <Icon>
@@ -273,13 +273,13 @@ const NavBar = ({
           </RightMenuItem>
 
           <ShareLocationDropdown
-            isOpen={shareLocationDropdownOpen}
+            isOpen={isShareLocationDropdownOpen}
             openDropdown={openShareLocationDropdown}
-            onOpenShareLocationModal={withIndexPage(() => {
+            onOpenShareLocationModal={navigateHomeAndRun(() => {
               openShareLocationDropdown(false);
               openShareLocationModal(true);
             })}
-            onOpenPublishLocationModal={withIndexPage(() => {
+            onOpenPublishLocationModal={navigateHomeAndRun(() => {
               openPublicShare(true);
             })}
           />

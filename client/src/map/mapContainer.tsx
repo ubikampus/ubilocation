@@ -14,7 +14,7 @@ import {
   OfflineMarker,
   NonUserMarker,
   SharedLocationMarker,
-  LocationPinMarker,
+  LocationMarker,
   divideMarkers,
   PinKind,
 } from './marker';
@@ -147,7 +147,7 @@ const MapContainer = ({
           closeModal={closeModal}
           modalText={modalText}
         />
-        <LocationPinMarker
+        <LocationMarker
           coords={pinCoordinates}
           onClick={openModal}
           onClose={() => setPinType('none')}

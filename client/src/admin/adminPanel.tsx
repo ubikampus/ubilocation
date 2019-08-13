@@ -109,7 +109,7 @@ const HeaderRow = styled.div`
   justify-content: space-between;
 `;
 
-const HideButton = styled.div`
+const CloseButton = styled.div`
   width: 30px;
   height: 30px;
   margin-top: -10px;
@@ -145,9 +145,9 @@ const AdminPanel = ({
       <div>
         <HeaderRow>
           <CalibrationHeader>Set Raspberry Pi locations</CalibrationHeader>
-          <HideButton>
+          <CloseButton>
             <TiChevronLeft onClick={() => onCancel()} />
-          </HideButton>
+          </CloseButton>
         </HeaderRow>
         <InfoSection>
           Click location on map, and enter name and height in millimeters for

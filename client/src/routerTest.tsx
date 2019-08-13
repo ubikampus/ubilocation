@@ -22,34 +22,38 @@ describe('<Router />', () => {
     mount(<Router />);
   });
 
+  /**
+   * If user's current location isn't known (bluetooth name is null), and user
+   * clicks "Location sharing", verify that tracking prompt is opened.
+   */
   it('shows tracking prompt if sharing location without known name', () => {
     const bluetoothName = null;
-    const shareLocationModalOpen = true;
-    const publicShareOpen = false;
-    const centralizeActive = false;
+    const isShareLocationModalOpen = true;
+    const isPublicShareOpen = false;
+    const isCentralizationButtonActive = false;
 
     expect(
       isTrackingPromptOpen(
         bluetoothName,
-        shareLocationModalOpen,
-        publicShareOpen,
-        centralizeActive
+        isShareLocationModalOpen,
+        isPublicShareOpen,
+        isCentralizationButtonActive
       )
     ).toBe(true);
   });
 
   it('shows tracking prompt if publishing location without known name', () => {
     const bluetoothName = null;
-    const shareLocationModalOpen = false;
-    const publicShareOpen = true;
-    const centralizeActive = false;
+    const isShareLocationModalOpen = false;
+    const isPublicShareOpen = true;
+    const isCentralizationButtonActive = false;
 
     expect(
       isTrackingPromptOpen(
         bluetoothName,
-        shareLocationModalOpen,
-        publicShareOpen,
-        centralizeActive
+        isShareLocationModalOpen,
+        isPublicShareOpen,
+        isCentralizationButtonActive
       )
     ).toBe(true);
   });
