@@ -68,14 +68,25 @@ export type PinKind = 'configure' | 'show' | 'none';
 interface PinProps {
   type: PinKind;
   coords: Location;
+  onClose(): void;
   onClick(a: MouseEvent<HTMLButtonElement>): void;
 }
 
-export const LocationPinMarker = ({ type, coords, onClick }: PinProps) => {
+export const LocationMarker = ({
+  onClose,
+  type,
+  coords,
+  onClick,
+}: PinProps) => {
   switch (type) {
     case 'configure':
       return (
-        <Popup anchor="bottom" longitude={coords.lon} latitude={coords.lat}>
+        <Popup
+          onClose={onClose}
+          anchor="bottom"
+          longitude={coords.lon}
+          latitude={coords.lat}
+        >
           <button onClick={onClick}>qr code</button>
         </Popup>
       );

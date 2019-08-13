@@ -1,8 +1,26 @@
 import React, { FC } from 'react';
 import ReactMapGl, { ViewState, PointerEvent } from 'react-map-gl';
 import { Style } from 'mapbox-gl';
+import { BeaconGeoLocation } from '../location/mqttDeserialize';
+import { easeCubic } from 'd3-ease';
 
 const MIN_ZOOM = 9;
+
+export const flyToUserlocation = (
+  viewport: ViewState,
+  userLocation: BeaconGeoLocation
+) => {
+  const nextViewport = {
+    ...viewport,
+    longitude: userLocation.lon,
+    latitude: userLocation.lat,
+    zoom: 18,
+    transitionDuration: 1000,
+    transitionEasing: easeCubic,
+  };
+
+  return nextViewport;
+};
 
 interface Props {
   onClick(event: PointerEvent): void;

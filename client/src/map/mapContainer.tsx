@@ -1,22 +1,20 @@
 import React, { useState } from 'react';
 import { Marker } from 'react-map-gl';
-
 import { RouteComponentProps, withRouter } from 'react-router';
 
 import applyMapboxColors from './shapeDraw/mapboxStyle';
-import { MapboxButton } from '../common/button';
-import { MQTT_URL } from '../location/urlPromptContainer';
-import UbikampusMap from './ubikampusMap';
+import { MapboxButton as CentralizationButton } from '../common/button';
+import UbikampusMap, { flyToUserlocation } from './ubikampusMap';
 import QrCodeModal from './qrCodeModal';
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
-import { useUbiMqtt, urlForLocation } from '../location/mqttConnection';
+import { urlForLocation } from '../location/mqttConnection';
 import { RaspberryLocation } from '../admin/adminPanel';
 import {
   StaticUbiMarker,
   OfflineMarker,
   NonUserMarker,
   SharedLocationMarker,
-  LocationPinMarker,
+  LocationMarker,
   divideMarkers,
   PinKind,
 } from './marker';
@@ -35,10 +33,11 @@ const DEFAULT_TRACKED_ZOOM = 18;
 interface Props {
   beacons: BeaconGeoLocation[];
   bluetoothName: string | null;
-  setNameModalOpen(a: boolean): void;
+  setCentralizeActive(a: boolean): void;
   pinType: PinKind;
   lastKnownPosition: BeaconGeoLocation | null;
   isAdminPanelOpen: boolean;
+  isAdmin: boolean;
   getDeviceLocation: Location | null;
   setDeviceLocation(a: Location): void;
   devices: RaspberryLocation[];
@@ -51,6 +50,7 @@ const MapContainer = ({
   location,
   setDeviceLocation,
   isAdminPanelOpen,
+  isAdmin,
   getDeviceLocation,
   beacons,
   devices,
@@ -60,7 +60,7 @@ const MapContainer = ({
   setPinType,
   bluetoothName,
   pinType,
-  setNameModalOpen,
+  setCentralizeActive,
 }: RouteComponentProps & Props) => {
   const queryParams =
     location.search === ''
@@ -112,12 +112,19 @@ const MapContainer = ({
 
   return (
     <>
-      <MapboxButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
+      <CentralizationButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
         <button
-          onClick={() => setNameModalOpen(true)}
+          onClick={() => {
+            if (bluetoothName === null) {
+              setCentralizeActive(true);
+            } else {
+              // Use first known user location.
+              setViewport(flyToUserlocation(viewport, allUserMarkers[0]));
+            }
+          }}
           className="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate"
         />
-      </MapboxButton>
+      </CentralizationButton>
       <UbikampusMap
         mapStyle={mapStyle as Style}
         onClick={e => {
@@ -125,7 +132,7 @@ const MapContainer = ({
 
           if (isAdminPanelOpen) {
             setDeviceLocation({ lon, lat });
-          } else {
+          } else if (isAdmin) {
             setModalText(urlForLocation(queryParams, lon, lat));
             setPinType('configure');
             setPinCoordinates({ lat, lon });
@@ -140,9 +147,10 @@ const MapContainer = ({
           closeModal={closeModal}
           modalText={modalText}
         />
-        <LocationPinMarker
+        <LocationMarker
           coords={pinCoordinates}
           onClick={openModal}
+          onClose={() => setPinType('none')}
           type={pinType}
         />
         {allStaticMarkers.map((device, i) => (

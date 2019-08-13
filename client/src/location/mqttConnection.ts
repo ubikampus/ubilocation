@@ -8,7 +8,6 @@ import Deserializer, {
   mqttMessageToGeo,
 } from './mqttDeserialize';
 import queryString from 'query-string';
-import { currentEnv } from '../common/environment';
 import { DEFAULT_TOPIC } from '../location/urlPromptContainer';
 
 const MOCK_MESSAGE_INTERVAL = 2000;
@@ -71,8 +70,13 @@ export const useUbiMqtt = (
           topic || DEFAULT_TOPIC,
           null,
           (connectedTopic: string, msg: string) => {
+            const locations = parser.deserializeMessage(msg);
+            if (!locations) {
+              return;
+            }
+
             const nextBeacons = refreshBeacons(
-              parser.deserializeMessage(msg),
+              locations,
               bluetoothName,
               lastKnownPosition
             );

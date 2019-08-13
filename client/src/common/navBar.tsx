@@ -208,42 +208,35 @@ const MobileSearch = styled.input`
 
 interface Props {
   bluetoothName: string | null;
-  setNameModalOpen(a: boolean): void;
   openPublicShare(a: boolean): void;
   isAdmin: boolean;
   openAdminPanel(a: boolean): void;
   isAdminPanelOpen: boolean;
   publicShareOpen: boolean;
-  shareLocationDropdownOpen: boolean;
+  isShareLocationDropdownOpen: boolean;
   openShareLocationDropdown(a: boolean): void;
   openShareLocationModal(a: boolean): void;
 }
 
 const NavBar = ({
   openPublicShare,
-  setNameModalOpen,
-  bluetoothName,
   isAdmin,
   isAdminPanelOpen,
   openAdminPanel,
   location: { pathname },
   history,
-  shareLocationDropdownOpen,
+  isShareLocationDropdownOpen,
   openShareLocationDropdown,
   openShareLocationModal,
 }: Props & RouteComponentProps) => {
   const [isActive, setActive] = useState(false);
 
-  const withBluetoothName = (after: () => void) => () => {
+  const navigateHomeAndRun = (after: () => void) => () => {
     if (pathname !== '/') {
       history.push('/');
     }
 
-    if (bluetoothName === null) {
-      setNameModalOpen(true);
-    } else {
-      after();
-    }
+    after();
   };
 
   return (
@@ -270,7 +263,7 @@ const NavBar = ({
 
           <RightMenuItem
             onClick={() => {
-              openShareLocationDropdown(!shareLocationDropdownOpen);
+              openShareLocationDropdown(!isShareLocationDropdownOpen);
             }}
           >
             <Icon>
@@ -280,13 +273,13 @@ const NavBar = ({
           </RightMenuItem>
 
           <ShareLocationDropdown
-            isOpen={shareLocationDropdownOpen}
+            isOpen={isShareLocationDropdownOpen}
             openDropdown={openShareLocationDropdown}
-            onOpenShareLocationModal={withBluetoothName(() => {
+            onOpenShareLocationModal={navigateHomeAndRun(() => {
               openShareLocationDropdown(false);
               openShareLocationModal(true);
             })}
-            onOpenPublishLocationModal={withBluetoothName(() => {
+            onOpenPublishLocationModal={navigateHomeAndRun(() => {
               openPublicShare(true);
             })}
           />

@@ -38,6 +38,27 @@ const MainRow = styled.div`
   height: 100%;
 `;
 
+export const isTrackingPromptOpen = (
+  bluetoothName: string | null,
+  isShareLocationModalOpen: boolean,
+  isPublicShareOpen: boolean,
+  isCentralizationButtonActive: boolean
+) => {
+  if (isCentralizationButtonActive) {
+    return true;
+  }
+
+  if (isShareLocationModalOpen && bluetoothName === null) {
+    return true;
+  }
+
+  if (isPublicShareOpen && bluetoothName === null) {
+    return true;
+  }
+
+  return false;
+};
+
 const Router = () => {
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [isAdminPanelOpen, openAdminPanel] = useState(false);
@@ -48,8 +69,8 @@ const Router = () => {
   const [newName, setNewName] = useState('');
   const [newHeight, setNewHeight] = useState('');
   const [roomReserved, setRoomReserved] = useState(false);
-  const [shareLocationModalOpen, openShareLocationModal] = useState(false);
-  const [shareLocationDropdownOpen, openShareLocationDropdown] = useState(
+  const [isShareLocationModalOpen, openShareLocationModal] = useState(false);
+  const [isShareLocationDropdownOpen, openShareLocationDropdown] = useState(
     false
   );
   const [publicShareOpen, openPublicShare] = useState(false);
@@ -80,7 +101,7 @@ const Router = () => {
     queryParams && queryParams.topic ? queryParams.topic : undefined
   );
 
-  const [nameModalOpen, setNameModalOpen] = useState(
+  const [centralizeActive, setCentralizeActive] = useState(
     queryParams && queryParams.lat ? true : false
   );
 
@@ -97,14 +118,14 @@ const Router = () => {
 
   return (
     <BrowserRouter basename={apiRoot()}>
-      {shareLocationModalOpen && bluetoothName && (
+      {isShareLocationModalOpen && bluetoothName && (
         <ShareLocationModal
-          isOpen={shareLocationModalOpen}
+          isOpen={isShareLocationModalOpen}
           onClose={() => openShareLocationModal(false)}
           currentBluetoothName={bluetoothName}
         />
       )}
-      {publicShareOpen && (
+      {publicShareOpen && bluetoothName && (
         <PublicShareModal
           publishLocation={nickname => {
             // TODO
@@ -115,15 +136,24 @@ const Router = () => {
           isOpen={publicShareOpen}
         />
       )}
-      {nameModalOpen && (
+      {isTrackingPromptOpen(
+        bluetoothName,
+        isShareLocationModalOpen,
+        publicShareOpen,
+        centralizeActive
+      ) && (
         <TrackingContainer
           beacons={beacons}
-          onClose={() => setNameModalOpen(false)}
+          onClose={() => {
+            setCentralizeActive(false);
+            openShareLocationModal(false);
+            openPublicShare(false);
+          }}
           confirmName={name => {
             setBluetoothName(name);
             setStaticLocations([]);
             setPinType('none');
-            setNameModalOpen(false);
+            setCentralizeActive(false);
           }}
           onStaticSelected={name => {
             const targetBeacons = beacons.filter(b => b.beaconId === name);
@@ -133,12 +163,11 @@ const Router = () => {
       )}
       <Fullscreen>
         <NavBar
-          setNameModalOpen={setNameModalOpen}
           bluetoothName={bluetoothName}
           isAdmin={admin != null}
           openAdminPanel={openAdminPanel}
           isAdminPanelOpen={isAdminPanelOpen}
-          shareLocationDropdownOpen={shareLocationDropdownOpen}
+          isShareLocationDropdownOpen={isShareLocationDropdownOpen}
           openShareLocationDropdown={openShareLocationDropdown}
           openShareLocationModal={openShareLocationModal}
           publicShareOpen={publicShareOpen}
@@ -211,12 +240,13 @@ const Router = () => {
               render={props => (
                 <MapContainer
                   {...props}
+                  isAdmin={admin !== null}
                   beacons={beacons}
                   pinType={pinType}
                   setPinType={setPinType}
                   lastKnownPosition={lastKnownPosition}
                   staticLocations={staticLocations}
-                  setNameModalOpen={setNameModalOpen}
+                  setCentralizeActive={setCentralizeActive}
                   bluetoothName={bluetoothName}
                   roomReserved={roomReserved}
                   devices={devices}
