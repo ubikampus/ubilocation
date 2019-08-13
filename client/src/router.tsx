@@ -10,7 +10,6 @@ import {
   MockBusContainer,
 } from './3dVisualisation/screenContainer';
 import UrlPromptContainer, { MQTT_URL } from './location/urlPromptContainer';
-import { apiRoot } from './common/environment';
 import MapContainer from './map/mapContainer';
 import AdminPanel, { RaspberryLocation } from './admin/adminPanel';
 import { Location } from './common/typeUtil';
@@ -117,7 +116,7 @@ const Router = () => {
   }, []);
 
   return (
-    <BrowserRouter basename={apiRoot()}>
+    <BrowserRouter>
       {isShareLocationModalOpen && bluetoothName && (
         <ShareLocationModal
           isOpen={isShareLocationModalOpen}

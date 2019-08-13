@@ -25,11 +25,3 @@ const loadEnv = (): Env => {
 };
 
 export const currentEnv = loadEnv();
-
-export const apiRoot = () => {
-  if (currentEnv.NODE_ENV === 'production') {
-    return '/bluetooth-dev-visualizer';
-  } else {
-    return '/';
-  }
-};
