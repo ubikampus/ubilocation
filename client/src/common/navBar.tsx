@@ -270,19 +270,18 @@ const NavBar = ({
               <TiLocationArrow />
             </Icon>
             <RightMenuText>Location Sharing</RightMenuText>
+            <ShareLocationDropdown
+              isOpen={isShareLocationDropdownOpen}
+              openDropdown={openShareLocationDropdown}
+              onOpenShareLocationModal={navigateHomeAndRun(() => {
+                openShareLocationDropdown(false);
+                openShareLocationModal(true);
+              })}
+              onOpenPublishLocationModal={navigateHomeAndRun(() => {
+                openPublicShare(true);
+              })}
+            />
           </RightMenuItem>
-
-          <ShareLocationDropdown
-            isOpen={isShareLocationDropdownOpen}
-            openDropdown={openShareLocationDropdown}
-            onOpenShareLocationModal={navigateHomeAndRun(() => {
-              openShareLocationDropdown(false);
-              openShareLocationModal(true);
-            })}
-            onOpenPublishLocationModal={navigateHomeAndRun(() => {
-              openPublicShare(true);
-            })}
-          />
 
           {isAdmin && (
             <RightMenuItem
