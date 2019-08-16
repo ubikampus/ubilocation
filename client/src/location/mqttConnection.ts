@@ -16,14 +16,12 @@ const ROOM_HEIGHT_METERS = 3.8;
 
 export const refreshBeacons = (
   parsed: MqttMessage[],
-  bluetoothName: string | null,
+  beaconId: string | null,
   lastKnownPosition: BeaconGeoLocation | null
 ) => {
   const geoBeacons = parsed.map(i => mqttMessageToGeo(i));
 
-  const ourBeacon = geoBeacons.find(
-    beacon => beacon.beaconId === bluetoothName
-  );
+  const ourBeacon = geoBeacons.find(beacon => beacon.beaconId === beaconId);
 
   return {
     beacons: geoBeacons,
@@ -48,7 +46,7 @@ export const urlForLocation = (
 
 export const useUbiMqtt = (
   host: string,
-  bluetoothName: string | null,
+  beaconId: string | null,
   topic?: string
 ) => {
   const parser = new Deserializer();
@@ -77,7 +75,7 @@ export const useUbiMqtt = (
 
             const nextBeacons = refreshBeacons(
               locations,
-              bluetoothName,
+              beaconId,
               lastKnownPosition
             );
 

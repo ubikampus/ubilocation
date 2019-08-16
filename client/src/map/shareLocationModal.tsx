@@ -61,11 +61,11 @@ const CopyIcon = styled(GoClippy)`
 interface Props {
   isOpen: boolean;
   onClose(): void;
-  currentBluetoothName: string;
+  currentBeaconId: string;
 }
 
-const ShareLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
-  const queryStr = queryString.stringify({ track: currentBluetoothName });
+const ShareLocation = ({ isOpen, onClose, currentBeaconId }: Props) => {
+  const queryStr = queryString.stringify({ track: currentBeaconId });
   const shareLink = `${baseUrl}/?${queryStr}`;
 
   return (
