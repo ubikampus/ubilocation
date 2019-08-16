@@ -11,7 +11,7 @@ const getTokenFrom = (req: Request) => {
 };
 
 const loginCheck = (req: Request, res: Response, next: () => void) => {
-  if (req.path === '/login') {
+  if (req.path === '/login' || req.path === '/register') {
     return next();
   }
 

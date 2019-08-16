@@ -5,6 +5,7 @@ import fs from 'fs';
 import cors from 'cors';
 import loginRouter from './controllers/login';
 import loginCheck from './middleware/loginCheck';
+import registerRouter from './controllers/register';
 
 if (process.env.TYPECHECK) {
   console.log('type check success!');
@@ -19,6 +20,7 @@ app.use(cors());
 app.use(express.json());
 app.use(loginCheck);
 app.use('/login', loginRouter);
+app.use('/register', registerRouter);
 
 app.post('/sign', async (req, res) => {
   const message = req.body.message;
