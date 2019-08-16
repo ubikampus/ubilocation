@@ -1,12 +1,9 @@
 import process from 'process';
-import express, { Request, Response } from 'express';
-import sign from './signer';
-import fs from 'fs';
+import express from 'express';
 import cors from 'cors';
 import loginRouter from './controllers/login';
 import reservationRouter from './controllers/reservation';
-import loginCheck from './middleware/loginCheck';
-import MqttService from './services/mqtt';
+import signRouter from './controllers/sign';
 
 if (process.env.TYPECHECK) {
   console.log('type check success!');
@@ -14,20 +11,12 @@ if (process.env.TYPECHECK) {
 }
 
 const app = express();
-const KEY_PATH = process.env.KEY_PATH || 'pkey.pem';
-const PKEY = fs.readFileSync(KEY_PATH);
 
 app.use(cors());
 app.use(express.json());
-app.use(loginCheck);
 app.use('/login', loginRouter);
 app.use('/reservations', reservationRouter);
-
-app.post('/sign', async (req, res) => {
-  const message = req.body.message;
-  const signed = await sign(PKEY, message);
-  res.json(signed);
-});
+app.use('/sign', signRouter);
 
 const PORT = 3001;
 app.listen(PORT, () => {
