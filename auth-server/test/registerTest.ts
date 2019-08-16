@@ -1,5 +1,4 @@
 import supertest from 'supertest';
-import jwt from 'jsonwebtoken';
 import app from '../src/app';
 
 const api = supertest(app);

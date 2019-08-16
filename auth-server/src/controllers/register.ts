@@ -5,6 +5,7 @@ const registerRouter = express.Router();
 
 export interface Beacon {
   token: string;
+  beaconId: string;
 }
 
 if (!process.env.SECRET) {
@@ -26,7 +27,7 @@ registerRouter.post('/', (request: Request, response: Response) => {
 
   const token = jwt.sign(tokenContents, SECRET);
 
-  response.status(200).send({ token } as Beacon);
+  response.status(200).send({ token, beaconId: body.beaconId } as Beacon);
 });
 
 export default registerRouter;
