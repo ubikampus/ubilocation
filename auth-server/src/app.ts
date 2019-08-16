@@ -4,7 +4,9 @@ import sign from './signer';
 import fs from 'fs';
 import cors from 'cors';
 import loginRouter from './controllers/login';
+import reservationRouter from './controllers/reservation';
 import loginCheck from './middleware/loginCheck';
+import MqttService from './services/mqtt';
 
 if (process.env.TYPECHECK) {
   console.log('type check success!');
@@ -19,6 +21,7 @@ app.use(cors());
 app.use(express.json());
 app.use(loginCheck);
 app.use('/login', loginRouter);
+app.use('/reservations', reservationRouter);
 
 app.post('/sign', async (req, res) => {
   const message = req.body.message;
