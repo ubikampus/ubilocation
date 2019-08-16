@@ -17,6 +17,8 @@ import NavBar from './common/navBar';
 
 import LoginPromptContainer from './admin/loginPromptContainer';
 import AuthApi, { Admin } from './admin/authApi';
+import ShareLocationApi from './map/shareLocationApi';
+import BeaconIdModal from './map/beaconIdModal';
 import ShareLocationModal from './map/shareLocationModal';
 import PublicShareModal from './map/publicShareModal';
 import { parseQuery, MapLocationQueryDecoder } from './common/urlParse';
@@ -157,6 +159,15 @@ const Router = () => {
           onStaticSelected={name => {
             const targetBeacons = beacons.filter(b => b.beaconId === name);
             setStaticLocations(targetBeacons);
+          }}
+        />
+      )}
+      {true && (
+        <BeaconIdModal
+          onClose={() => console.log('close modal')}
+          confirmId={async (beaconId: string) => {
+            const beacon = await ShareLocationApi.registerBeacon(beaconId);
+            console.log('confirm id, beacon:', beacon);
           }}
         />
       )}
