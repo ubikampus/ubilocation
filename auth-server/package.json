@@ -2,13 +2,14 @@
   "name": "auth-server",
   "version": "1.0.0",
   "description": "",
-  "main": "src/app.ts",
+  "main": "src/index.ts",
   "scripts": {
-    "start": "ts-node-dev --respawn --files src/app.ts",
+    "start": "ts-node-dev --respawn --files src/index.ts",
     "test": "jest",
     "coverage": "jest --silent --verbose --coverage --forceExit",
     "lint": "tslint -p .",
-    "typecheck": "TYPECHECK=1 ts-node-dev --files src/app.ts",
+    "prepush": "npm run lint && npm run test",
+    "typecheck": "TYPECHECK=1 ts-node --files src/index.ts",
     "travis": "npm run coverage && npm run lint && npm run typecheck && curl -sS https://codecov.io/bash | bash -s -- -F authserver"
   },
   "author": "",
