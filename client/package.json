@@ -82,7 +82,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "docker-compose exec -T bluetooth-client npm run prepush"
+      "pre-push": "docker-compose exec -T bluetooth-client npm run prepush && docker-compose exec -T bluetooth-auth-server npm run prepush"
     }
   }
 }

@@ -16,6 +16,7 @@ import NavBar from './common/navBar';
 
 import LoginPromptContainer from './admin/loginPromptContainer';
 import AuthApi, { Admin } from './admin/authApi';
+import AdminTokenStore from './admin/adminTokenStore';
 import ShareLocationApi, { Beacon } from './map/shareLocationApi';
 import BeaconIdModal from './map/beaconIdModal';
 import ShareLocationModal from './map/shareLocationModal';
@@ -112,14 +113,8 @@ const Router = () => {
   );
 
   useEffect(() => {
-    const loggedAdminUserJSON = window.localStorage.getItem(
-      'loggedUbimapsAdmin'
-    );
-
-    if (loggedAdminUserJSON) {
-      const adminUser = JSON.parse(loggedAdminUserJSON);
-      setAdmin(adminUser);
-    }
+    const adminUser = AdminTokenStore.get();
+    setAdmin(adminUser);
   }, []);
 
   return (
@@ -199,7 +194,7 @@ const Router = () => {
                       newName={newName}
                       onLogout={() => {
                         setAdmin(null);
-                        window.localStorage.removeItem('loggedUbimapsAdmin');
+                        AdminTokenStore.clear();
                         openAdminPanel(false);
                       }}
                       setNewName={setNewName}
@@ -264,7 +259,11 @@ const Router = () => {
               exact
               path="/admin"
               render={props => (
-                <LoginPromptContainer {...props} setAdmin={setAdmin} />
+                <LoginPromptContainer
+                  {...props}
+                  admin={admin}
+                  setAdmin={setAdmin}
+                />
               )}
             />
 
