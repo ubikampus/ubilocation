@@ -4,6 +4,9 @@ services:
   bluetooth-client:
     container_name: bluetooth-client
     build: client
+    environment:
+      API_URL: "http://localhost:3001"
+      TILE_URL: "http://localhost:8000"
     ports:
       - "8080:8080"
     volumes:

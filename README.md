@@ -32,4 +32,8 @@ test`.
 
 ### Deploy to production
 
-TODO: document production build
+* Set SECRET variable in .env file
+
+* Generate private key as described above into `pkey/pkey.pem`.
+
+* Run `docker-compose -f docker-compose.prod.yml up --build`

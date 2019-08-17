@@ -3,8 +3,18 @@ import produce from 'immer';
 import styleJson from '../style.json';
 import geojsonSource from './roomSource.json';
 import geojsonLayer from './roomLayer.json';
+import { currentEnv } from '../../common/environment';
 
 (styleJson.sources as any).geojsonSource = geojsonSource;
+styleJson.sources.openmaptiles.url = `${
+  currentEnv.TILE_URL
+}/data/helsinki.json`;
+
+styleJson.sources.library_floorplan.url = `${
+  currentEnv.TILE_URL
+}/data/helsinkiraster.json`;
+styleJson.glyphs = `${currentEnv.TILE_URL}/fonts/{fontstack}/{range}.pbf`;
+
 (styleJson.layers as any).push(geojsonLayer);
 
 /**

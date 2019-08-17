@@ -11,6 +11,8 @@ const EnvDecoder = t.type({
      */
     t.literal('test'),
   ]),
+  API_URL: t.string,
+  TILE_URL: t.string,
 });
 
 export type Env = t.TypeOf<typeof EnvDecoder>;
@@ -20,7 +22,9 @@ export type Env = t.TypeOf<typeof EnvDecoder>;
  */
 const loadEnv = (): Env => {
   return unsafeDecode(EnvDecoder, {
-    NODE_ENV: DEFINE_NODE_ENV,
+    NODE_ENV: process.env.NODE_ENV,
+    API_URL: process.env.API_URL,
+    TILE_URL: process.env.TILE_URL,
   });
 };
 

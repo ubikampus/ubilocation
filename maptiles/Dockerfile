@@ -27,7 +27,7 @@ RUN npm i
 RUN node ./generate.js
 RUN cp -r _output /server/fonts
 
-COPY opts.json /server/opts.json
+COPY opts.json opts-prod.json /server/
 COPY --from=mbtilebuilder /build/floorplan.mbtiles /server
 
 CMD ["/bin/bash", "/usr/src/app/run.sh", "--config", "/server/opts.json"]

@@ -57,7 +57,9 @@ module.exports = {
     // something weird going on with EnvironmentPlugin? Lets use defineplugin
     // instead
     new webpack.DefinePlugin({
-      DEFINE_NODE_ENV: JSON.stringify(isProd ? 'production' : 'development'),
+      'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
+      'process.env.API_URL': JSON.stringify(process.env.API_URL),
+      'process.env.TILE_URL': JSON.stringify(process.env.TILE_URL),
     })
   ]
 }
