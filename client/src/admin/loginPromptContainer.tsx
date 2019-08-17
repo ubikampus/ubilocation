@@ -1,13 +1,19 @@
 import React, { useState, FormEvent } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { RouteComponentProps, withRouter, Redirect } from 'react-router';
 import LoginPrompt from './loginPrompt';
 import AuthApi, { Admin } from './authApi';
+import AdminTokenStore from './adminTokenStore';
 
 interface Props {
+  admin: Admin | null;
   setAdmin(a: Admin): void;
 }
 
-const LoginContainer = ({ history, setAdmin }: RouteComponentProps & Props) => {
+const LoginContainer = ({
+  history,
+  admin,
+  setAdmin,
+}: RouteComponentProps & Props) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [notification, setNotification] = useState('');
@@ -21,10 +27,7 @@ const LoginContainer = ({ history, setAdmin }: RouteComponentProps & Props) => {
       });
 
       setAdmin(adminUser);
-      window.localStorage.setItem(
-        'loggedUbimapsAdmin',
-        JSON.stringify(adminUser)
-      );
+      AdminTokenStore.set(adminUser);
 
       setUsername('');
       setPassword('');
@@ -37,6 +40,10 @@ const LoginContainer = ({ history, setAdmin }: RouteComponentProps & Props) => {
       }, 5000);
     }
   };
+
+  if (admin) {
+    return <Redirect to="/" />;
+  }
 
   return (
     <LoginPrompt
