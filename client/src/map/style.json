@@ -20,15 +20,15 @@
   "sources": {
     "openmaptiles": {
       "type": "vector",
-      "url": null
+      "url": ""
     },
     "library_floorplan": {
       "type": "raster",
-      "url": null
+      "url": ""
     }
   },
   "sprite": "https://openmaptiles.github.io/positron-gl-style/sprite",
-  "glyphs": null,
+  "glyphs": "",
   "layers": [
     {
       "id": "background",
