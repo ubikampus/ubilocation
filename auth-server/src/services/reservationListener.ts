@@ -46,6 +46,5 @@ export default class ReservationListener {
     }
 
     this.reservations = newReservations;
-    console.log(this.reservations);
   }
 }
