@@ -32,8 +32,10 @@ test`.
 
 ### Deploy to production
 
-* Set SECRET variable in .env file
+* Set SECRET variable in .env file. The secret is used for JWT sign/verify
+  process.
 
-* Generate private key as described above into `pkey/pkey.pem`.
+* Generate a separate production private key for as described above into
+  `pkey/pkey.pem`.
 
 * Run `docker-compose -f docker-compose.prod.yml up --build`
