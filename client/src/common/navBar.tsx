@@ -207,7 +207,6 @@ const MobileSearch = styled.input`
 `;
 
 interface Props {
-  bluetoothName: string | null;
   openPublicShare(a: boolean): void;
   isAdmin: boolean;
   openAdminPanel(a: boolean): void;

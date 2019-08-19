@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
 import { Transition } from 'react-spring/renderprops';
 
-import TrackingContainer from './map/trackingContainer';
 import AboutContainer from './aboutContainer';
 import {
   GenuineBusContainer,
@@ -18,6 +17,8 @@ import NavBar from './common/navBar';
 import LoginPromptContainer from './admin/loginPromptContainer';
 import AuthApi, { Admin } from './admin/authApi';
 import AdminTokenStore from './admin/adminTokenStore';
+import ShareLocationApi, { Beacon } from './map/shareLocationApi';
+import BeaconIdModal from './map/beaconIdModal';
 import ShareLocationModal from './map/shareLocationModal';
 import PublicShareModal from './map/publicShareModal';
 import { parseQuery, MapLocationQueryDecoder } from './common/urlParse';
@@ -38,8 +39,8 @@ const MainRow = styled.div`
   height: 100%;
 `;
 
-export const isTrackingPromptOpen = (
-  bluetoothName: string | null,
+export const isBeaconIdPromptOpen = (
+  beaconId: string | null,
   isShareLocationModalOpen: boolean,
   isPublicShareOpen: boolean,
   isCentralizationButtonActive: boolean
@@ -48,11 +49,11 @@ export const isTrackingPromptOpen = (
     return true;
   }
 
-  if (isShareLocationModalOpen && bluetoothName === null) {
+  if (isShareLocationModalOpen && beaconId === null) {
     return true;
   }
 
-  if (isPublicShareOpen && bluetoothName === null) {
+  if (isPublicShareOpen && beaconId === null) {
     return true;
   }
 
@@ -74,7 +75,13 @@ const Router = () => {
     false
   );
   const [publicShareOpen, openPublicShare] = useState(false);
-  const [bluetoothName, setBluetoothName] = useState<string | null>(null);
+  const [beaconId, setBeaconId] = useState<string | null>(null);
+  const [beaconToken, setBeaconToken] = useState<string | null>(null);
+
+  const setBeacon = (beacon: Beacon) => {
+    setBeaconId(beacon.beaconId);
+    setBeaconToken(beacon.token);
+  };
 
   /**
    * Used when user selects "only current" from the location prompt.
@@ -97,7 +104,7 @@ const Router = () => {
     queryParams && queryParams.host ? queryParams.host : MQTT_URL;
   const { beacons, lastKnownPosition } = useUbiMqtt(
     mqttHost,
-    bluetoothName,
+    beaconId,
     queryParams && queryParams.topic ? queryParams.topic : undefined
   );
 
@@ -112,14 +119,14 @@ const Router = () => {
 
   return (
     <BrowserRouter>
-      {isShareLocationModalOpen && bluetoothName && (
+      {isShareLocationModalOpen && beaconId && (
         <ShareLocationModal
           isOpen={isShareLocationModalOpen}
           onClose={() => openShareLocationModal(false)}
-          currentBluetoothName={bluetoothName}
+          currentBeaconId={beaconId}
         />
       )}
-      {publicShareOpen && bluetoothName && (
+      {publicShareOpen && beaconId && (
         <PublicShareModal
           publishLocation={nickname => {
             // TODO
@@ -130,34 +137,29 @@ const Router = () => {
           isOpen={publicShareOpen}
         />
       )}
-      {isTrackingPromptOpen(
-        bluetoothName,
+      {isBeaconIdPromptOpen(
+        beaconId,
         isShareLocationModalOpen,
         publicShareOpen,
         centralizeActive
       ) && (
-        <TrackingContainer
-          beacons={beacons}
+        <BeaconIdModal
           onClose={() => {
             setCentralizeActive(false);
             openShareLocationModal(false);
             openPublicShare(false);
           }}
-          confirmName={name => {
-            setBluetoothName(name);
+          confirmId={async id => {
+            const newBeacon = await ShareLocationApi.registerBeacon(id);
+            setBeacon(newBeacon);
             setStaticLocations([]);
             setPinType('none');
             setCentralizeActive(false);
-          }}
-          onStaticSelected={name => {
-            const targetBeacons = beacons.filter(b => b.beaconId === name);
-            setStaticLocations(targetBeacons);
           }}
         />
       )}
       <Fullscreen>
         <NavBar
-          bluetoothName={bluetoothName}
           isAdmin={admin != null}
           openAdminPanel={openAdminPanel}
           isAdminPanelOpen={isAdminPanelOpen}
@@ -241,7 +243,7 @@ const Router = () => {
                   lastKnownPosition={lastKnownPosition}
                   staticLocations={staticLocations}
                   setCentralizeActive={setCentralizeActive}
-                  bluetoothName={bluetoothName}
+                  beaconId={beaconId}
                   roomReserved={roomReserved}
                   devices={devices}
                   getDeviceLocation={getDeviceLocation}

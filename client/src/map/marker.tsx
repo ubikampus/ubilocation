@@ -100,18 +100,18 @@ export const LocationMarker = ({
 };
 
 /**
- * Why can there be multiple markers for the user? Because we cannot get unique
- * Id for the device thanks to bluetooth security limits. Instead we can utilize
- * the non-unique bluetooth name.
+ * Why can there be multiple markers for the user? Because may not be able to get
+ * an unique ID for the device thanks to bluetooth security limits. Hence, we don't
+ * assume the IDs to be unique.
  */
 export const divideMarkers = (
   beacons: BeaconGeoLocation[],
-  bluetoothName: string | null,
+  beaconId: string | null,
   lastKnownPosition: BeaconGeoLocation | null
 ) => {
   const [userMarkers, nonUserMarkers] = partition(
     beacons,
-    beacon => beacon.beaconId === bluetoothName
+    beacon => beacon.beaconId === beaconId
   );
 
   const allUserMarkers =

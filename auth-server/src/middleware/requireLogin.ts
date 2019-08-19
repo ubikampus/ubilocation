@@ -1,6 +1,12 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
+if (!process.env.SECRET) {
+  throw new Error('SECRET env variable cannot be empty');
+}
+
+const { SECRET } = process.env;
+
 const getTokenFrom = (req: Request) => {
   const authorization = req.get('authorization');
   if (!(authorization && authorization.toLowerCase().startsWith('bearer '))) {
@@ -10,25 +16,15 @@ const getTokenFrom = (req: Request) => {
   return authorization.substring(7);
 };
 
-const loginCheck = (req: Request, res: Response, next: () => void) => {
-  if (req.path === '/login') {
-    return next();
-  }
-
+const requireLogin = (req: Request, res: Response, next: () => void) => {
   const token = getTokenFrom(req);
   if (!token) {
     return res.status(401).json({ error: 'token missing' });
   }
 
-  if (!process.env.SECRET) {
-    return res
-      .status(500)
-      .json({ error: 'secret is undefined (set it in your .env file)' });
-  }
-
   let decodedToken;
   try {
-    decodedToken = jwt.verify(token, process.env.SECRET) as any;
+    decodedToken = jwt.verify(token, SECRET) as any;
   } catch (exception) {
     return res.status(401).json({ error: 'invalid token' });
   }
@@ -44,4 +40,4 @@ const loginCheck = (req: Request, res: Response, next: () => void) => {
   next();
 };
 
-export default loginCheck;
+export default requireLogin;

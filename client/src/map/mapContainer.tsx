@@ -32,7 +32,7 @@ const DEFAULT_TRACKED_ZOOM = 18;
 
 interface Props {
   beacons: BeaconGeoLocation[];
-  bluetoothName: string | null;
+  beaconId: string | null;
   setCentralizeActive(a: boolean): void;
   pinType: PinKind;
   lastKnownPosition: BeaconGeoLocation | null;
@@ -58,7 +58,7 @@ const MapContainer = ({
   lastKnownPosition,
   roomReserved,
   setPinType,
-  bluetoothName,
+  beaconId,
   pinType,
   setCentralizeActive,
 }: RouteComponentProps & Props) => {
@@ -91,7 +91,7 @@ const MapContainer = ({
 
   const { isOnline, allUserMarkers, nonUserMarkers } = divideMarkers(
     beacons,
-    bluetoothName,
+    beaconId,
     lastKnownPosition
   );
 
@@ -103,11 +103,11 @@ const MapContainer = ({
     ? [...staticMarkers, getDeviceLocation]
     : staticMarkers;
 
-  const trackedBtName =
+  const trackedBeaconId =
     queryParams && queryParams.track ? queryParams.track : null;
 
-  const sharedLocationMarkers = trackedBtName
-    ? nonUserMarkers.filter(b => b.beaconId === trackedBtName)
+  const sharedLocationMarkers = trackedBeaconId
+    ? nonUserMarkers.filter(b => b.beaconId === trackedBeaconId)
     : [];
 
   return (
@@ -115,11 +115,13 @@ const MapContainer = ({
       <CentralizationButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
         <button
           onClick={() => {
-            if (bluetoothName === null) {
+            if (beaconId === null) {
               setCentralizeActive(true);
             } else {
               // Use first known user location.
-              setViewport(flyToUserlocation(viewport, allUserMarkers[0]));
+              if (allUserMarkers.length > 0) {
+                setViewport(flyToUserlocation(viewport, allUserMarkers[0]));
+              }
             }
           }}
           className="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate"
@@ -168,7 +170,7 @@ const MapContainer = ({
             className="mapboxgl-user-location-dot"
           />
         ))}
-        {trackedBtName
+        {trackedBeaconId
           ? sharedLocationMarkers.map((beacon, i) => (
               <SharedLocationMarker
                 key={'sharedLocationMarker-' + i}
