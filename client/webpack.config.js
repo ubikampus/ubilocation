@@ -50,8 +50,7 @@ module.exports = {
   plugins: [
     new ForkTsCheckerWebpackPlugin({ reportFiles: 'src/**/*.{ts,tsx}', tslint: true }),
     new HtmlWebpackPlugin({
-      template: 'index.html',
-      favicon: 'asset/ubi_ukko_small.png',
+      template: 'index.html'
     }),
 
     // something weird going on with EnvironmentPlugin? Lets use defineplugin
