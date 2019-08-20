@@ -1,7 +1,7 @@
 import axios from 'axios';
+import { currentEnv } from '../common/environment';
 
-/* TODO: This URL should be an environment variable */
-const baseUrl = 'http://localhost:3001';
+const API_URL = currentEnv.API_URL;
 
 /**
  * Note: This type definition is shared with auth-server
@@ -12,7 +12,7 @@ export interface Beacon {
 }
 
 const registerBeacon = async (beaconId: string): Promise<Beacon> => {
-  const url = `${baseUrl}/register`;
+  const url = `${API_URL}/register`;
   const response = await axios.post<Beacon>(url, { beaconId });
   return response.data;
 };
