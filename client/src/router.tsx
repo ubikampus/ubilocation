@@ -8,7 +8,7 @@ import {
   GenuineBusContainer,
   MockBusContainer,
 } from './3dVisualisation/screenContainer';
-import UrlPromptContainer, { MQTT_URL } from './location/urlPromptContainer';
+import UrlPromptContainer from './location/urlPromptContainer';
 import MapContainer from './map/mapContainer';
 import AdminPanel, { RaspberryLocation } from './admin/adminPanel';
 import { Location } from './common/typeUtil';
@@ -25,6 +25,7 @@ import { parseQuery, MapLocationQueryDecoder } from './common/urlParse';
 import { useUbiMqtt } from './location/mqttConnection';
 import { BeaconGeoLocation } from './location/mqttDeserialize';
 import { PinKind } from './map/marker';
+import { fetchConfig, ClientConfig } from './common/environment';
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -60,7 +61,11 @@ export const isBeaconIdPromptOpen = (
   return false;
 };
 
-const Router = () => {
+interface Props {
+  appConfig: ClientConfig;
+}
+
+const Router = ({ appConfig }: Props) => {
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [isAdminPanelOpen, openAdminPanel] = useState(false);
   const [getDeviceLocation, setDeviceLocation] = useState<Location | null>(
@@ -101,7 +106,7 @@ const Router = () => {
   const [pinType, setPinType] = useState<PinKind>(initialPinType);
 
   const mqttHost =
-    queryParams && queryParams.host ? queryParams.host : MQTT_URL;
+    queryParams && queryParams.host ? queryParams.host : appConfig.MQTT_URL;
   const { beacons, lastKnownPosition } = useUbiMqtt(
     mqttHost,
     beaconId,
@@ -236,6 +241,7 @@ const Router = () => {
               render={props => (
                 <MapContainer
                   {...props}
+                  appConfig={appConfig}
                   isAdmin={admin !== null}
                   beacons={beacons}
                   pinType={pinType}

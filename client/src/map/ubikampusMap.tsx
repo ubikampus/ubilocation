@@ -4,8 +4,6 @@ import { Style } from 'mapbox-gl';
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
 import { easeCubic } from 'd3-ease';
 
-const MIN_ZOOM = 9;
-
 export const flyToUserlocation = (
   viewport: ViewState,
   userLocation: BeaconGeoLocation
@@ -28,6 +26,7 @@ interface Props {
   setViewport(a: ViewState): void;
   pointerCursor: boolean;
   mapStyle: Style;
+  minZoom: number;
 }
 
 const UbikampusMap: FC<Props> = ({
@@ -37,6 +36,7 @@ const UbikampusMap: FC<Props> = ({
   setViewport,
   mapStyle,
   pointerCursor,
+  minZoom,
 }) => (
   <ReactMapGl
     // NOTE: onViewportChange adds extra properties to `viewport`
@@ -44,7 +44,7 @@ const UbikampusMap: FC<Props> = ({
     mapStyle={mapStyle}
     width="100%"
     height="auto"
-    minZoom={MIN_ZOOM}
+    minZoom={minZoom}
     getCursor={pointerCursor ? () => 'pointer' : undefined}
     style={{ flex: '1' }}
     onViewportChange={nextViewport => {

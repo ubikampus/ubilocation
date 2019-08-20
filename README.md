@@ -30,10 +30,23 @@ See `scripts` section in package.json for other development commands. For
 example run client unit tests via `docker-compose exec bluetooth-client npm
 test`.
 
+### Configuration
+
+ | env variable | description
+----|----
+INITIAL_LATITUDE | latitude as float for the initial map position (WGS84)
+INITIAL_LONGITUDE | longitude as float for the initial map position
+INITIAL_ZOOM | mapbox zoom level, from 1 to 22
+ADMIN_USER | username for admin login (/admin)
+ADMIN_PASSWORD | password for admin login
+JWT_SECRET | secret key for JWT sign/verify process
+MQTT_URL | URL for mqtt bus, used for location data, calibration messages and location sharing. E.g. `wss://example.com:9002/mqtt`
+
 ### Deploy to production
 
-* Set SECRET variable in .env file. The secret is used for JWT sign/verify
-  process.
+* Set secret environment variables (ADMIN_* and JWT_SECRET) in .env file and
+  other configuration into docker-compose.prod.yml. See explanation for
+  configuration parameters above.
 
 * Generate a separate production private key for as described above into
   `pkey/pkey.pem`.
