@@ -57,7 +57,7 @@ interface Props {
 
 const ShareLocation = ({ isOpen, onClose, currentBeaconId }: Props) => {
   const queryStr = queryString.stringify({ track: currentBeaconId });
-  const shareLink = `${window.location.href}?${queryStr}`;
+  const shareLink = `${window.location.origin}/?${queryStr}`;
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose}>
