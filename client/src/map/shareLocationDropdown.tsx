@@ -20,6 +20,11 @@ const DropdownContent = styled.div`
    * (since links don't have rounded corners)
    */
   overflow: hidden;
+
+  /* hack for collapsed nav button positioning */
+  @media (max-width: 750px) {
+    margin-left: -65px;
+  }
 `;
 
 const DropdownLink = styled.div`
