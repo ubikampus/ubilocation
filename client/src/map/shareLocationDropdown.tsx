@@ -13,7 +13,7 @@ const DropdownContent = styled.div`
    */
   position: absolute;
   top: 48px;
-  background-color: #68a0fd;
+  background-color: #4287f5;
   border-radius: 0 0 8px 8px;
   /**
    * So that the corners stay rounded also when hovering over a link
@@ -27,7 +27,7 @@ const DropdownLink = styled.div`
   font-size: 12px;
   color: white;
   &:hover {
-    background-color: #7db2ff;
+    background-color: #68a0fd;
   }
   cursor: pointer;
   padding: 10px 15px;
