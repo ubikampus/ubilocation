@@ -1,0 +1,47 @@
+version: '3'
+
+# TODO: use images from dockerhub instead of building them locally.
+
+services:
+  bluetooth-nginx-ingress:
+    restart: unless-stopped
+    logging:
+      driver: journald
+    container_name: bluetooth-nginx-ingress
+    build:
+      context: client
+      dockerfile: Dockerfile.prod
+      args:
+        API_URL: "/api"
+        TILE_URL: "/tiles"
+    volumes:
+      - "./nginx:/etc/nginx/"
+    ports:
+      - "80:80"
+
+      # TODO: add TLS supports via letsencrypt
+      # - "443:443"
+
+  bluetooth-server:
+    restart: unless-stopped
+    logging:
+      driver: journald
+    container_name: bluetooth-server
+    environment:
+      SECRET: $SECRET
+
+      # Used for signing admin messages for MQTT bus
+      KEY_PATH: pkey/pkey.pem
+    build:
+      context: auth-server
+      dockerfile: Dockerfile.prod
+    volumes:
+      - "./pkey:/auth-server/pkey"
+
+  bluetooth-tileserver:
+    restart: unless-stopped
+    logging:
+      driver: journald
+    container_name: bluetooth-tileserver
+    build: maptiles
+    command: /bin/bash /usr/src/app/run.sh --config /server/opts-prod.json

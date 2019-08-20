@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "ts-node-dev --respawn --files src/index.ts",
+    "build": "NODE_ENV=production tsc --build tsconfig.json",
     "test": "jest",
     "coverage": "jest --silent --verbose --coverage --forceExit",
     "lint": "tslint -p .",

@@ -8,4 +8,4 @@ script:
   - docker build --no-cache -t bluetooth-auth-server auth-server
   - docker run -e SECRET=aaaa $ci_env bluetooth-auth-server npm run travis
   - docker build --no-cache -t bluetooth-client client
-  - docker run $ci_env bluetooth-client npm run travis
+  - docker run $ci_env -e API_URL=a -e TILE_URL=a bluetooth-client npm run travis

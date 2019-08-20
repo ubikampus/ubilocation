@@ -8,7 +8,7 @@
       "mbtiles": ""
     },
     "domains": [
-      "localhost:8000"
+      "localhost:80/tiles"
     ],
     "formatQuality": {
       "jpeg": 80,

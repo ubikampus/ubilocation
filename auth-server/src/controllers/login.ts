@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import express from 'express';
 const loginRouter = express.Router();
 
+// TODO: make these configurable by env variables
 const adminUsername = 'admin';
 const adminPassword = '#Apollo11';
 
