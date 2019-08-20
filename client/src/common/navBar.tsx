@@ -181,10 +181,10 @@ const MobileMenuItem = styled.li`
   padding: 5px;
 
   &:hover {
-    background-color: #5E9BFC;
+    background-color: #5e9bfc;
   }
   &:active {
-    background-color: #5E9BFC;
+    background-color: #5e9bfc;
   }
   & > div > svg {
     height: 80%;
