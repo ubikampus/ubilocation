@@ -160,7 +160,7 @@ const Mobile = styled.nav<{ active: boolean }>`
   display: ${props => (props.active ? 'inherit' : 'none')};
 
   color: white;
-  background-color: #7db2ff;
+  background-color: #20262b;
 
   @media (min-width: 575px) {
     display: none;
@@ -181,10 +181,10 @@ const MobileMenuItem = styled.li`
   padding: 5px;
 
   &:hover {
-    background-color: #94bfff;
+    background-color: #5e9bfc;
   }
   &:active {
-    background-color: #94bfff;
+    background-color: #5e9bfc;
   }
   & > div > svg {
     height: 80%;
