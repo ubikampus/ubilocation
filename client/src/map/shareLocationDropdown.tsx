@@ -23,7 +23,7 @@ const DropdownContent = styled.div`
 
   /* hack for collapsed nav button positioning */
   @media (max-width: 750px) {
-    margin-left: -65px;
+    margin-left: -99px;
   }
 `;
 
