@@ -74,6 +74,9 @@ const Router = ({ appConfig }: Props) => {
   const [devices, setDevices] = useState<RaspberryLocation[]>([]);
   const [newName, setNewName] = useState('');
   const [newHeight, setNewHeight] = useState('');
+
+  // setRoomReserved can be used for controlling room reservation status.
+  // TODO: use genuine MQTT bus data for room reservation status
   const [roomReserved, setRoomReserved] = useState(false);
   const [isShareLocationModalOpen, openShareLocationModal] = useState(false);
   const [isShareLocationDropdownOpen, openShareLocationDropdown] = useState(
@@ -81,11 +84,9 @@ const Router = ({ appConfig }: Props) => {
   );
   const [publicShareOpen, openPublicShare] = useState(false);
   const [beaconId, setBeaconId] = useState<string | null>(null);
-  const [beaconToken, setBeaconToken] = useState<string | null>(null);
 
   const setBeacon = (beacon: Beacon) => {
     setBeaconId(beacon.beaconId);
-    setBeaconToken(beacon.token);
   };
 
   /**
@@ -191,9 +192,6 @@ const Router = ({ appConfig }: Props) => {
                   (props => (
                     <AdminPanel
                       style={props}
-                      toggleRoomReservation={() =>
-                        setRoomReserved(!roomReserved)
-                      }
                       newHeight={newHeight}
                       setNewHeight={setNewHeight}
                       newName={newName}
