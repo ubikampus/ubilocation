@@ -23,4 +23,3 @@ declare module 'ubimqtt' {
   }
   export = UbiMqtt;
 }
-
