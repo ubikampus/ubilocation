@@ -22,7 +22,7 @@ describe('tests for the login router', () => {
   });
 });
 
-describe('tests for the login check middleware', () => {
+describe('tests for the requireLogin middleware', () => {
   test('access denied if token missing', async () => {
     await api
       .post('/sign')
