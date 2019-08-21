@@ -59,9 +59,11 @@ export const NonUserMarker = styled(OfflineMarker)`
   }
 `;
 
-export const SharedLocationMarker = styled(NonUserMarker)`
+export const PrivateLocationMarker = styled(NonUserMarker)`
   background-color: green;
 `;
+
+export const PublicLocationMarker = styled(NonUserMarker)``;
 
 export type PinKind = 'configure' | 'show' | 'none';
 

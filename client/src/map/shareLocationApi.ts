@@ -5,10 +5,15 @@ const API_URL = currentEnv.API_URL;
 const PUBLIC_URL = `${API_URL}/public`;
 
 /**
- * Note: This type definition is shared with auth-server
+ * Note: These type definitions are shared with auth-server
  */
 export interface Beacon {
   token: string;
+  beaconId: string;
+  nickname: string;
+}
+
+export interface PublicBeacon {
   beaconId: string;
   nickname: string;
 }
@@ -19,7 +24,7 @@ const registerBeacon = async (beaconId: string): Promise<Beacon> => {
   return response.data;
 };
 
-const fetchPublicBeacons = async (): Promise<Beacon[]> => {
+const fetchPublicBeacons = async (): Promise<PublicBeacon[]> => {
   const response = await axios.get(PUBLIC_URL);
   return response.data;
 };
@@ -31,7 +36,7 @@ const publish = async (token: string): Promise<{}> => {
     },
   };
 
-  const response = await axios.post(PUBLIC_URL, {}, config);
+  const response = await axios.post<{}>(PUBLIC_URL, {}, config);
   return response.data;
 };
 

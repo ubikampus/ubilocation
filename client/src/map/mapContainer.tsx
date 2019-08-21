@@ -13,7 +13,8 @@ import {
   StaticUbiMarker,
   OfflineMarker,
   NonUserMarker,
-  SharedLocationMarker,
+  PrivateLocationMarker,
+  PublicLocationMarker,
   LocationMarker,
   divideMarkers,
   PinKind,
@@ -21,6 +22,7 @@ import {
 import { Location } from '../common/typeUtil';
 import { Style } from 'mapbox-gl';
 import { MapLocationQueryDecoder, parseQuery } from '../common/urlParse';
+import { PublicBeacon } from './shareLocationApi';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 17;
@@ -44,6 +46,7 @@ interface Props {
   setPinType(a: PinKind): void;
   roomReserved: boolean;
   staticLocations: BeaconGeoLocation[];
+  publicBeacons: PublicBeacon[];
 }
 
 const MapContainer = ({
@@ -61,6 +64,7 @@ const MapContainer = ({
   beaconId,
   pinType,
   setCentralizeActive,
+  publicBeacons,
 }: RouteComponentProps & Props) => {
   const queryParams =
     location.search === ''
@@ -106,9 +110,35 @@ const MapContainer = ({
   const trackedBeaconId =
     queryParams && queryParams.track ? queryParams.track : null;
 
-  const sharedLocationMarkers = trackedBeaconId
+  const privateLocationMarkers = trackedBeaconId
     ? nonUserMarkers.filter(b => b.beaconId === trackedBeaconId)
     : [];
+
+  const filterPublicMarkers = (
+    markers: BeaconGeoLocation[],
+    pubBeacons: PublicBeacon[]
+  ) => {
+    return markers.filter(
+      b => pubBeacons.find(p => p.beaconId === b.beaconId) !== undefined
+    );
+  };
+
+  const publicLocationMarkers = filterPublicMarkers(
+    nonUserMarkers,
+    publicBeacons
+  );
+
+  const getNicknameForMarker = (
+    marker: BeaconGeoLocation,
+    pubBeacons: PublicBeacon[]
+  ) => {
+    const beacon = pubBeacons.find(p => p.beaconId === marker.beaconId);
+    if (!beacon) {
+      return null;
+    }
+
+    return beacon.nickname;
+  };
 
   return (
     <>
@@ -171,21 +201,25 @@ const MapContainer = ({
           />
         ))}
         {trackedBeaconId
-          ? sharedLocationMarkers.map((beacon, i) => (
-              <SharedLocationMarker
-                key={'sharedLocationMarker-' + i}
+          ? privateLocationMarkers.map((beacon, i) => (
+              <PrivateLocationMarker
+                key={'privateLocationMarker-' + i}
                 latitude={beacon.lat}
                 longitude={beacon.lon}
                 className="mapboxgl-user-location-dot"
               />
             ))
-          : nonUserMarkers.map((beacon, i) => (
-              <NonUserMarker
-                key={i}
+          : publicLocationMarkers.map((beacon, i) => (
+              <PublicLocationMarker
+                key={'publicLocationMarker' + i}
                 latitude={beacon.lat}
                 longitude={beacon.lon}
                 className="mapboxgl-user-location-dot"
-              />
+              >
+                <div style={{ fontSize: 12, paddingTop: 12 }}>
+                  {getNicknameForMarker(beacon, publicBeacons)}
+                </div>
+              </PublicLocationMarker>
             ))}
       </UbikampusMap>
     </>

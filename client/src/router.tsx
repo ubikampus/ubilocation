@@ -17,7 +17,7 @@ import NavBar from './common/navBar';
 import LoginPromptContainer from './admin/loginPromptContainer';
 import AuthApi, { Admin } from './admin/authApi';
 import AdminTokenStore from './admin/adminTokenStore';
-import ShareLocationApi, { Beacon } from './map/shareLocationApi';
+import ShareLocationApi, { Beacon, PublicBeacon } from './map/shareLocationApi';
 import BeaconIdModal from './map/beaconIdModal';
 import ShareLocationModal from './map/shareLocationModal';
 import PublicShareModal from './map/publicShareModal';
@@ -85,6 +85,8 @@ const Router = () => {
     setBeaconToken(beacon.token);
   };
 
+  const [publicBeacons, setPublicBeacons] = useState<PublicBeacon[]>([]);
+
   /**
    * Used when user selects "only current" from the location prompt.
    */
@@ -117,6 +119,15 @@ const Router = () => {
   useEffect(() => {
     const adminUser = AdminTokenStore.get();
     setAdmin(adminUser);
+
+    ShareLocationApi.fetchPublicBeacons()
+      .then(pubBeacons => {
+        setPublicBeacons(pubBeacons);
+      })
+      .catch(e => {
+        console.log('Failed to fetch public beacons');
+        console.log(e.message);
+      });
   }, []);
 
   return (
@@ -254,6 +265,7 @@ const Router = () => {
                   getDeviceLocation={getDeviceLocation}
                   setDeviceLocation={setDeviceLocation}
                   isAdminPanelOpen={isAdminPanelOpen}
+                  publicBeacons={publicBeacons}
                 />
               )}
             />
