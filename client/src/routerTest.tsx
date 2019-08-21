@@ -19,7 +19,15 @@ describe('<Router />', () => {
       done();
     });
 
-    mount(<Router />);
+    const config = {
+      INITIAL_LATITUDE: 1.1,
+      INITIAL_LONGITUDE: 2.2,
+      INITIAL_ZOOM: 10,
+      MINIMUM_ZOOM: 5,
+      MQTT_URL: 'ws://example.com',
+    };
+
+    mount(<Router appConfig={config} />);
   });
 
   /**

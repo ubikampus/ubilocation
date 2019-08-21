@@ -21,16 +21,16 @@ import {
 import { Location } from '../common/typeUtil';
 import { Style } from 'mapbox-gl';
 import { MapLocationQueryDecoder, parseQuery } from '../common/urlParse';
-
-const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
-const DEFAULT_NONTRACKED_ZOOM = 17;
+import { ClientConfig } from '../common/environment';
 
 /**
- * When user lands to the page with a position.
+ * When user lands to the page with a position. Probs not needed as env
+ * variable..
  */
 const DEFAULT_TRACKED_ZOOM = 18;
 
 interface Props {
+  appConfig: ClientConfig;
   beacons: BeaconGeoLocation[];
   beaconId: string | null;
   setCentralizeActive(a: boolean): void;
@@ -47,6 +47,7 @@ interface Props {
 }
 
 const MapContainer = ({
+  appConfig,
   location,
   setDeviceLocation,
   isAdminPanelOpen,
@@ -70,7 +71,7 @@ const MapContainer = ({
   const initialCoords =
     queryParams && queryParams.lat && queryParams.lon
       ? { lat: queryParams.lat, lon: queryParams.lon }
-      : KUMPULA_COORDS;
+      : { lat: appConfig.INITIAL_LATITUDE, lon: appConfig.INITIAL_LONGITUDE };
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const mapStyle = applyMapboxColors(roomReserved);
   const [modalText, setModalText] = useState('');
@@ -86,7 +87,7 @@ const MapContainer = ({
     zoom:
       queryParams && queryParams.lat
         ? DEFAULT_TRACKED_ZOOM
-        : DEFAULT_NONTRACKED_ZOOM,
+        : appConfig.INITIAL_ZOOM,
   });
 
   const { isOnline, allUserMarkers, nonUserMarkers } = divideMarkers(
@@ -128,6 +129,7 @@ const MapContainer = ({
         />
       </CentralizationButton>
       <UbikampusMap
+        minZoom={appConfig.MINIMUM_ZOOM}
         mapStyle={mapStyle as Style}
         onClick={e => {
           const [lon, lat] = e.lngLat;

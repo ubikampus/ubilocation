@@ -4,6 +4,7 @@ import sign from './signer';
 import fs from 'fs';
 import cors from 'cors';
 import loginRouter from './controllers/login';
+import config from './controllers/config';
 import requireLogin from './middleware/requireLogin';
 import registerRouter from './controllers/register';
 
@@ -23,5 +24,6 @@ app.post('/sign', async (req, res) => {
   const signed = await sign(PKEY, message);
   res.json(signed);
 });
+app.get('/config', config);
 
 export default app;
