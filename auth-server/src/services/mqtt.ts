@@ -11,7 +11,7 @@ export default class MqttService {
         if (!error) {
           resolve(this);
         } else {
-          reject(error)
+          reject(error);
         }
       });
     });
@@ -26,6 +26,28 @@ export default class MqttService {
           reject(error);
         }
       });
+    });
+  }
+
+  subscribeSigned(
+    topic: string,
+    publicKeys: string[],
+    listener: any
+  ): Promise<MqttService> {
+    return new Promise((resolve, reject) => {
+      this.mqtt.subscribeSigned(
+        topic,
+        publicKeys,
+        this,
+        listener,
+        (error: any) => {
+          if (!error) {
+            resolve(this);
+          } else {
+            reject(error);
+          }
+        }
+      );
     });
   }
 }
