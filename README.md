@@ -37,10 +37,12 @@ test`.
 INITIAL_LATITUDE | latitude as float for the initial map position (WGS84)
 INITIAL_LONGITUDE | longitude as float for the initial map position
 INITIAL_ZOOM | mapbox zoom level, from 1 to 22
+MINIMUM_ZOOM | mapbox minimum zoom level
 ADMIN_USER | username for admin login (/admin)
 ADMIN_PASSWORD | password for admin login
 JWT_SECRET | secret key for JWT sign/verify process
 MQTT_URL | URL for mqtt bus, used for location data, calibration messages and location sharing. E.g. `wss://example.com:9002/mqtt`
+
 
 ### Deploy to production
 
