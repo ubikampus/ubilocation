@@ -38,12 +38,13 @@ services:
       ADMIN_PASSWORD: $ADMIN_PASSWORD
 
       # Used for signing admin messages for MQTT bus
-      KEY_PATH: pkey/pkey.pem
+      KEY_PATH: privatekey/pkey.pem
+
     build:
       context: auth-server
       dockerfile: Dockerfile.prod
     volumes:
-      - "./pkey:/auth-server/pkey"
+      - "./privatekey:/auth-server/privatekey"
 
   bluetooth-tileserver:
     restart: unless-stopped
@@ -51,4 +52,4 @@ services:
       driver: journald
     container_name: bluetooth-tileserver
     build: maptiles
-    command: /bin/bash /usr/src/app/run.sh --config /server/opts-prod.json
+    command: /bin/bash /usr/src/app/run.sh --config /server/opts-prod.json -u https://map.ubikampus.net/tiles
