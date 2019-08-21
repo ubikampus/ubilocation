@@ -76,10 +76,12 @@ const Router = () => {
   );
   const [publicShareOpen, openPublicShare] = useState(false);
   const [beaconId, setBeaconId] = useState<string | null>(null);
+  const [nickname, setNickname] = useState<string | null>(null);
   const [beaconToken, setBeaconToken] = useState<string | null>(null);
 
   const setBeacon = (beacon: Beacon) => {
     setBeaconId(beacon.beaconId);
+    setNickname(beacon.nickname);
     setBeaconToken(beacon.token);
   };
 
@@ -128,11 +130,14 @@ const Router = () => {
       )}
       {publicShareOpen && beaconId && (
         <PublicShareModal
-          publishLocation={nickname => {
-            // TODO
-            console.log('publishing our location as user', nickname.payload);
-            openPublicShare(false);
+          publishLocation={async () => {
+            if (beaconToken) {
+              console.log('publishing our location as user', nickname);
+              await ShareLocationApi.publish(beaconToken);
+              openPublicShare(false);
+            }
           }}
+          nickname={nickname || 'nickname not set'}
           onClose={() => openPublicShare(false)}
           isOpen={publicShareOpen}
         />

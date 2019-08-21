@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import Modal, {
   ModalHeader,
@@ -6,24 +6,19 @@ import Modal, {
   ModalButtonRow,
   UbiLogo,
 } from '../common/modal';
-import { SignedMessage } from '../admin/authApi';
 import styled from 'styled-components';
 import { PrimaryButton, SecondaryButton } from '../common/button';
-
-type Nickname = string;
 
 interface Props {
   isOpen: boolean;
   onClose(): void;
-  publishLocation(message: SignedMessage<Nickname>): void;
+  nickname: string;
+  publishLocation(): void;
 }
 
-/**
- * TODO: implement
- *
- * Fetch generated nickname from auth-server
- */
-const fetchNickname = async (): Promise<SignedMessage<Nickname>> => {
+/*
+// Fetch generated nickname from auth-server
+const fetchNickname = async (): Promise<Nickname> => {
   // axios.get('/nickname') . . .
   return {
     payload: 'random-nick-12',
@@ -35,6 +30,7 @@ const fetchNickname = async (): Promise<SignedMessage<Nickname>> => {
     ],
   };
 };
+*/
 
 const Nickname = styled.span`
   font-family: monospace;
@@ -44,11 +40,13 @@ const MainRow = styled.div`
   display: flex;
 `;
 
-const PublicShareModal = ({ isOpen, onClose, publishLocation }: Props) => {
-  const [nickname, setNickname] = useState<SignedMessage<Nickname> | null>(
-    null
-  );
-
+const PublicShareModal = ({
+  isOpen,
+  onClose,
+  nickname,
+  publishLocation,
+}: Props) => {
+  /*
   useEffect(() => {
     const generateNick = async () => {
       const nick = await fetchNickname();
@@ -58,6 +56,7 @@ const PublicShareModal = ({ isOpen, onClose, publishLocation }: Props) => {
 
     generateNick();
   }, []);
+  */
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose}>
@@ -74,7 +73,7 @@ const PublicShareModal = ({ isOpen, onClose, publishLocation }: Props) => {
               'loading...'
             ) : (
               <>
-                using nickname <Nickname>{nickname.payload}</Nickname>
+                using nickname <Nickname>{nickname}</Nickname>
               </>
             )}
           </ModalParagraph>
@@ -83,7 +82,7 @@ const PublicShareModal = ({ isOpen, onClose, publishLocation }: Props) => {
 
       <ModalButtonRow>
         <SecondaryButton onClick={() => onClose()}>Cancel</SecondaryButton>
-        <PrimaryButton onClick={() => nickname && publishLocation(nickname)}>
+        <PrimaryButton onClick={() => nickname && publishLocation()}>
           Ok
         </PrimaryButton>
       </ModalButtonRow>
