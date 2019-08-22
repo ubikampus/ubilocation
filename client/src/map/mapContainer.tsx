@@ -3,7 +3,7 @@ import { Marker } from 'react-map-gl';
 import { RouteComponentProps, withRouter } from 'react-router';
 
 import applyMapboxColors from './shapeDraw/mapboxStyle';
-import { MapboxButton as CentralizationButton } from '../common/button';
+import { CentralizationButton } from '../common/button';
 import UbikampusMap, { flyToUserlocation } from './ubikampusMap';
 import QrCodeModal from './qrCodeModal';
 import { BeaconGeoLocation } from '../location/mqttDeserialize';

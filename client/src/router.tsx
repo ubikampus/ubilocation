@@ -25,7 +25,7 @@ import { parseQuery, MapLocationQueryDecoder } from './common/urlParse';
 import { useUbiMqtt } from './location/mqttConnection';
 import { BeaconGeoLocation } from './location/mqttDeserialize';
 import { PinKind } from './map/marker';
-import { fetchConfig, ClientConfig } from './common/environment';
+import { ClientConfig } from './common/environment';
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -33,6 +33,8 @@ const Fullscreen = styled.div`
   height: 100vh;
   display: flex;
   flex-direction: column;
+
+  overflow-x: hidden;
 `;
 
 const MainRow = styled.div`
