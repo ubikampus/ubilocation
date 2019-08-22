@@ -29,7 +29,7 @@ export const flyToUserlocation = (
 const Navigation = styled.div`
   position: absolute;
   right: 10px;
-  bottom: 60px;
+  bottom: 100px;
 `;
 
 interface Props {
