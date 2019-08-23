@@ -2,8 +2,8 @@ import process from 'process';
 import express from 'express';
 import cors from 'cors';
 import loginRouter from './controllers/login';
-import reservationRouter from './controllers/reservation';
 import signRouter from './controllers/sign';
+import reservationRouter from './controllers/reservation';
 
 if (process.env.TYPECHECK) {
   console.log('type check success!');
@@ -14,6 +14,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
 app.use('/login', loginRouter);
 app.use('/reservations', reservationRouter);
 app.use('/sign', signRouter);

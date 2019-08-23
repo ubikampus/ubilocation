@@ -6,8 +6,8 @@ const listener = new ReservationListener();
 const reservationRouter = Router();
 
 reservationRouter.get('/', (_, response) => {
-  listener.filter();
-  response.json(listener.reservations);
+  listener.update();
+  response.json(listener.rooms);
 });
 
 export default reservationRouter;
