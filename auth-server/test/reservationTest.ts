@@ -1,8 +1,4 @@
-import supertest from 'supertest';
 import ReservationListener from '../src/services/reservationListener';
-import app from '../src/app';
-
-const api = supertest(app);
 
 let listener: ReservationListener;
 let startTime: Date;
@@ -32,26 +28,22 @@ describe('ReservationListener', () => {
       currentStartTime: +startTime,
       currentEndTime: +endTime,
     };
-    const startingReservation = {
-      payload: JSON.stringify(reservation),
-    };
+
     const topic = 'rooms/test/reservations/starting';
 
-    listener.listener(topic, JSON.stringify(startingReservation));
+    listener.listener(topic, JSON.stringify(reservation));
     expect(listener.reservations.test.length).toBe(1);
     expect(listener.reservations.test[0]).toEqual({ startTime, endTime });
   });
 
   test('Adds correctly formatted ending reservation', () => {
     const endingReservation = {
-      payload: JSON.stringify({
-        currentId: '321',
-        currentStartTime: +new Date() - 1000,
-        currentEndTime: +new Date(),
-        nextId: '321',
-        nextStartTime: +startTime,
-        nextEndTime: +endTime,
-      }),
+      currentId: '321',
+      currentStartTime: +new Date() - 1000,
+      currentEndTime: +new Date(),
+      nextId: '321',
+      nextStartTime: +startTime,
+      nextEndTime: +endTime,
     };
 
     const topic = 'rooms/test/reservations/ending';

@@ -1,8 +1,16 @@
 import MqttService from '../services/mqtt';
+import fs from 'fs';
 
 const url = process.env.MQTT_URL || 'mqtt://localhost';
 const topic = process.env.RESERVATION_TOPIC || 'rooms/+/reservations/#';
+const publicKeyPath = process.env.KEY_PATH || 'pkey.pem';
 
+let publicKey: string;
+try {
+  publicKey = fs.readFileSync(publicKeyPath).toString();
+} catch (err) {
+  console.error(err);
+}
 interface Reservation {
   startTime: Date;
   endTime: Date;
@@ -16,14 +24,16 @@ export default class ReservationListener {
   public reservations: Reservations = {};
 
   constructor() {
-    new MqttService().connect(url).then(s => s.subscribe(topic, this.listener));
+    new MqttService()
+      .connect(url)
+      .then(s => s.subscribeSigned(topic, [publicKey], this.listener));
   }
 
   public listener = (messageTopic: string, message: string) => {
     const room = messageTopic.split('/')[1];
+
     try {
       const parsed = JSON.parse(message);
-      const payload = JSON.parse(parsed.payload);
 
       if (!this.reservations[room]) {
         this.reservations[room] = [];
@@ -31,13 +41,13 @@ export default class ReservationListener {
 
       if (messageTopic.includes('ending')) {
         this.reservations[room].push({
-          startTime: new Date(payload.nextStartTime),
-          endTime: new Date(payload.nextEndTime),
+          startTime: new Date(parsed.nextStartTime),
+          endTime: new Date(parsed.nextEndTime),
         });
       } else {
         this.reservations[room].push({
-          startTime: new Date(payload.currentStartTime),
-          endTime: new Date(payload.currentEndTime),
+          startTime: new Date(parsed.currentStartTime),
+          endTime: new Date(parsed.currentEndTime),
         });
       }
     } catch (err) {
