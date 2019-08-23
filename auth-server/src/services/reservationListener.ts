@@ -3,7 +3,7 @@ import fs from 'fs';
 
 const url = process.env.MQTT_URL || 'mqtt://localhost';
 const topic = process.env.RESERVATION_TOPIC || 'rooms/+/reservations/#';
-const publicKeyPath = process.env.KEY_PATH || 'pkey.pem';
+const publicKeyPath = process.env.PUBLIC_KEY_PATH || 'pubkey.pem';
 
 let publicKey: string;
 try {

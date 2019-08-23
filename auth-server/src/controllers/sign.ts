@@ -3,7 +3,7 @@ import loginCheck from '../middleware/loginCheck';
 import sign from '../services/signer';
 import fs from 'fs';
 
-const KEY_PATH = process.env.KEY_PATH || 'pkey.pem';
+const KEY_PATH = process.env.PRIVATE_KEY_PATH || 'pkey.pem';
 const PKEY = fs.readFileSync(KEY_PATH);
 
 const signRouter = Router();
