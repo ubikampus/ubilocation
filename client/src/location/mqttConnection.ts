@@ -8,7 +8,6 @@ import Deserializer, {
   mqttMessageToGeo,
 } from './mqttDeserialize';
 import queryString from 'query-string';
-import { currentEnv } from '../common/environment';
 import { DEFAULT_TOPIC } from '../location/urlPromptContainer';
 
 const MOCK_MESSAGE_INTERVAL = 2000;
@@ -17,14 +16,12 @@ const ROOM_HEIGHT_METERS = 3.8;
 
 export const refreshBeacons = (
   parsed: MqttMessage[],
-  bluetoothName: string | null,
+  beaconId: string | null,
   lastKnownPosition: BeaconGeoLocation | null
 ) => {
   const geoBeacons = parsed.map(i => mqttMessageToGeo(i));
 
-  const ourBeacon = geoBeacons.find(
-    beacon => beacon.beaconId === bluetoothName
-  );
+  const ourBeacon = geoBeacons.find(beacon => beacon.beaconId === beaconId);
 
   return {
     beacons: geoBeacons,
@@ -49,7 +46,7 @@ export const urlForLocation = (
 
 export const useUbiMqtt = (
   host: string,
-  bluetoothName: string | null,
+  beaconId: string | null,
   topic?: string
 ) => {
   const parser = new Deserializer();
@@ -71,9 +68,14 @@ export const useUbiMqtt = (
           topic || DEFAULT_TOPIC,
           null,
           (connectedTopic: string, msg: string) => {
+            const locations = parser.deserializeMessage(msg);
+            if (!locations) {
+              return;
+            }
+
             const nextBeacons = refreshBeacons(
-              parser.deserializeMessage(msg),
-              bluetoothName,
+              locations,
+              beaconId,
               lastKnownPosition
             );
 

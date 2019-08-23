@@ -4,16 +4,16 @@ FROM osgeo/gdal:alpine-normal-v2.4.1 AS mbtilebuilder
 
 RUN apk add --no-cache curl
 
-RUN mkdir /build && curl -L -o /build/floorplan_v5.tif "https://drive.google.com/uc?export=download&id=16nNCcRJZEXJA9cYphWiFdKMI3OvY0078"
+RUN mkdir /build && curl -L -o /build/floorplan.tif "https://drive.google.com/uc?export=download&id=1kesK_DGAlkA7hEJluGMr1NmSsb5vcuP9"
 
 WORKDIR /build
 
 # This is the actual GeoTIFF -> mbtiles conversion
-RUN gdal_translate -of MBTILES -co BLOCKSIZE=2048 -co ZOOM_LEVEL_STRATEGY=UPPER floorplan_v5.tif floorplan_v5.mbtiles
+RUN gdal_translate -of MBTILES -co BLOCKSIZE=2048 -co ZOOM_LEVEL_STRATEGY=UPPER floorplan.tif floorplan.mbtiles
 
 # Add different zoom levels.
 # TODO: minimum zoom level is 16, how do we add smaller zoom levels?
-RUN gdaladdo -r average floorplan_v5.mbtiles 2 4 8 16 32
+RUN gdaladdo -r average floorplan.mbtiles 2 4 8 16 32
 
 FROM klokantech/tileserver-gl:latest
 
@@ -27,7 +27,7 @@ RUN npm i
 RUN node ./generate.js
 RUN cp -r _output /server/fonts
 
-COPY opts.json /server/opts.json
-COPY --from=mbtilebuilder /build/floorplan_v5.mbtiles /server
+COPY opts.json opts-prod.json /server/
+COPY --from=mbtilebuilder /build/floorplan.mbtiles /server
 
 CMD ["/bin/bash", "/usr/src/app/run.sh", "--config", "/server/opts.json"]

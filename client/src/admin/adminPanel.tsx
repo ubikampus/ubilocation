@@ -2,24 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import { animated } from 'react-spring';
 
-import Button from '../common/button';
+import { PrimaryButton, SecondaryButton } from '../common/button';
+import { TiChevronLeft } from 'react-icons/ti';
 import { Location } from '../common/typeUtil';
 
-const PrimaryButton = styled(Button)`
-  background: #4287f5;
-  color: white;
-
-  &&:hover {
-    color: #eee;
-  }
-`;
-
-const CancelButton = styled(Button)`
-  background: white;
-`;
-
-const SecondaryButton = styled(Button)`
-  background: #f3f6f7;
+const CancelButton = styled(SecondaryButton)`
+  border: none;
 `;
 
 export interface RaspberryLocation {
@@ -46,10 +34,6 @@ const InputRow = styled.div`
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-`;
-
-const LogoutButton = styled(Button)`
-  margin-top: auto;
 `;
 
 const InputCol = styled.div`
@@ -113,12 +97,32 @@ interface Props {
   resetDeviceLocation(): void;
   onLogout(): void;
   style: object;
-  toggleRoomReservation(): void;
   newName: string;
   setNewName(a: string): void;
   newHeight: string;
   setNewHeight(a: string): void;
 }
+
+const HeaderRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const CloseButton = styled.div`
+  width: 30px;
+  height: 30px;
+  margin-top: -10px;
+  margin-right: -10px;
+  padding: 5px;
+
+  color: #4d4d4d;
+  cursor: pointer;
+
+  & > svg {
+    height: 100%;
+    width: 100%;
+  }
+`;
 
 const AdminPanel = ({
   getDeviceLocation,
@@ -127,7 +131,6 @@ const AdminPanel = ({
   onCancel,
   onSubmit,
   style,
-  toggleRoomReservation,
   onLogout,
   resetDeviceLocation,
   newName,
@@ -138,7 +141,12 @@ const AdminPanel = ({
   <Sidebar style={style}>
     <SidebarContent>
       <div>
-        <CalibrationHeader>Set Raspberry Pi locations</CalibrationHeader>
+        <HeaderRow>
+          <CalibrationHeader>Set Raspberry Pi locations</CalibrationHeader>
+          <CloseButton>
+            <TiChevronLeft onClick={() => onCancel()} />
+          </CloseButton>
+        </HeaderRow>
         <InfoSection>
           Click location on map, and enter name and height in millimeters for
           the Raspberry Pi. Height should be given relative to the second floor.
@@ -204,9 +212,6 @@ const AdminPanel = ({
       </div>
       <BottomRow>
         <SecondaryButton onClick={() => onLogout()}>Log out</SecondaryButton>
-        <SecondaryButton onClick={() => toggleRoomReservation()}>
-          Room reservation
-        </SecondaryButton>
       </BottomRow>
     </SidebarContent>
   </Sidebar>

@@ -42,33 +42,7 @@ describe('MQTT parsing', () => {
   it('should return empty list for odd input', () => {
     const parser = new Deserializer();
     const res = parser.deserializeMessage('asdfasdf');
-    expect(res.length).toBe(0);
-  });
-});
-
-describe('query string parsing', () => {
-  it('should throw if required number is missing', () => {
-    const queryDecoder = t.type({
-      lat: t.number,
-      lon: t.number,
-    });
-
-    const parser = new Deserializer();
-
-    expect(() => {
-      parser.parseQuery(queryDecoder, '?lon=60.1');
-    }).toThrow();
-  });
-
-  it('should parse float in the query string', () => {
-    const decoder = t.type({
-      lat: t.number,
-    });
-
-    const parser = new Deserializer();
-
-    expect(parser.parseQuery(decoder, '?lat=50.5').lat).toBeCloseTo(50.5);
-    expect(parser.parseQuery(decoder, 'lat=50.1').lat).toBeCloseTo(50.1);
+    expect(res).toBe(null);
   });
 });
 

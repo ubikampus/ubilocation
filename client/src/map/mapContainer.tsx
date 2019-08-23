@@ -1,88 +1,83 @@
 import React, { useState } from 'react';
 import { Marker } from 'react-map-gl';
-
 import { RouteComponentProps, withRouter } from 'react-router';
 
-import TrackingContainer from './trackingContainer';
 import applyMapboxColors from './shapeDraw/mapboxStyle';
-import { MapboxButton } from '../common/button';
-import { MQTT_URL } from '../location/urlPromptContainer';
-import UbikampusMap from './ubikampusMap';
+import { CentralizationButton } from '../common/button';
+import UbikampusMap, { flyToUserlocation } from './ubikampusMap';
 import QrCodeModal from './qrCodeModal';
-import Deserializer, {
-  MapLocationQueryDecoder,
-  BeaconGeoLocation,
-} from '../location/mqttDeserialize';
-import { useUbiMqtt, urlForLocation } from '../location/mqttConnection';
+import { BeaconGeoLocation } from '../location/mqttDeserialize';
+import { urlForLocation } from '../location/mqttConnection';
 import { RaspberryLocation } from '../admin/adminPanel';
 import {
   StaticUbiMarker,
   OfflineMarker,
   NonUserMarker,
   SharedLocationMarker,
-  LocationPinMarker,
+  LocationMarker,
   divideMarkers,
+  PinKind,
 } from './marker';
 import { Location } from '../common/typeUtil';
-import ShareLocationModal from './shareLocationModal';
 import { Style } from 'mapbox-gl';
-
-const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
-const DEFAULT_NONTRACKED_ZOOM = 17;
+import { MapLocationQueryDecoder, parseQuery } from '../common/urlParse';
+import { ClientConfig } from '../common/environment';
 
 /**
- * When user lands to the page with a position.
+ * When user lands to the page with a position. Probs not needed as env
+ * variable..
  */
 const DEFAULT_TRACKED_ZOOM = 18;
 
 interface Props {
+  appConfig: ClientConfig;
+  beacons: BeaconGeoLocation[];
+  beaconId: string | null;
+  setCentralizeActive(a: boolean): void;
+  pinType: PinKind;
+  lastKnownPosition: BeaconGeoLocation | null;
   isAdminPanelOpen: boolean;
+  isAdmin: boolean;
   getDeviceLocation: Location | null;
   setDeviceLocation(a: Location): void;
   devices: RaspberryLocation[];
+  setPinType(a: PinKind): void;
   roomReserved: boolean;
-  shareLocationModalOpen: boolean;
-  openShareLocationModal(a: boolean): void;
+  staticLocations: BeaconGeoLocation[];
 }
 
 const MapContainer = ({
+  appConfig,
   location,
   setDeviceLocation,
   isAdminPanelOpen,
+  isAdmin,
   getDeviceLocation,
+  beacons,
   devices,
+  staticLocations,
+  lastKnownPosition,
   roomReserved,
-  shareLocationModalOpen,
-  openShareLocationModal,
+  setPinType,
+  beaconId,
+  pinType,
+  setCentralizeActive,
 }: RouteComponentProps & Props) => {
-  const parser = new Deserializer();
-
   const queryParams =
     location.search === ''
       ? null
-      : parser.parseQuery(MapLocationQueryDecoder, location.search);
+      : parseQuery(MapLocationQueryDecoder, location.search);
 
-  const fromQuery = !!(queryParams && queryParams.lat && queryParams.lon);
   const initialCoords =
     queryParams && queryParams.lat && queryParams.lon
       ? { lat: queryParams.lat, lon: queryParams.lon }
-      : KUMPULA_COORDS;
+      : { lat: appConfig.INITIAL_LATITUDE, lon: appConfig.INITIAL_LONGITUDE };
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const mapStyle = applyMapboxColors(roomReserved);
   const [modalText, setModalText] = useState('');
 
-  const initialPinType = fromQuery ? 'show' : 'none';
   const [pinCoordinates, setPinCoordinates] = useState(initialCoords);
-  const [pinType, setPinType] = useState<'configure' | 'show' | 'none'>(
-    initialPinType
-  );
 
-  /**
-   * Used when user selects "only current" from the location prompt.
-   */
-  const [staticLocations, setStaticLocations] = useState<BeaconGeoLocation[]>(
-    []
-  );
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 
@@ -92,25 +87,12 @@ const MapContainer = ({
     zoom:
       queryParams && queryParams.lat
         ? DEFAULT_TRACKED_ZOOM
-        : DEFAULT_NONTRACKED_ZOOM,
+        : appConfig.INITIAL_ZOOM,
   });
-
-  const [nameModalOpen, setNameModalOpen] = useState(
-    queryParams && queryParams.lat ? true : false
-  );
-
-  const mqttHost =
-    queryParams && queryParams.host ? queryParams.host : MQTT_URL;
-  const [bluetoothName, setBluetoothName] = useState<string | null>(null);
-  const { beacons, lastKnownPosition } = useUbiMqtt(
-    mqttHost,
-    bluetoothName,
-    queryParams && queryParams.topic ? queryParams.topic : undefined
-  );
 
   const { isOnline, allUserMarkers, nonUserMarkers } = divideMarkers(
     beacons,
-    bluetoothName,
+    beaconId,
     lastKnownPosition
   );
 
@@ -122,29 +104,39 @@ const MapContainer = ({
     ? [...staticMarkers, getDeviceLocation]
     : staticMarkers;
 
-  const trackedBtName =
+  const trackedBeaconId =
     queryParams && queryParams.track ? queryParams.track : null;
 
-  const sharedLocationMarkers = trackedBtName
-    ? nonUserMarkers.filter(b => b.beaconId === trackedBtName)
+  const sharedLocationMarkers = trackedBeaconId
+    ? nonUserMarkers.filter(b => b.beaconId === trackedBeaconId)
     : [];
 
   return (
     <>
-      <MapboxButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
+      <CentralizationButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
         <button
-          onClick={() => setNameModalOpen(true)}
+          onClick={() => {
+            if (beaconId === null) {
+              setCentralizeActive(true);
+            } else {
+              // Use first known user location.
+              if (allUserMarkers.length > 0) {
+                setViewport(flyToUserlocation(viewport, allUserMarkers[0]));
+              }
+            }
+          }}
           className="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate"
         />
-      </MapboxButton>
+      </CentralizationButton>
       <UbikampusMap
+        minZoom={appConfig.MINIMUM_ZOOM}
         mapStyle={mapStyle as Style}
         onClick={e => {
           const [lon, lat] = e.lngLat;
 
           if (isAdminPanelOpen) {
             setDeviceLocation({ lon, lat });
-          } else {
+          } else if (isAdmin) {
             setModalText(urlForLocation(queryParams, lon, lat));
             setPinType('configure');
             setPinCoordinates({ lat, lon });
@@ -159,32 +151,10 @@ const MapContainer = ({
           closeModal={closeModal}
           modalText={modalText}
         />
-        {nameModalOpen && (
-          <TrackingContainer
-            beacons={beacons}
-            onClose={() => setNameModalOpen(false)}
-            confirmName={name => {
-              setBluetoothName(name);
-              setStaticLocations([]);
-              setPinType('none');
-              setNameModalOpen(false);
-            }}
-            onStaticSelected={name => {
-              const targetBeacons = beacons.filter(b => b.beaconId === name);
-              setStaticLocations(targetBeacons);
-            }}
-          />
-        )}
-        {shareLocationModalOpen && (
-          <ShareLocationModal
-            isOpen={shareLocationModalOpen}
-            onClose={() => openShareLocationModal(false)}
-            currentBluetoothName={bluetoothName}
-          />
-        )}
-        <LocationPinMarker
+        <LocationMarker
           coords={pinCoordinates}
           onClick={openModal}
+          onClose={() => setPinType('none')}
           type={pinType}
         />
         {allStaticMarkers.map((device, i) => (
@@ -202,7 +172,7 @@ const MapContainer = ({
             className="mapboxgl-user-location-dot"
           />
         ))}
-        {trackedBtName
+        {trackedBeaconId
           ? sharedLocationMarkers.map((beacon, i) => (
               <SharedLocationMarker
                 key={'sharedLocationMarker-' + i}

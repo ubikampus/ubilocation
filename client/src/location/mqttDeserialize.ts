@@ -1,5 +1,4 @@
 import * as t from 'io-ts';
-import queryStringParser from 'query-string';
 import { unsafeDecode } from '../common/typeUtil';
 import destination from '@turf/destination';
 
@@ -118,46 +117,19 @@ export const mqttMessageToGeo = (message: MqttMessage): BeaconGeoLocation => {
 export default class Deserializer {
   /**
    * Convert raw mqtt message into static type, crash on unexpected input.
+   *
+   * Sometimes server returns invalid JSON with "NaN" values, null is returned
+   * then.
    */
-  deserializeMessage(rawMessage: string): MqttMessage[] {
+  deserializeMessage(rawMessage: string): MqttMessage[] | null {
     let parsed;
     try {
       parsed = JSON.parse(rawMessage);
     } catch (err) {
-      console.error('error parsing json', err);
-      console.error('json:', rawMessage);
-      return [];
+      console.log('received invalid JSON from location server');
+      return null;
     }
 
-    return parsed.map((obj: unknown) => {
-      const message = unsafeDecode(MqttMessageDecoder, obj);
-      return message;
-    });
-  }
-
-  /**
-   * Parse query string into regular javascript object.
-   *
-   * @param type Decoder for the deserialized object
-   * @param queryString see https://en.wikipedia.org/wiki/Query_string
-   */
-  parseQuery<A>(type: t.Decoder<unknown, A>, queryString: string) {
-    const parsed = queryStringParser.parse(queryString, {
-      parseNumbers: true,
-    });
-
-    return unsafeDecode<A>(type, parsed);
+    return unsafeDecode(t.array(MqttMessageDecoder), parsed);
   }
 }
-
-export const MapLocationQueryDecoder = t.type({
-  lat: t.union([t.undefined, t.number]),
-  lon: t.union([t.undefined, t.number]),
-  host: t.union([t.string, t.undefined]),
-  topic: t.union([t.string, t.undefined]),
-  track: t.union([t.string, t.undefined]),
-});
-
-export const VizQueryDecoder = t.type({ host: t.string, topic: t.string });
-
-export type VizQuery = t.TypeOf<typeof VizQueryDecoder>;

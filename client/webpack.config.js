@@ -2,7 +2,6 @@ const path = require('path');
 const process = require('process');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
-const CopyPlugin = require('copy-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const styledComponentsTransformer = require('typescript-plugin-styled-components').default();
 
@@ -57,8 +56,9 @@ module.exports = {
     // something weird going on with EnvironmentPlugin? Lets use defineplugin
     // instead
     new webpack.DefinePlugin({
-      DEFINE_NODE_ENV: JSON.stringify(isProd ? 'production' : 'development'),
-    }),
-    new CopyPlugin(['asset/404.html'])
+      'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
+      'process.env.API_URL': JSON.stringify(process.env.API_URL),
+      'process.env.TILE_URL': JSON.stringify(process.env.TILE_URL),
+    })
   ]
 }

@@ -22,16 +22,38 @@ project. See main repo
    [Tslint](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-tslint-plugin)
    and [Styled
    components](https://marketplace.visualstudio.com/items?itemName=jpoissonnier.vscode-styled-components)
-1. `docker-compose up`
+1. `docker-compose up` (use `docker-compose up --build --renew-anon-volumes` if
+   there are changes to dependencies)
 1. Open browser at localhost:8080
 
 See `scripts` section in package.json for other development commands. For
 example run client unit tests via `docker-compose exec bluetooth-client npm
 test`.
 
+### Configuration
+
+ | env variable | description
+----|----
+INITIAL_LATITUDE | latitude as float for the initial map position (WGS84)
+INITIAL_LONGITUDE | longitude as float for the initial map position
+INITIAL_ZOOM | mapbox zoom level, from 1 to 22
+MINIMUM_ZOOM | mapbox minimum zoom level
+ADMIN_USER | username for admin login (/admin)
+ADMIN_PASSWORD | password for admin login
+JWT_SECRET | secret key for JWT sign/verify process
+MQTT_URL | URL for mqtt bus, used for location data, calibration messages and location sharing. E.g. `wss://example.com:9002/mqtt`
+
+
 ### Deploy to production
 
-TODO: document production build
+* Set secret environment variables (ADMIN_* and JWT_SECRET) in .env file and
+  other configuration into docker-compose.prod.yml. See explanation for
+  configuration parameters above.
+
+* Generate a separate production private key for as described above into
+  `pkey/pkey.pem`.
+
+* Run `docker-compose -f docker-compose.prod.yml up --build`
 
 ### Import a floor plan
 
