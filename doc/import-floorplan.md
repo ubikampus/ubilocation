@@ -39,7 +39,7 @@ After this, it's time to click "Start Georeferencing". This will create a georef
 
 ## 3. Deploy the georeferenced floor plan
 
-The deploy the georeferenced raster file we need to edit a Dockerfile, which describes a portion our build process. To be more specific, the file we need to edit is `/maptiles/Dockerfile`. This file should be fairly readable even if you haven't used Docker before. The change the floor plan we'll change the URL portion of the following line
+The deploy the georeferenced raster file we need to edit a Dockerfile, which describes a portion our build process. To be more specific, the file we need to edit is `/maptiles/Dockerfile`. This file should be fairly readable even if you haven't used Docker before. To change the floor plan we'll change the URL portion of the following line
 
 ```
 RUN mkdir /build && curl -L -o /build/floorplan.tif "https://drive.google.com/uc?export=download&id=..."
@@ -63,6 +63,6 @@ Once, you have generated a basemap tileset, we'll once again modify the files in
 RUN mkdir /server && curl -L -o /server/helsinki.mbtiles "https://drive.google.com/uc?export=download&id=..."
 ```
 
-If you change the name of the downloaded file (here, helsinki.mbtiles), you'll need to update `ops.json` and `opts-prod.json` accordingly.
+If you change the name of the downloaded file (here, helsinki.mbtiles), you'll need to update also `ops.json` and `opts-prod.json` accordingly.
 
-The next time you issue a `docker-compose up --build`, you should see your updated floor plan on top of an OpenStreetMap basemap. Congratulations, you should now have a working system!
+The next time you issue a `docker-compose up --build`, you should see your floor plan on top of an OpenStreetMap basemap. Congratulations, you should now have a working system!
