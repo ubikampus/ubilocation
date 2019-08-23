@@ -57,7 +57,7 @@ The final step is to update our basemap so that it will cover our geographical l
 
 At first, we need to create a .mbtiles file which covers our geographical region. For this process, please refer to the documentation [Building a tileset](https://github.com/openmaptiles/openmaptiles#build) on the OpenMapTiles's GitHub page. The basis of this process is an extract of OpenStreetMap data. As these extracts can be quite large, it is advisable to choose just a single city. Nevertheless, the processing of this data will take some time. The end result should be a .mbtiles tileset which can then be served by a TileServer.
 
-Once, you have generated a basemap tileset, we'll once again modify the files in the directory `/maptiles`. From the Dockerfile, we need to update the URL of the basemap
+Once, you have generated a basemap tileset, we'll once again modify the files in the directory `/maptiles`. From the Dockerfile, we need to update the URL of the tileset
 
 ```
 RUN mkdir /server && curl -L -o /server/helsinki.mbtiles "https://drive.google.com/uc?export=download&id=..."
