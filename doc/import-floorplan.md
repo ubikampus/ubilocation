@@ -39,7 +39,7 @@ After this, it's time to click "Start Georeferencing". This will create a georef
 
 ## 3. Deploy the georeferenced floor plan
 
-The deploy the georeferenced raster file we need to edit a Dockerfile, which describes a portion our build process. To be more specific, the file we need to edit is `/maptiles/Dockerfile`. This file should be fairly readable even if you haven't used Docker before. To change the floor plan we'll change the URL portion of the following line
+To deploy the georeferenced raster file we need to edit a Dockerfile, which describes a portion of our build process. To be more specific, the file we need to edit is `/maptiles/Dockerfile`. This file should be fairly readable even if you haven't used Docker before. To change the floor plan we'll change the URL portion of the following line
 
 ```
 RUN mkdir /build && curl -L -o /build/floorplan.tif "https://drive.google.com/uc?export=download&id=..."
