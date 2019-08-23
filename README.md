@@ -32,3 +32,7 @@ test`.
 ### Deploy to production
 
 TODO: document production build
+
+### Import a floor plan
+
+See [How to import your own floor plan and OSM basemap](doc/import-floorplan.md).
