@@ -45,7 +45,14 @@ To deploy the georeferenced raster file we need to edit a Dockerfile, which desc
 RUN mkdir /build && curl -L -o /build/floorplan.tif "https://drive.google.com/uc?export=download&id=..."
 ```
 
-This fetches our floor plan from Google drive, or some other location you'll specify.
+This fetches our floor plan from Google drive, or some other location you'll specify. If you'd prefer to use a file on your own hard drive, you can modify this line as follows
+
+```
+RUN mkdir /build
+COPY my-floorplan-v1.tif /build/floorplan.tif
+```
+
+This uses the file `my-floorplan-v1.tif` , which should be placed in the same directory `/maptiles`.
 
 You should also modify the configuration parameters `INITIAL_LATITUDE` and `INITIAL_LONGITUDE`, so that the map will be positioned at the correct coordinates. These are part of the application's configuration, and are specified at `/docker-compose.yml` and `/docker-compose.prod.yml`.
 
@@ -60,9 +67,14 @@ At first, we need to create a .mbtiles file which covers our geographical region
 Once, you have generated a basemap tileset, we'll once again modify the files in the directory `/maptiles`. From the Dockerfile, we need to update the URL of the tileset
 
 ```
-RUN mkdir /server && curl -L -o /server/helsinki.mbtiles "https://drive.google.com/uc?export=download&id=..."
+RUN mkdir /server && curl -L -o /server/basemap.mbtiles "https://drive.google.com/uc?export=download&id=..."
 ```
 
-If you change the name of the downloaded file (here, helsinki.mbtiles), you'll need to update also `ops.json` and `opts-prod.json` accordingly.
+Again, if you'd prefer to use a file on your own hard drive, instead, you can use the commands
 
-The next time you issue a `docker-compose up --build`, you should see your floor plan on top of an OpenStreetMap basemap. Congratulations, you should now have a working system!
+```
+RUN mkdir /server
+COPY our-city.mbtiles /server/basemap.mbtiles
+```
+
+This concludes our tutorial. The next time you issue a `docker-compose up --build`, you should see your floor plan on top of an OpenStreetMap basemap. Congratulations, you should now have a working system!
