@@ -18,7 +18,7 @@ RUN gdaladdo -r average floorplan.mbtiles 2 4 8 16 32
 FROM klokantech/tileserver-gl:latest
 
 # See this repo for instructions for generating the .mbtiles file https://github.com/openmaptiles/openmaptiles#build
-RUN mkdir /server && curl -L -o /server/helsinki.mbtiles "https://drive.google.com/uc?export=download&id=14CSgceZROQ2sg7RYuz9m74iDZ19-UdrE"
+RUN mkdir /server && curl -L -o /server/basemap.mbtiles "https://drive.google.com/uc?export=download&id=14CSgceZROQ2sg7RYuz9m74iDZ19-UdrE"
 
 WORKDIR /fontbuild
 RUN git clone https://github.com/openmaptiles/fonts.git

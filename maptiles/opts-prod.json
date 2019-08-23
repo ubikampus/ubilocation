@@ -18,10 +18,10 @@
     "serveStaticMaps": true
   },
   "data": {
-    "helsinki": {
-      "mbtiles": "helsinki.mbtiles"
+    "basemap": {
+      "mbtiles": "basemap.mbtiles"
     },
-    "helsinkiraster": {
+    "floorplan": {
       "mbtiles": "floorplan.mbtiles"
     }
   }
