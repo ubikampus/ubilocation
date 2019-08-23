@@ -2,10 +2,10 @@
 
 Importing a floor plan has several steps:
 
-1. Polish and simplify the original floor plan
-2. Produce a georeferenced raster file (TIFF file generation)
-3. Deploy the georeferenced floor plan
-4. Deploy your own OpenStreetMap basemap
+1. [Polish and simplify the original floor plan](#1-polish-and-simplify-the-original-floor-plan)
+2. [Produce a georeferenced raster file (TIFF file generation)](#2-produce-a-georeferenced-raster-file-tiff-file-generation)
+3. [Deploy the georeferenced floor plan](#3-deploy-the-georeferenced-floor-plan)
+4. [Deploy your own OpenStreetMap basemap](#4-deploy-your-own-openstreetmap-basemap)
 
 ## 1. Polish and simplify the original floor plan
 
