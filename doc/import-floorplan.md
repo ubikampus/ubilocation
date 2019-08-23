@@ -45,14 +45,14 @@ To deploy the georeferenced raster file we need to edit a Dockerfile, which desc
 RUN mkdir /build && curl -L -o /build/floorplan.tif "https://drive.google.com/uc?export=download&id=..."
 ```
 
-This fetches our floor plan from Google drive, or some other location you'll specify. If you'd prefer to use a file on your own hard drive, you can modify this line as follows
+This fetches our floor plan from Google drive, or some other location you'll specify. If you'd prefer to use a file on your hard drive, you can modify this line as follows
 
 ```
 RUN mkdir /build
 COPY my-floorplan-v1.tif /build/floorplan.tif
 ```
 
-This uses the file `my-floorplan-v1.tif` , which should be placed in the same directory `/maptiles`.
+This uses the file `my-floorplan-v1.tif`, which should be placed in the same directory `/maptiles`.
 
 You should also modify the configuration parameters `INITIAL_LATITUDE` and `INITIAL_LONGITUDE`, so that the map will be positioned at the correct coordinates. These are part of the application's configuration, and are specified at `/docker-compose.yml` and `/docker-compose.prod.yml`.
 
@@ -70,11 +70,13 @@ Once, you have generated a basemap tileset, we'll once again modify the files in
 RUN mkdir /server && curl -L -o /server/basemap.mbtiles "https://drive.google.com/uc?export=download&id=..."
 ```
 
-Again, if you'd prefer to use a file on your own hard drive, instead, you can use the commands
+Again, if you'd prefer to use a file on your hard drive, instead, you can modify this line as follows
 
 ```
 RUN mkdir /server
 COPY our-city.mbtiles /server/basemap.mbtiles
 ```
+
+This uses the file `our-city.mbtiles`, which should be placed in the same directory `/maptiles`.
 
 This concludes our tutorial. The next time you issue a `docker-compose up --build`, you should see your floor plan on top of an OpenStreetMap basemap. Congratulations, you should now have a working system!
