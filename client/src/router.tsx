@@ -120,14 +120,12 @@ const Router = () => {
     const adminUser = AdminTokenStore.get();
     setAdmin(adminUser);
 
-    ShareLocationApi.fetchPublicBeacons()
-      .then(pubBeacons => {
-        setPublicBeacons(pubBeacons);
-      })
-      .catch(e => {
-        console.log('Failed to fetch public beacons');
-        console.log(e.message);
-      });
+    const fetchPublicBeacons = async () => {
+      const pubBeacons = await ShareLocationApi.fetchPublicBeacons();
+      setPublicBeacons(pubBeacons);
+    };
+
+    fetchPublicBeacons();
   }, []);
 
   return (
