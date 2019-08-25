@@ -54,6 +54,7 @@ const BeaconIdModal = ({ confirmId, onClose }: Props) => {
         <IdRow>
           <IdInput
             autoFocus
+            type="password"
             placeholder="Beacon ID"
             value={beaconId}
             onChange={e => setBeaconId(e.target.value)}

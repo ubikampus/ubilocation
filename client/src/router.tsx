@@ -10,7 +10,7 @@ import {
 } from './3dVisualisation/screenContainer';
 import UrlPromptContainer from './location/urlPromptContainer';
 import MapContainer from './map/mapContainer';
-import AdminPanel, { RaspberryLocation } from './admin/adminPanel';
+import AdminPanel, { AndroidLocation } from './admin/adminPanel';
 import { Location } from './common/typeUtil';
 import NavBar from './common/navBar';
 
@@ -75,7 +75,7 @@ const Router = ({ appConfig }: Props) => {
   const [getDeviceLocation, setDeviceLocation] = useState<Location | null>(
     null
   );
-  const [devices, setDevices] = useState<RaspberryLocation[]>([]);
+  const [devices, setDevices] = useState<AndroidLocation[]>([]);
   const [newName, setNewName] = useState('');
   const [newHeight, setNewHeight] = useState('');
 

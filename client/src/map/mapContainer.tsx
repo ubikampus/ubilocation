@@ -8,7 +8,7 @@ import UbikampusMap, { flyToUserlocation } from './ubikampusMap';
 import QrCodeModal from './qrCodeModal';
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
 import { urlForLocation } from '../location/mqttConnection';
-import { RaspberryLocation } from '../admin/adminPanel';
+import { AndroidLocation } from '../admin/adminPanel';
 import {
   StaticUbiMarker,
   OfflineMarker,
@@ -40,7 +40,7 @@ interface Props {
   isAdmin: boolean;
   getDeviceLocation: Location | null;
   setDeviceLocation(a: Location): void;
-  devices: RaspberryLocation[];
+  devices: AndroidLocation[];
   setPinType(a: PinKind): void;
   roomReserved: boolean;
   staticLocations: BeaconGeoLocation[];
@@ -159,7 +159,7 @@ const MapContainer = ({
         />
         {allStaticMarkers.map((device, i) => (
           <StaticUbiMarker
-            key={'raspberry-' + i}
+            key={'android-' + i}
             latitude={device.lat}
             longitude={device.lon}
           />
