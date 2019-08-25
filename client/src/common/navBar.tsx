@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { NavLink, withRouter, RouteComponentProps } from 'react-router-dom';
-import { TiCog, TiLocationArrow, TiPlus } from 'react-icons/ti';
+import { TiCog, TiLocationArrow } from 'react-icons/ti';
 import { HamburgerSqueeze } from 'react-animated-burgers';
 import styled from 'styled-components';
 import { IoIosSearch } from 'react-icons/io';
@@ -297,7 +297,7 @@ const NavBar = ({
           </MobileMenuItem>
 
           <MobileMenuItem
-            itemIcon={TiPlus}
+            itemIcon={TiLocationArrow}
             renderSubItems={() => (
               <>
                 <MenuSubItem onClick={sharePrivateClicked}>
