@@ -22,10 +22,12 @@ import BeaconIdModal from './map/beaconIdModal';
 import ShareLocationModal from './map/shareLocationModal';
 import PublicShareModal from './map/publicShareModal';
 import { parseQuery, MapLocationQueryDecoder } from './common/urlParse';
-import { useUbiMqtt } from './location/mqttConnection';
+import { useUbiMqtt, lastKnownPosCache } from './location/mqttConnection';
 import { BeaconGeoLocation } from './location/mqttDeserialize';
 import { PinKind } from './map/marker';
 import { ClientConfig } from './common/environment';
+
+const inferLastKnownPosition = lastKnownPosCache();
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -110,11 +112,12 @@ const Router = ({ appConfig }: Props) => {
 
   const mqttHost =
     queryParams && queryParams.host ? queryParams.host : appConfig.MQTT_URL;
-  const { beacons, lastKnownPosition } = useUbiMqtt(
+  const beacons = useUbiMqtt(
     mqttHost,
-    beaconId,
     queryParams && queryParams.topic ? queryParams.topic : undefined
   );
+
+  const lastKnownPosition = inferLastKnownPosition(beacons, beaconId);
 
   const [centralizeActive, setCentralizeActive] = useState(
     queryParams && queryParams.lat ? true : false
