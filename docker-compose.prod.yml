@@ -15,7 +15,8 @@ services:
         API_URL: "/api"
         TILE_URL: "/tiles"
     volumes:
-      - "./nginx:/etc/nginx/"
+      - "./nginx/nginx.conf:/etc/nginx/nginx.conf"
+
     ports:
       - "8000:8000"
 
