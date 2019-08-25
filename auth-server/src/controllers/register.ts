@@ -23,7 +23,7 @@ registerRouter.post('/', (request: Request, response: Response) => {
   const body = request.body;
   const beaconId = body.beaconId;
 
-  if (!beaconId) {
+  if (!beaconId || beaconId.length === 0) {
     return response.status(400).json({ error: 'beacon ID is missing' });
   }
 

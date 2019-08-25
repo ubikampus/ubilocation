@@ -41,7 +41,18 @@ publicRouter.post(
 publicRouter.delete(
   '/:beaconId',
   (request: Request & DecodedToken, response: Response) => {
-    remove(request.decodedToken.beaconId);
+    const beaconId = request.decodedToken.beaconId;
+    const beacon = find(request.params.beaconId);
+
+    if (!beacon) {
+      return response.status(404).json({ error: 'unknown beacon ID' });
+    }
+
+    if (!beacon.beaconId === beaconId) {
+      return response.status(403).json({ error: 'access forbidden' });
+    }
+
+    remove(beaconId);
     response.status(200).send({});
   }
 );
