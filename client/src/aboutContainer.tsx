@@ -1,201 +1,198 @@
 import React from 'react';
 import { withRouter } from 'react-router';
 import styled from 'styled-components';
+import githubLogo from '../asset/GitHub-Mark-Light-64px.png';
+import { PrimaryButton } from '../src/common/button';
 
-/** Containers */
-const Container = styled.div`
+/** Container */
+const About = styled.div`
   max-width: 800px;
+
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  margin: 5rem auto;
-  padding: 15px 0 15px 0;
+  margin: auto;
+  padding: 45px 0;
+
+  @media (max-width: 840px) {
+    margin: auto 2rem;
+  }
 `;
 
-const Article = styled.article`
-  padding: 0 0 30px 0;
+const Wrap = styled.div`
+  margin: auto;
 `;
 
 /** Header */
-const HeaderRow = styled.ul`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  list-style-type: none;
-  padding: 0 0 15px 0;
+const Header = styled.article`
+  justify-content: space-evenly;
 
-  @media (min-width: 750px) {
-    flex-direction: row;
-  }
-`;
-
-const HeaderColumn = styled.li`
-  text-align: left;
-  font-family: 'Helvetica', 'Arial', sans-serif;
+  text-align: center;
+  font-family: 'Comfortaa', cursive;
 `;
 
 const Headline = styled.h1`
-  font-family: 'Comfortaa', cursive;
+  padding-bottom: 15px;
+
   font-size: 40px;
 `;
 
-const Button = styled.button`
-  border: none;
-  margin: 5px;
-  border-radius: 5px;
-  padding: 10px 25px;
-  color: #ffffff;
-  text-transform: uppercase;
-  font-weight: 700;
-  background-color: #4287f5;
-  font-family: 'Comfortaa', cursive;
-  font-size: 11px;
-  cursor: pointer;
+const ButtonComponent = styled(PrimaryButton)`
+  height: 75px;
+  width: 160px;
+
+  background-color: #20262b;
+
   &:hover {
-    background-color: #3670cf;
+    background-color: #4287f5;
   }
-`;
-
-/** Lightweight navigation bar */
-const NavRow = styled.ul`
-  display: flex;
-  flex-direction: column;
-  justify-content: left;
-  list-style-type: none;
-  border-bottom: 1px solid lightgray;
-  border-top: 1px solid lightgray;
-  @media (min-width: 750px) {
-    flex-direction: row;
-  }
-`;
-
-const NavColumn = styled.li`
-  padding: 15px 15px 15px 0;
-  text-align: left;
-  font-family: 'Helvetica', 'Arial', sans-serif;
-`;
-
-const NavLink = styled.li`
   &:active {
-    color: #4287f5;
+    background-color: #4287f5;
   }
-  &:hover {
-    color: #4287f5;
-  }
+`;
+
+/** GitHub button */
+const ButtonText = styled.div`
+  padding-top: 5px;
+
+  font-size: 12px;
+`;
+
+const Logo = styled.img`
+  height: 50%;
+`;
+
+const Divider = styled.div`
+  padding-top: 20px;
+  border-bottom: 1px solid lightgray;
 `;
 
 /** Content */
-const BodyRow = styled.ul`
-  display: flex;
-  padding: 0 0 15px 0;
-  flex-direction: column;
-  list-style-type: none;
-  justify-content: space-between;
+const Content = styled.div`
+  text-align: left;
+  line-height: 1.6;
 
-  @media (min-width: 750px) {
-    flex-direction: row;
+  & > div {
+    padding-top: 15px;
   }
 `;
 
-const BodyColumn = styled.li`
-  text-align: left;
-  font-size: 15px;
-  line-height: 1.6;
-  font-family: 'Raleway', sans-serif;
+const SplitContent = styled.div`
+  display: flex;
+
+  @media (max-width: 575px) {
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  & > div {
+    max-width: 50%;
+    padding-right: 30px;
+
+    @media (max-width: 575px) {
+      max-width: 100%;
+    }
+  }
 `;
 
-const HalfBodyColumn = styled.li`
-  width: 49%;
-  text-align: left;
-  font-size: 15px;
-  line-height: 1.6;
-  font-family: 'Raleway', sans-serif;
-  justify-content: space-between;
+const ContentItem = styled.div`
+  & > * {
+    @media (max-width: 575px) {
+      text-align: center;
+    }
+  }
 `;
 
-const BodyHeadline = styled.h2`
-  text-align: left;
+const ContentHeadline = styled.h2`
+  padding: 10px 0;
+
+  font-size: 16px;
+  font-weight: 700;
   text-transform: uppercase;
   font-family: 'Comfortaa', cursive;
-  font-weight: 700;
-  font-size: 14px;
+`;
+
+const ContentText = styled.div`
+  font-size: 15px;
+  font-family: 'Raleway', sans-serif;
+`;
+
+/** Footer */
+const Footer = styled.footer`
+  display: flex;
+  margin: 0;
+  justify-content: center;
+  width: 100%;
+  height: 40px;
+  background-color: #20262b;
+  color: white;
+  font-size: 13px;
+  text-align: center;
 `;
 
 const AboutContainer = () => (
   <>
-    <Container>
-      <Article>
-        <HeaderRow>
-          <HeaderColumn>
-            <Headline>Ubikampus Location Service</Headline>
-          </HeaderColumn>
-        </HeaderRow>
-        <HeaderRow>
-          <HeaderColumn>
-            <Button>Download</Button>
-          </HeaderColumn>
-        </HeaderRow>
-      </Article>
+    <Wrap>
+      <About>
+        <Header>
+          <Headline>Ubikampus Location Service</Headline>
+          <ButtonComponent>
+            <Logo src={githubLogo} />
+            <ButtonText>View on GitHub</ButtonText>
+          </ButtonComponent>
+          <Divider />
+        </Header>
 
-      <Article>
-        <NavRow>
-          <NavColumn>
-            <NavLink>Info X</NavLink>
-          </NavColumn>
-          <NavColumn>
-            <NavLink>Info Y</NavLink>
-          </NavColumn>
-          <NavColumn>
-            <NavLink>Info Z</NavLink>
-          </NavColumn>
-        </NavRow>
-      </Article>
+        <Content>
+          <ContentItem>
+            <ContentHeadline>What is Ubilocation?</ContentHeadline>
+            <ContentText>
+              Ubilocation is a Bluetooth-positioning system developed on the
+              course Software Engineering Lab at the University of Helsinki,
+              department of Computer Science. The aim of the project is to
+              calculate campus visitors’ indoor position by using an inverse
+              technique of collecting Bluetooth signals via minicomputers such
+              as Raspberry PIs placed on the walls. Ubilocation is part of the
+              Ubikampus project and is built on the specifications and
+              requirements of Ubikampus’ coordinator Petri Savolainen.
+            </ContentText>
+            <ContentText>
+              Please note that users need to carry Bluetooth beacons with them
+              (the size of small, electronic keys) or download a beacon
+              simulation app in order to be positioned.
+            </ContentText>
+          </ContentItem>
 
-      <Article>
-        <BodyRow>
-          <BodyColumn>
-            <BodyHeadline>Is Ubilocation for you?</BodyHeadline>
-          </BodyColumn>
-        </BodyRow>
+          <SplitContent>
+            <ContentItem>
+              <ContentHeadline>Contributing</ContentHeadline>
+              <ContentText>
+                Ubilocation is an Open Source project consisting of three
+                independent code repositories: Android scanner, Ubilocation
+                library and an user interface. If you would like to develop the
+                project further please visit Ubilocation’s GitHub page and
+                submit an issue and/or pull request.
+              </ContentText>
+            </ContentItem>
 
-        <BodyRow>
-          <BodyColumn>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent
-            ultrices, tortor vel volutpat placerat, lectus mauris tempus ex, non
-            pharetra leo justo at odio. Etiam feugiat nibh nec nibh vehicula, et
-            porta massa luctus. Fusce ut purus facilisis nunc ullamcorper
-            gravida id vitae mauris. Nulla interdum dignissim risus, vitae
-            placerat velit malesuada quis. Aenean eget nibh vitae sapien
-            suscipit laoreet vel quis neque. Vestibulum v olutpat nisl sed orci
-            venenatis, vel feugiat nibh posuere. Nam a enim gravida, aliquet
-            magna vel, placerat mauris. Nam ut nisl in
-          </BodyColumn>
-        </BodyRow>
-        <BodyRow>
-          <HalfBodyColumn>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent
-            ultrices, tortor vel volutpat placerat, lectus mauris tempus ex, non
-            pharetra leo justo at odio. Etiam feugiat nibh nec nibh vehicula, et
-            porta massa luctus. Fusce ut purus facilisis nunc ullamcorper
-            gravida id vitae mauris. Nulla interdum dignissim risus, vitae
-            placerat velit malesuada quis. Aenean eget nibh vitae sapien
-            suscipit laoreet vel quis neque. Vestibulum v olutpat nisl sed orci
-            venenatis, vel feugiat nibh posuere. Nam a enim gravida, aliquet
-            magna vel, placerat mauris. Nam ut nisl in
-          </HalfBodyColumn>
-          <HalfBodyColumn>
-            magna tempor cursus quis eget velit. Sed nunc nunc, convallis et
-            tempus vel, finibus eu sem. Quisque sit amet ultrices mi, at
-            ullamcorper purus. Nulla tristique augue a arcu dictum tincidunt.
-            Etiam in sollicitudin nisi. In ut ex nunc. Praesent tellus magna,
-            ultrices nec turpis a, hendrerit fringilla magna. Phasellus
-            consequat dui sed neque sollicitudin varius. Nulla vitae volutpat
-            ligula. Sed aliquet rhoncus nunc ut venenatis. Vivamus nibh risus,
-            egestas vel tincidunt eu, imperdiet nec ex. Donec sit amet suscipit
-            nisi. Curabitur bibendum leo quis sem eleifend fermentum. Fusce id
-            imperdiet felis, ut aliquet magna. gravida id vitae mauris.
-          </HalfBodyColumn>
-        </BodyRow>
-      </Article>
-    </Container>
+            <ContentItem>
+              <ContentHeadline>Creators</ContentHeadline>
+              <ContentText>
+                Elizabeth Berg, UI/UX <br />
+                Matti Riekkinen, front end <br />
+                Jere Lahelma, front end <br />
+                Atte Haarni, full stack <br />
+                Joni Kokko, back end <br />
+                Emil Andersson, back end <br />
+                Aleksander Matikainen, back end <br />
+              </ContentText>
+            </ContentItem>
+          </SplitContent>
+        </Content>
+      </About>
+
+      <Footer>Helsingin yliopisto 2019</Footer>
+    </Wrap>
   </>
 );
 
