@@ -29,7 +29,8 @@ const tryParseConfig = () => {
       ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
       JWT_SECRET: process.env.JWT_SECRET,
       MINIMUM_ZOOM: parseInt(process.env.MINIMUM_ZOOM as string, 10),
-      MQTT_URL: process.env.MQTT_URL,
+      WEB_MQTT_URL: process.env.WEB_MQTT_URL,
+      SERVER_MQTT_URL: process.env.SERVER_MQTT_URL,
     });
   } catch (e) {
     throw new Error(
@@ -43,7 +44,7 @@ export const ClientConfigDecoder = t.type({
   INITIAL_LONGITUDE: t.number,
   INITIAL_ZOOM: t.number,
   MINIMUM_ZOOM: t.number,
-  MQTT_URL: t.string,
+  WEB_MQTT_URL: t.string,
 });
 
 export type ClientConfig = t.TypeOf<typeof ClientConfigDecoder>;
@@ -54,6 +55,7 @@ export const AppConfig = t.intersection([
     ADMIN_PASSWORD: t.string,
 
     JWT_SECRET: t.string,
+    SERVER_MQTT_URL: t.string,
   }),
   ClientConfigDecoder,
 ]);
