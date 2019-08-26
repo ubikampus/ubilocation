@@ -149,7 +149,8 @@ const AdminPanel = ({
         </HeaderRow>
         <InfoSection>
           Click location on map, and enter name and height in millimeters for
-          the Android device. Height should be given relative to the second floor.
+          the Android device. Height should be given relative to the second
+          floor.
         </InfoSection>
         {devices.map((device, i) => (
           <AndroidRow key={'rpi-' + i}>

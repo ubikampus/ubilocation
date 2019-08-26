@@ -60,7 +60,7 @@ const BeaconIdModal = ({ confirmId, onClose }: Props) => {
             onChange={e => setBeaconId(e.target.value)}
           />
         </IdRow>
-        <ModalParagraph>Allow Ubimaps to track my location</ModalParagraph>
+        <ModalParagraph>Allow Ubilocation to track my location</ModalParagraph>
         <ModalButtonRow>
           <SecondaryButton
             type="button"
