@@ -27,6 +27,18 @@ export interface SignedMessage<T = any> {
   signatures: Array<Signature<T>>;
 }
 
+export interface Reservation {
+  startTime: Date;
+  endTime: Date;
+}
+
+export interface Rooms {
+  [room: string]: {
+    free: boolean;
+    reservations: Reservation[];
+  };
+}
+
 const login = async (credentials: Credentials): Promise<Admin> => {
   const url = `${API_URL}/login`;
   const response = await axios.post<Admin>(url, credentials);
@@ -45,4 +57,10 @@ const sign = async (message: string, token: string): Promise<SignedMessage> => {
   return response.data;
 };
 
-export default { login, sign };
+const reservations = async (): Promise<Rooms> => {
+  const url = `${API_URL}/reservations`;
+  const response = await axios.get(url);
+  return response.data;
+};
+
+export default { login, sign, reservations };
