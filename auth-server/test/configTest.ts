@@ -16,6 +16,6 @@ describe('/config', () => {
   it('has MQTT_URL in client config response', async () => {
     const res = await api.get('/config');
 
-    expect(res.body.MQTT_URL.length).toBeGreaterThan(3);
+    expect(res.body.WEB_MQTT_URL.length).toBeGreaterThan(3);
   });
 });
