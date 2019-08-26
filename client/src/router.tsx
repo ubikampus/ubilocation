@@ -26,6 +26,7 @@ import { useUbiMqtt, lastKnownPosCache } from './location/mqttConnection';
 import { BeaconGeoLocation } from './location/mqttDeserialize';
 import { PinKind } from './map/marker';
 import { ClientConfig } from './common/environment';
+import ReservationStatus from './common/reservationStatus';
 
 const inferLastKnownPosition = lastKnownPosCache();
 
@@ -126,6 +127,11 @@ const Router = ({ appConfig }: Props) => {
   useEffect(() => {
     const adminUser = AdminTokenStore.get();
     setAdmin(adminUser);
+  }, []);
+
+  useEffect(() => {
+    const rs = new ReservationStatus();
+    rs.update().then(() => setRoomReserved(rs.getRoomStatus('bar')));
   }, []);
 
   return (

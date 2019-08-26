@@ -1,6 +1,6 @@
 import authApi, { Rooms } from '../admin/authApi';
 
-class ReservationStatus {
+export default class ReservationStatus {
   public rooms: Rooms = {};
 
   public async update() {
