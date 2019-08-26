@@ -1,7 +1,7 @@
 {
   "name": "ubilocation",
   "version": "1.0.0",
-  "description": "Development tool for Ubikampus bluetooth tracker",
+  "description": "Map application for Ubikampus Bluetooth tracker",
   "repository": "github:ubikampus/ubilocation",
   "scripts": {
     "build": "NODE_ENV=production webpack",
