@@ -7,13 +7,13 @@ import Modal, {
   UbiLogo,
 } from '../common/modal';
 import styled from 'styled-components';
-import { PrimaryButton, SecondaryButton } from '../common/button';
+import { PrimaryButton } from '../common/button';
+import { PublicBeacon } from './shareLocationApi';
 
 interface Props {
   isOpen: boolean;
   onClose(): void;
-  isPublic: boolean;
-  nickname: string | null;
+  publicBeacon: PublicBeacon | null;
   publishLocation(a: boolean): void;
 }
 
@@ -44,8 +44,7 @@ const MainRow = styled.div`
 const PublicShareModal = ({
   isOpen,
   onClose,
-  isPublic,
-  nickname,
+  publicBeacon,
   publishLocation,
 }: Props) => {
   /*
@@ -59,6 +58,8 @@ const PublicShareModal = ({
     generateNick();
   }, []);
   */
+  const isPublic = publicBeacon !== null;
+  const nickname = publicBeacon ? publicBeacon.nickname : null;
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose}>

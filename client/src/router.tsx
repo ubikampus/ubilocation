@@ -17,7 +17,8 @@ import NavBar from './common/navBar';
 import LoginPromptContainer from './admin/loginPromptContainer';
 import AuthApi, { Admin } from './admin/authApi';
 import AdminTokenStore from './admin/adminTokenStore';
-import ShareLocationApi, { Beacon, PublicBeacon } from './map/shareLocationApi';
+import ShareLocationApi, { Beacon } from './map/shareLocationApi';
+import PublicBeaconList from './map/publicBeaconList';
 import BeaconIdModal from './map/beaconIdModal';
 import ShareLocationModal from './map/shareLocationModal';
 import PublicShareModal from './map/publicShareModal';
@@ -83,8 +84,9 @@ const Router = () => {
     setBeaconToken(beacon.token);
   };
 
-  const [publicBeacons, setPublicBeacons] = useState<PublicBeacon[]>([]);
-  const [publicBeacon, setPublicBeacon] = useState<PublicBeacon | null>(null);
+  const [publicBeacons, setPublicBeacons] = useState<PublicBeaconList>(
+    new PublicBeaconList([])
+  );
 
   /**
    * Used when user selects "only current" from the location prompt.
@@ -121,10 +123,8 @@ const Router = () => {
 
     const fetchPublicBeacons = async () => {
       const pubBeacons = await ShareLocationApi.fetchPublicBeacons();
-      setPublicBeacons(pubBeacons);
-
-      const myPublicBeacon = pubBeacons.find(pb => pb.beaconId === beaconId);
-      setPublicBeacon(myPublicBeacon ? myPublicBeacon : null);
+      const pubBeaconsList = new PublicBeaconList(pubBeacons);
+      setPublicBeacons(pubBeaconsList);
     };
 
     fetchPublicBeacons();
@@ -151,14 +151,14 @@ const Router = () => {
 
             if (enable) {
               const pubBeacon = await ShareLocationApi.publish(beaconToken);
-              setPublicBeacon(pubBeacon);
+              publicBeacons.update(pubBeacon);
 
               console.log('published our location as user', pubBeacon.nickname);
             } else {
               try {
                 console.log('disabling public location sharing');
+                publicBeacons.remove(beaconId);
                 await ShareLocationApi.unpublish(beaconId, beaconToken);
-                setPublicBeacon(null);
               } catch (e) {
                 // The beacon we tried to remove doesn't exist on the server
                 // This could happen, e.g. because the server was restarted
@@ -167,8 +167,7 @@ const Router = () => {
               }
             }
           }}
-          isPublic={publicBeacon !== null}
-          nickname={publicBeacon ? publicBeacon.nickname : null}
+          publicBeacon={publicBeacons.find(beaconId)}
           onClose={() => openPublicShare(false)}
           isOpen={publicShareOpen}
         />
@@ -188,10 +187,6 @@ const Router = () => {
           confirmId={async id => {
             const newBeacon = await ShareLocationApi.registerBeacon(id);
             setBeacon(newBeacon);
-
-            const myPublicBeacon = publicBeacons.find(pb => pb.beaconId === id);
-            setPublicBeacon(myPublicBeacon ? myPublicBeacon : null);
-
             setStaticLocations([]);
             setPinType('none');
             setCentralizeActive(false);
@@ -289,7 +284,7 @@ const Router = () => {
                   getDeviceLocation={getDeviceLocation}
                   setDeviceLocation={setDeviceLocation}
                   isAdminPanelOpen={isAdminPanelOpen}
-                  publicBeacons={publicBeacons}
+                  publicBeacons={publicBeacons.asList()}
                 />
               )}
             />
