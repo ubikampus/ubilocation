@@ -29,6 +29,5 @@ describe('tests for the register router', () => {
 
     expect(response.body.token).toBeDefined();
     expect(response.body.beaconId).toBeDefined();
-    expect(response.body.nickname).toBeDefined();
   });
 });
