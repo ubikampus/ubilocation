@@ -26,7 +26,7 @@ const Wrap = styled.div`
 /** Header */
 const Header = styled.article`
   width: auto;
-  justify-content: space-evenly;
+  padding: 15px;
 
   text-align: center;
   font-family: 'Comfortaa', cursive;
@@ -45,10 +45,10 @@ const ButtonComponent = styled(PrimaryButton)`
   background-color: #20262b;
 
   &:hover {
-    background-color: #4287f5;
+    background-color: #282e33;
   }
   &:active {
-    background-color: #4287f5;
+    background-color: #282e33;
   }
 `;
 
@@ -88,12 +88,10 @@ const SplitContent = styled.div`
 
   & > div {
     max-width: 50%;
-
     @media (max-width: 575px) {
       max-width: 100%;
     }
   }
-
 
   & > div:first-child {
     padding-right: 30px;
@@ -114,21 +112,31 @@ const ContentItem = styled.div`
       text-align: center;
     }
   }
-
 `;
 
 const ContentHeadline = styled.h2`
-  height: 35px;
+  display: flex;
+  align-items: center;
+  height: 33px;
   padding: 10px 0;
+  border-radius: 10px;
+  padding: 0 15px;
 
   font-size: 16px;
   font-weight: 700;
   text-transform: uppercase;
   font-family: 'Comfortaa', cursive;
-  background-color: lightgray;
+  background-color: salmon;
+
+  @media (max-width: 575px) {
+    justify-content: center;
+    text-align: center;
+  }
 `;
 
 const ContentText = styled.div`
+  padding: 15px;
+
   font-size: 15px;
   font-family: 'Raleway', sans-serif;
 `;
@@ -201,8 +209,8 @@ const AboutContainer = () => (
               <ContentHeadline>Creators</ContentHeadline>
               <ContentText>
                 Elizabeth Berg, UI/UX<br />
-                Matti Riekkinen, front-end<br />
                 Jere Lahelma, front-end<br />
+                Matti Riekkinen, front-end<br />
                 Atte Haarni, full-stack<br />
                 Joni Kokko, back-end<br />
                 Emil Andersson, back-end<br />
