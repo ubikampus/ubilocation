@@ -18,17 +18,6 @@ publicRouter.get('/', (request: Request, response: Response) => {
   response.status(200).send(publicBeacons);
 });
 
-publicRouter.get('/:beaconId', (request: Request, response: Response) => {
-  // TODO: Do we need to URL decode the beacon ID?
-  const beacon = find(request.params.beaconId);
-
-  if (!beacon) {
-    return response.status(404).json({ error: 'unknown beacon ID' });
-  }
-
-  return response.status(200).send(beacon);
-});
-
 publicRouter.post(
   '/',
   (request: Request & DecodedToken, response: Response) => {

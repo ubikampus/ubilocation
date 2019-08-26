@@ -28,29 +28,6 @@ const fetchPublicBeacons = async (): Promise<PublicBeacon[]> => {
   return response.data;
 };
 
-const fetchOnePublicBeacon = async (
-  beaconId: string
-): Promise<PublicBeacon> => {
-  // TODO: URL ENCODE THE BEACON ID !!
-  const url = `${PUBLIC_URL}/${beaconId}`;
-  const response = await axios.get(url);
-  return response.data;
-};
-
-const isPublic = async (beaconId: string): Promise<boolean> => {
-  try {
-    // TODO: URL ENCODE THE BEACON ID !!
-    const url = `${PUBLIC_URL}/${beaconId}`;
-    await axios.get(url);
-
-    // Returned 200: the beacon is on the list of public beacons
-    return true;
-  } catch (e) {
-    // Returned 404: the beacon is not on the list
-    return false;
-  }
-};
-
 const publish = async (token: string): Promise<PublicBeacon> => {
   const config = getConfig(token);
   const response = await axios.post<PublicBeacon>(PUBLIC_URL, {}, config);
@@ -75,8 +52,6 @@ const getConfig = (token: string): AxiosRequestConfig => {
 
 export default {
   registerBeacon,
-  isPublic,
-  fetchOnePublicBeacon,
   fetchPublicBeacons,
   publish,
   unpublish,
