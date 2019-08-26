@@ -1,10 +1,14 @@
 import React, { FC } from 'react';
-import ReactMapGl, { ViewState, PointerEvent } from 'react-map-gl';
+import ReactMapGl, {
+  ViewState,
+  PointerEvent,
+  NavigationControl,
+} from 'react-map-gl';
 import { Style } from 'mapbox-gl';
-import { BeaconGeoLocation } from '../location/mqttDeserialize';
 import { easeCubic } from 'd3-ease';
+import styled from 'styled-components';
 
-const MIN_ZOOM = 9;
+import { BeaconGeoLocation } from '../location/mqttDeserialize';
 
 export const flyToUserlocation = (
   viewport: ViewState,
@@ -22,12 +26,19 @@ export const flyToUserlocation = (
   return nextViewport;
 };
 
+const Navigation = styled.div`
+  position: absolute;
+  right: 10px;
+  bottom: 100px;
+`;
+
 interface Props {
   onClick(event: PointerEvent): void;
   viewport: ViewState;
   setViewport(a: ViewState): void;
   pointerCursor: boolean;
   mapStyle: Style;
+  minZoom: number;
 }
 
 const UbikampusMap: FC<Props> = ({
@@ -37,6 +48,7 @@ const UbikampusMap: FC<Props> = ({
   setViewport,
   mapStyle,
   pointerCursor,
+  minZoom,
 }) => (
   <ReactMapGl
     // NOTE: onViewportChange adds extra properties to `viewport`
@@ -44,7 +56,7 @@ const UbikampusMap: FC<Props> = ({
     mapStyle={mapStyle}
     width="100%"
     height="auto"
-    minZoom={MIN_ZOOM}
+    minZoom={minZoom}
     getCursor={pointerCursor ? () => 'pointer' : undefined}
     style={{ flex: '1' }}
     onViewportChange={nextViewport => {
@@ -53,6 +65,9 @@ const UbikampusMap: FC<Props> = ({
     onClick={e => onClick(e)}
   >
     {children}
+    <Navigation>
+      <NavigationControl />
+    </Navigation>
   </ReactMapGl>
 );
 

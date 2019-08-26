@@ -1,36 +1,44 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 import express from 'express';
-const loginRouter = express.Router();
+import { timingSafeEqual } from 'crypto';
 
-const adminUsername = 'admin';
-const adminPassword = '#Apollo11';
+import { appConfig } from '../validation';
+
+const loginRouter = express.Router();
 
 export interface Admin {
   token: string;
   username: string;
 }
 
-if (!process.env.SECRET) {
-  throw new Error('SECRET env variable cannot be empty');
-}
-
-const { SECRET } = process.env;
-
-loginRouter.post('/', (request: Request, response: Response) => {
+loginRouter.post('/', async (request: Request, response: Response) => {
   const body = request.body;
 
-  if (body.username !== adminUsername || body.password !== adminPassword) {
-    return response.status(401).json({ error: 'invalid username or password' });
+  const err = { error: 'invalid username or password' };
+
+  if (body.password.length !== appConfig.ADMIN_PASSWORD.length) {
+    await response.status(401).json(err);
+    return;
+  }
+
+  const isCorrectPassword = timingSafeEqual(
+    Buffer.from(body.password),
+    Buffer.from(appConfig.ADMIN_PASSWORD)
+  );
+
+  if (body.username !== appConfig.ADMIN_USER || !isCorrectPassword) {
+    await response.status(401).json(err);
+    return;
   }
 
   const userForToken = {
     username: body.username,
   };
 
-  const token = jwt.sign(userForToken, SECRET);
+  const token = jwt.sign(userForToken, appConfig.JWT_SECRET);
 
-  response.status(200).send({ token, username: body.username } as Admin);
+  await response.status(200).send({ token, username: body.username } as Admin);
 });
 
 export default loginRouter;

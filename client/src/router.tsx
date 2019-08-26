@@ -3,13 +3,12 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
 import { Transition } from 'react-spring/renderprops';
 
-import TrackingContainer from './map/trackingContainer';
 import AboutContainer from './aboutContainer';
 import {
   GenuineBusContainer,
   MockBusContainer,
 } from './3dVisualisation/screenContainer';
-import UrlPromptContainer, { MQTT_URL } from './location/urlPromptContainer';
+import UrlPromptContainer from './location/urlPromptContainer';
 import MapContainer from './map/mapContainer';
 import AdminPanel, { RaspberryLocation } from './admin/adminPanel';
 import { Location } from './common/typeUtil';
@@ -17,12 +16,18 @@ import NavBar from './common/navBar';
 
 import LoginPromptContainer from './admin/loginPromptContainer';
 import AuthApi, { Admin } from './admin/authApi';
+import AdminTokenStore from './admin/adminTokenStore';
+import ShareLocationApi, { Beacon } from './map/shareLocationApi';
+import BeaconIdModal from './map/beaconIdModal';
 import ShareLocationModal from './map/shareLocationModal';
 import PublicShareModal from './map/publicShareModal';
 import { parseQuery, MapLocationQueryDecoder } from './common/urlParse';
-import { useUbiMqtt } from './location/mqttConnection';
+import { useUbiMqtt, lastKnownPosCache } from './location/mqttConnection';
 import { BeaconGeoLocation } from './location/mqttDeserialize';
 import { PinKind } from './map/marker';
+import { ClientConfig } from './common/environment';
+
+const inferLastKnownPosition = lastKnownPosCache();
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -30,6 +35,8 @@ const Fullscreen = styled.div`
   height: 100vh;
   display: flex;
   flex-direction: column;
+
+  overflow-x: hidden;
 `;
 
 const MainRow = styled.div`
@@ -37,8 +44,8 @@ const MainRow = styled.div`
   height: 100%;
 `;
 
-export const isTrackingPromptOpen = (
-  bluetoothName: string | null,
+export const isBeaconIdPromptOpen = (
+  beaconId: string | null,
   isShareLocationModalOpen: boolean,
   isPublicShareOpen: boolean,
   isCentralizationButtonActive: boolean
@@ -47,18 +54,22 @@ export const isTrackingPromptOpen = (
     return true;
   }
 
-  if (isShareLocationModalOpen && bluetoothName === null) {
+  if (isShareLocationModalOpen && beaconId === null) {
     return true;
   }
 
-  if (isPublicShareOpen && bluetoothName === null) {
+  if (isPublicShareOpen && beaconId === null) {
     return true;
   }
 
   return false;
 };
 
-const Router = () => {
+interface Props {
+  appConfig: ClientConfig;
+}
+
+const Router = ({ appConfig }: Props) => {
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [isAdminPanelOpen, openAdminPanel] = useState(false);
   const [getDeviceLocation, setDeviceLocation] = useState<Location | null>(
@@ -67,13 +78,20 @@ const Router = () => {
   const [devices, setDevices] = useState<RaspberryLocation[]>([]);
   const [newName, setNewName] = useState('');
   const [newHeight, setNewHeight] = useState('');
+
+  // setRoomReserved can be used for controlling room reservation status.
+  // TODO: use genuine MQTT bus data for room reservation status
   const [roomReserved, setRoomReserved] = useState(false);
   const [isShareLocationModalOpen, openShareLocationModal] = useState(false);
   const [isShareLocationDropdownOpen, openShareLocationDropdown] = useState(
     false
   );
   const [publicShareOpen, openPublicShare] = useState(false);
-  const [bluetoothName, setBluetoothName] = useState<string | null>(null);
+  const [beaconId, setBeaconId] = useState<string | null>(null);
+
+  const setBeacon = (beacon: Beacon) => {
+    setBeaconId(beacon.beaconId);
+  };
 
   /**
    * Used when user selects "only current" from the location prompt.
@@ -93,38 +111,33 @@ const Router = () => {
   const [pinType, setPinType] = useState<PinKind>(initialPinType);
 
   const mqttHost =
-    queryParams && queryParams.host ? queryParams.host : MQTT_URL;
-  const { beacons, lastKnownPosition } = useUbiMqtt(
+    queryParams && queryParams.host ? queryParams.host : appConfig.WEB_MQTT_URL;
+  const beacons = useUbiMqtt(
     mqttHost,
-    bluetoothName,
     queryParams && queryParams.topic ? queryParams.topic : undefined
   );
+
+  const lastKnownPosition = inferLastKnownPosition(beacons, beaconId);
 
   const [centralizeActive, setCentralizeActive] = useState(
     queryParams && queryParams.lat ? true : false
   );
 
   useEffect(() => {
-    const loggedAdminUserJSON = window.localStorage.getItem(
-      'loggedUbimapsAdmin'
-    );
-
-    if (loggedAdminUserJSON) {
-      const adminUser = JSON.parse(loggedAdminUserJSON);
-      setAdmin(adminUser);
-    }
+    const adminUser = AdminTokenStore.get();
+    setAdmin(adminUser);
   }, []);
 
   return (
     <BrowserRouter>
-      {isShareLocationModalOpen && bluetoothName && (
+      {isShareLocationModalOpen && beaconId && (
         <ShareLocationModal
           isOpen={isShareLocationModalOpen}
           onClose={() => openShareLocationModal(false)}
-          currentBluetoothName={bluetoothName}
+          currentBeaconId={beaconId}
         />
       )}
-      {publicShareOpen && bluetoothName && (
+      {publicShareOpen && beaconId && (
         <PublicShareModal
           publishLocation={nickname => {
             // TODO
@@ -135,34 +148,29 @@ const Router = () => {
           isOpen={publicShareOpen}
         />
       )}
-      {isTrackingPromptOpen(
-        bluetoothName,
+      {isBeaconIdPromptOpen(
+        beaconId,
         isShareLocationModalOpen,
         publicShareOpen,
         centralizeActive
       ) && (
-        <TrackingContainer
-          beacons={beacons}
+        <BeaconIdModal
           onClose={() => {
             setCentralizeActive(false);
             openShareLocationModal(false);
             openPublicShare(false);
           }}
-          confirmName={name => {
-            setBluetoothName(name);
+          confirmId={async id => {
+            const newBeacon = await ShareLocationApi.registerBeacon(id);
+            setBeacon(newBeacon);
             setStaticLocations([]);
             setPinType('none');
             setCentralizeActive(false);
-          }}
-          onStaticSelected={name => {
-            const targetBeacons = beacons.filter(b => b.beaconId === name);
-            setStaticLocations(targetBeacons);
           }}
         />
       )}
       <Fullscreen>
         <NavBar
-          bluetoothName={bluetoothName}
           isAdmin={admin != null}
           openAdminPanel={openAdminPanel}
           isAdminPanelOpen={isAdminPanelOpen}
@@ -189,15 +197,12 @@ const Router = () => {
                   (props => (
                     <AdminPanel
                       style={props}
-                      toggleRoomReservation={() =>
-                        setRoomReserved(!roomReserved)
-                      }
                       newHeight={newHeight}
                       setNewHeight={setNewHeight}
                       newName={newName}
                       onLogout={() => {
                         setAdmin(null);
-                        window.localStorage.removeItem('loggedUbimapsAdmin');
+                        AdminTokenStore.clear();
                         openAdminPanel(false);
                       }}
                       setNewName={setNewName}
@@ -239,6 +244,7 @@ const Router = () => {
               render={props => (
                 <MapContainer
                   {...props}
+                  appConfig={appConfig}
                   isAdmin={admin !== null}
                   beacons={beacons}
                   pinType={pinType}
@@ -246,7 +252,7 @@ const Router = () => {
                   lastKnownPosition={lastKnownPosition}
                   staticLocations={staticLocations}
                   setCentralizeActive={setCentralizeActive}
-                  bluetoothName={bluetoothName}
+                  beaconId={beaconId}
                   roomReserved={roomReserved}
                   devices={devices}
                   getDeviceLocation={getDeviceLocation}
@@ -262,7 +268,11 @@ const Router = () => {
               exact
               path="/admin"
               render={props => (
-                <LoginPromptContainer {...props} setAdmin={setAdmin} />
+                <LoginPromptContainer
+                  {...props}
+                  admin={admin}
+                  setAdmin={setAdmin}
+                />
               )}
             />
 

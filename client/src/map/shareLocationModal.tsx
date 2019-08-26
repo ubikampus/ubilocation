@@ -5,11 +5,6 @@ import queryString from 'query-string';
 import { GoClippy } from 'react-icons/go';
 import Modal, { ModalHeader, ModalParagraph, UbiLogo } from '../common/modal';
 
-/**
- * TODO: This URL should probably be an environment variable
- */
-const baseUrl = 'http://localhost:8080';
-
 const FlexContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -17,10 +12,6 @@ const FlexContainer = styled.div`
 
 const ModifiedModalHeader = styled(ModalHeader)`
   margin-bottom: 10px;
-`;
-
-const HighlightedParagraph = styled(ModalParagraph)`
-  color: red;
 `;
 
 /**
@@ -61,12 +52,12 @@ const CopyIcon = styled(GoClippy)`
 interface Props {
   isOpen: boolean;
   onClose(): void;
-  currentBluetoothName: string;
+  currentBeaconId: string;
 }
 
-const ShareLocation = ({ isOpen, onClose, currentBluetoothName }: Props) => {
-  const queryStr = queryString.stringify({ track: currentBluetoothName });
-  const shareLink = `${baseUrl}/?${queryStr}`;
+const ShareLocation = ({ isOpen, onClose, currentBeaconId }: Props) => {
+  const queryStr = queryString.stringify({ track: currentBeaconId });
+  const shareLink = `${window.location.origin}/?${queryStr}`;
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose}>

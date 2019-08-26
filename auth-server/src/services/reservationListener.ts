@@ -1,7 +1,7 @@
 import MqttService from '../services/mqtt';
 import fs from 'fs';
 
-const url = process.env.MQTT_URL || 'mqtt://localhost';
+const url = process.env.SERVER_MQTT_URL || 'mqtt://localhost';
 const topic = process.env.RESERVATION_TOPIC || 'rooms/+/reservations/#';
 const publicKeyPath = process.env.PUBLIC_KEY_PATH || 'pubkey.pem';
 
@@ -29,7 +29,8 @@ export default class ReservationListener {
   constructor() {
     new MqttService()
       .connect(url)
-      .then(s => s.subscribeSigned(topic, [publicKey], this.listener));
+      .then(s => s.subscribeSigned(topic, [publicKey], this.listener))
+      .catch(e => console.error(e));
   }
 
   addReservation(room: string, reservation: Reservation) {

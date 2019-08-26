@@ -1,9 +1,14 @@
-version: '3'
+# This compose file is used only for local development.
+
+version: '3.5'
 
 services:
   bluetooth-client:
     container_name: bluetooth-client
     build: client
+    environment:
+      API_URL: "http://localhost:3001"
+      TILE_URL: "http://localhost:8000"
     ports:
       - "8080:8080"
     volumes:
@@ -13,9 +18,19 @@ services:
     container_name: bluetooth-auth-server
     build: auth-server
     environment:
-      SECRET: secret
+      INITIAL_LATITUDE: 60.2046657
+      INITIAL_LONGITUDE: 24.9621132
+      INITIAL_ZOOM: 17
+      MINIMUM_ZOOM: 9
+      WEB_MQTT_URL: ws://localhost:9001/mqtt
+      SERVER_MQTT_URL: mqtt://mqtt
+      JWT_SECRET: secret
+      ADMIN_USER: admin
+      ADMIN_PASSWORD: "#Apollo11"
     ports:
       - "3001:3001"
+    networks:
+      - ubimaps
     volumes:
       - ./auth-server:/auth-server
       - /auth-server/node_modules
@@ -24,3 +39,8 @@ services:
     container_name: bluetooth-tileserver
     ports:
       - "8000:80"
+
+networks: 
+  ubimaps:
+    name: ubimaps
+    driver: bridge

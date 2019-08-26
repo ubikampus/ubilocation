@@ -3,7 +3,7 @@ import { Marker } from 'react-map-gl';
 import { RouteComponentProps, withRouter } from 'react-router';
 
 import applyMapboxColors from './shapeDraw/mapboxStyle';
-import { MapboxButton as CentralizationButton } from '../common/button';
+import { CentralizationButton } from '../common/button';
 import UbikampusMap, { flyToUserlocation } from './ubikampusMap';
 import QrCodeModal from './qrCodeModal';
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
@@ -21,18 +21,18 @@ import {
 import { Location } from '../common/typeUtil';
 import { Style } from 'mapbox-gl';
 import { MapLocationQueryDecoder, parseQuery } from '../common/urlParse';
-
-const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
-const DEFAULT_NONTRACKED_ZOOM = 17;
+import { ClientConfig } from '../common/environment';
 
 /**
- * When user lands to the page with a position.
+ * When user lands to the page with a position. Probs not needed as env
+ * variable..
  */
 const DEFAULT_TRACKED_ZOOM = 18;
 
 interface Props {
+  appConfig: ClientConfig;
   beacons: BeaconGeoLocation[];
-  bluetoothName: string | null;
+  beaconId: string | null;
   setCentralizeActive(a: boolean): void;
   pinType: PinKind;
   lastKnownPosition: BeaconGeoLocation | null;
@@ -47,6 +47,7 @@ interface Props {
 }
 
 const MapContainer = ({
+  appConfig,
   location,
   setDeviceLocation,
   isAdminPanelOpen,
@@ -58,7 +59,7 @@ const MapContainer = ({
   lastKnownPosition,
   roomReserved,
   setPinType,
-  bluetoothName,
+  beaconId,
   pinType,
   setCentralizeActive,
 }: RouteComponentProps & Props) => {
@@ -70,7 +71,7 @@ const MapContainer = ({
   const initialCoords =
     queryParams && queryParams.lat && queryParams.lon
       ? { lat: queryParams.lat, lon: queryParams.lon }
-      : KUMPULA_COORDS;
+      : { lat: appConfig.INITIAL_LATITUDE, lon: appConfig.INITIAL_LONGITUDE };
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const mapStyle = applyMapboxColors(roomReserved);
   const [modalText, setModalText] = useState('');
@@ -86,12 +87,12 @@ const MapContainer = ({
     zoom:
       queryParams && queryParams.lat
         ? DEFAULT_TRACKED_ZOOM
-        : DEFAULT_NONTRACKED_ZOOM,
+        : appConfig.INITIAL_ZOOM,
   });
 
   const { isOnline, allUserMarkers, nonUserMarkers } = divideMarkers(
     beacons,
-    bluetoothName,
+    beaconId,
     lastKnownPosition
   );
 
@@ -103,11 +104,11 @@ const MapContainer = ({
     ? [...staticMarkers, getDeviceLocation]
     : staticMarkers;
 
-  const trackedBtName =
+  const trackedBeaconId =
     queryParams && queryParams.track ? queryParams.track : null;
 
-  const sharedLocationMarkers = trackedBtName
-    ? nonUserMarkers.filter(b => b.beaconId === trackedBtName)
+  const sharedLocationMarkers = trackedBeaconId
+    ? nonUserMarkers.filter(b => b.beaconId === trackedBeaconId)
     : [];
 
   return (
@@ -115,17 +116,20 @@ const MapContainer = ({
       <CentralizationButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
         <button
           onClick={() => {
-            if (bluetoothName === null) {
+            if (beaconId === null) {
               setCentralizeActive(true);
             } else {
               // Use first known user location.
-              setViewport(flyToUserlocation(viewport, allUserMarkers[0]));
+              if (allUserMarkers.length > 0) {
+                setViewport(flyToUserlocation(viewport, allUserMarkers[0]));
+              }
             }
           }}
           className="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate"
         />
       </CentralizationButton>
       <UbikampusMap
+        minZoom={appConfig.MINIMUM_ZOOM}
         mapStyle={mapStyle as Style}
         onClick={e => {
           const [lon, lat] = e.lngLat;
@@ -168,7 +172,7 @@ const MapContainer = ({
             className="mapboxgl-user-location-dot"
           />
         ))}
-        {trackedBtName
+        {trackedBeaconId
           ? sharedLocationMarkers.map((beacon, i) => (
               <SharedLocationMarker
                 key={'sharedLocationMarker-' + i}

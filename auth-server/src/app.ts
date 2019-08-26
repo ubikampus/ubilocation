@@ -1,14 +1,11 @@
-import process from 'process';
 import express from 'express';
-import cors from 'cors';
-import loginRouter from './controllers/login';
 import signRouter from './controllers/sign';
 import reservationRouter from './controllers/reservation';
-
-if (process.env.TYPECHECK) {
-  console.log('type check success!');
-  process.exit(0);
-}
+import cors from 'cors';
+import loginRouter from './controllers/login';
+import config from './controllers/config';
+import requireLogin from './middleware/requireLogin';
+import registerRouter from './controllers/register';
 
 const app = express();
 
@@ -18,10 +15,9 @@ app.use(express.json());
 app.use('/login', loginRouter);
 app.use('/reservations', reservationRouter);
 app.use('/sign', signRouter);
+app.use('/register', registerRouter);
 
-const PORT = 3001;
-app.listen(PORT, () => {
-  console.log('Listening at', PORT);
-});
+app.use('/sign', requireLogin);
+app.get('/config', config);
 
 export default app;

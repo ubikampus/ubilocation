@@ -97,7 +97,6 @@ interface Props {
   resetDeviceLocation(): void;
   onLogout(): void;
   style: object;
-  toggleRoomReservation(): void;
   newName: string;
   setNewName(a: string): void;
   newHeight: string;
@@ -132,7 +131,6 @@ const AdminPanel = ({
   onCancel,
   onSubmit,
   style,
-  toggleRoomReservation,
   onLogout,
   resetDeviceLocation,
   newName,
@@ -214,9 +212,6 @@ const AdminPanel = ({
       </div>
       <BottomRow>
         <SecondaryButton onClick={() => onLogout()}>Log out</SecondaryButton>
-        <SecondaryButton onClick={() => toggleRoomReservation()}>
-          Room reservation
-        </SecondaryButton>
       </BottomRow>
     </SidebarContent>
   </Sidebar>
