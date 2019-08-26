@@ -12,8 +12,9 @@ import { PrimaryButton, SecondaryButton } from '../common/button';
 interface Props {
   isOpen: boolean;
   onClose(): void;
+  isPublic: boolean;
   nickname: string;
-  publishLocation(): void;
+  publishLocation(a: boolean): void;
 }
 
 /*
@@ -43,6 +44,7 @@ const MainRow = styled.div`
 const PublicShareModal = ({
   isOpen,
   onClose,
+  isPublic,
   nickname,
   publishLocation,
 }: Props) => {
@@ -68,6 +70,14 @@ const PublicShareModal = ({
             Display your current position on Ubikampus info screen and for other
             Ubilocation users. Generated nickname will be shown on map.
           </ModalParagraph>
+          <label>
+            <input
+              type="checkbox"
+              checked={isPublic}
+              onChange={e => publishLocation(e.target.checked)}
+            />
+            Share publicly
+          </label>
           <ModalParagraph>
             {nickname === null ? (
               'loading...'
@@ -81,10 +91,7 @@ const PublicShareModal = ({
       </MainRow>
 
       <ModalButtonRow>
-        <SecondaryButton onClick={() => onClose()}>Cancel</SecondaryButton>
-        <PrimaryButton onClick={() => nickname && publishLocation()}>
-          Ok
-        </PrimaryButton>
+        <PrimaryButton onClick={() => onClose()}>Ok</PrimaryButton>
       </ModalButtonRow>
     </Modal>
   );

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { currentEnv } from '../common/environment';
 
 const API_URL = currentEnv.API_URL;
@@ -29,15 +29,56 @@ const fetchPublicBeacons = async (): Promise<PublicBeacon[]> => {
   return response.data;
 };
 
-const publish = async (token: string): Promise<{}> => {
-  const config = {
-    headers: {
-      Authorization: 'Bearer ' + token,
-    },
-  };
+const fetchOnePublicBeacon = async (
+  beaconId: string
+): Promise<PublicBeacon> => {
+  // TODO: URL ENCODE THE BEACON ID !!
+  const url = `${PUBLIC_URL}/${beaconId}`;
+  const response = await axios.get(url);
+  return response.data;
+};
 
+const isPublic = async (beaconId: string): Promise<boolean> => {
+  try {
+    // TODO: URL ENCODE THE BEACON ID !!
+    const url = `${PUBLIC_URL}/${beaconId}`;
+    await axios.get(url);
+
+    // Returned 200: the beacon is on the list of public beacons
+    return true;
+  } catch (e) {
+    // Returned 404: the beacon is not on the list
+    return false;
+  }
+};
+
+const publish = async (token: string): Promise<{}> => {
+  const config = getConfig(token);
   const response = await axios.post<{}>(PUBLIC_URL, {}, config);
   return response.data;
 };
 
-export default { registerBeacon, fetchPublicBeacons, publish };
+const unpublish = async (beaconId: string, token: string): Promise<{}> => {
+  // TODO: URL ENCODE THE BEACON ID !!
+  const url = `${PUBLIC_URL}/${beaconId}`;
+  const config = getConfig(token);
+  const response = await axios.delete<{}>(url, config);
+  return response.data;
+};
+
+const getConfig = (token: string): AxiosRequestConfig => {
+  return {
+    headers: {
+      Authorization: 'Bearer ' + token,
+    },
+  };
+};
+
+export default {
+  registerBeacon,
+  isPublic,
+  fetchOnePublicBeacon,
+  fetchPublicBeacons,
+  publish,
+  unpublish,
+};

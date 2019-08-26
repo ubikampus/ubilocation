@@ -14,6 +14,7 @@ publicRouter.get('/', (request: Request, response: Response) => {
 });
 
 publicRouter.get('/:beaconId', (request: Request, response: Response) => {
+  // TODO: Do we need to URL decode the beacon ID?
   const beacon = find(request.params.beaconId);
 
   if (!beacon) {
@@ -42,6 +43,7 @@ publicRouter.delete(
   '/:beaconId',
   (request: Request & DecodedToken, response: Response) => {
     const beaconId = request.decodedToken.beaconId;
+    // TODO: Do we need to URL decode the beacon ID?
     const beacon = find(request.params.beaconId);
 
     if (!beacon) {

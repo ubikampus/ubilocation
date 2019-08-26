@@ -86,6 +86,7 @@ const Router = () => {
   };
 
   const [publicBeacons, setPublicBeacons] = useState<PublicBeacon[]>([]);
+  const [isPublic, makePublic] = useState(false);
 
   /**
    * Used when user selects "only current" from the location prompt.
@@ -126,6 +127,8 @@ const Router = () => {
     };
 
     fetchPublicBeacons();
+
+    // TODO: Handle initialization, read beacon token from local store
   }, []);
 
   return (
@@ -139,13 +142,30 @@ const Router = () => {
       )}
       {publicShareOpen && beaconId && (
         <PublicShareModal
-          publishLocation={async () => {
-            if (beaconToken) {
+          publishLocation={async enable => {
+            if (!beaconToken) {
+              console.log('cannot publish: beacon token not set');
+              return;
+            }
+
+            if (enable) {
               console.log('publishing our location as user', nickname);
               await ShareLocationApi.publish(beaconToken);
-              openPublicShare(false);
+            } else {
+              try {
+                console.log('disabling public location sharing');
+                await ShareLocationApi.unpublish(beaconId, beaconToken);
+              } catch (e) {
+                // The beacon we tried to remove doesn't exist on the server
+                // This could happen, e.g. because the server was restarted
+                console.log('cannot unpublish', beaconId);
+                console.log(e.message());
+              }
             }
+
+            makePublic(enable);
           }}
+          isPublic={isPublic}
           nickname={nickname || 'nickname not set'}
           onClose={() => openPublicShare(false)}
           isOpen={publicShareOpen}
@@ -166,6 +186,8 @@ const Router = () => {
           confirmId={async id => {
             const newBeacon = await ShareLocationApi.registerBeacon(id);
             setBeacon(newBeacon);
+            const isPub = await ShareLocationApi.isPublic(id);
+            makePublic(isPub);
             setStaticLocations([]);
             setPinType('none');
             setCentralizeActive(false);
