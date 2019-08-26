@@ -49,7 +49,6 @@ export const CentralizationButton = styled.div`
   }
 
   position: absolute;
-  bottom: 60px;
-  right: 10px;
+  margin-top: 10px;
   z-index: 1000;
 `;
