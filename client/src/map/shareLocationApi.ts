@@ -10,7 +10,6 @@ const PUBLIC_URL = `${API_URL}/public`;
 export interface Beacon {
   token: string;
   beaconId: string;
-  nickname: string;
 }
 
 export interface PublicBeacon {
@@ -52,9 +51,9 @@ const isPublic = async (beaconId: string): Promise<boolean> => {
   }
 };
 
-const publish = async (token: string): Promise<{}> => {
+const publish = async (token: string): Promise<PublicBeacon> => {
   const config = getConfig(token);
-  const response = await axios.post<{}>(PUBLIC_URL, {}, config);
+  const response = await axios.post<PublicBeacon>(PUBLIC_URL, {}, config);
   return response.data;
 };
 

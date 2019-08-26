@@ -1,12 +1,10 @@
 import jwt from 'jsonwebtoken';
 import express, { Request, Response } from 'express';
-const hri = require('human-readable-ids').hri;
 const registerRouter = express.Router();
 
 export interface Beacon {
   token: string;
   beaconId: string;
-  nickname: string;
 }
 
 if (!process.env.SECRET) {
@@ -14,10 +12,6 @@ if (!process.env.SECRET) {
 }
 
 const { SECRET } = process.env;
-
-const generateNickname = () => {
-  return hri.random();
-};
 
 registerRouter.post('/', (request: Request, response: Response) => {
   const body = request.body;
@@ -27,12 +21,10 @@ registerRouter.post('/', (request: Request, response: Response) => {
     return response.status(400).json({ error: 'beacon ID is missing' });
   }
 
-  const nickname = generateNickname();
-
-  const tokenContents = { beaconId, nickname };
+  const tokenContents = { beaconId };
   const token = jwt.sign(tokenContents, SECRET);
 
-  response.status(200).send({ token, beaconId, nickname } as Beacon);
+  response.status(200).send({ token, beaconId } as Beacon);
 });
 
 export default registerRouter;

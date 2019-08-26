@@ -76,17 +76,15 @@ const Router = () => {
   );
   const [publicShareOpen, openPublicShare] = useState(false);
   const [beaconId, setBeaconId] = useState<string | null>(null);
-  const [nickname, setNickname] = useState<string | null>(null);
   const [beaconToken, setBeaconToken] = useState<string | null>(null);
 
   const setBeacon = (beacon: Beacon) => {
     setBeaconId(beacon.beaconId);
-    setNickname(beacon.nickname);
     setBeaconToken(beacon.token);
   };
 
   const [publicBeacons, setPublicBeacons] = useState<PublicBeacon[]>([]);
-  const [isPublic, makePublic] = useState(false);
+  const [publicBeacon, setPublicBeacon] = useState<PublicBeacon | null>(null);
 
   /**
    * Used when user selects "only current" from the location prompt.
@@ -124,6 +122,9 @@ const Router = () => {
     const fetchPublicBeacons = async () => {
       const pubBeacons = await ShareLocationApi.fetchPublicBeacons();
       setPublicBeacons(pubBeacons);
+
+      const myPublicBeacon = pubBeacons.find(pb => pb.beaconId === beaconId);
+      setPublicBeacon(myPublicBeacon ? myPublicBeacon : null);
     };
 
     fetchPublicBeacons();
@@ -149,12 +150,15 @@ const Router = () => {
             }
 
             if (enable) {
-              console.log('publishing our location as user', nickname);
-              await ShareLocationApi.publish(beaconToken);
+              const pubBeacon = await ShareLocationApi.publish(beaconToken);
+              setPublicBeacon(pubBeacon);
+
+              console.log('published our location as user', pubBeacon.nickname);
             } else {
               try {
                 console.log('disabling public location sharing');
                 await ShareLocationApi.unpublish(beaconId, beaconToken);
+                setPublicBeacon(null);
               } catch (e) {
                 // The beacon we tried to remove doesn't exist on the server
                 // This could happen, e.g. because the server was restarted
@@ -162,11 +166,9 @@ const Router = () => {
                 console.log(e.message());
               }
             }
-
-            makePublic(enable);
           }}
-          isPublic={isPublic}
-          nickname={nickname || 'nickname not set'}
+          isPublic={publicBeacon !== null}
+          nickname={publicBeacon ? publicBeacon.nickname : null}
           onClose={() => openPublicShare(false)}
           isOpen={publicShareOpen}
         />
@@ -186,8 +188,10 @@ const Router = () => {
           confirmId={async id => {
             const newBeacon = await ShareLocationApi.registerBeacon(id);
             setBeacon(newBeacon);
-            const isPub = await ShareLocationApi.isPublic(id);
-            makePublic(isPub);
+
+            const myPublicBeacon = publicBeacons.find(pb => pb.beaconId === id);
+            setPublicBeacon(myPublicBeacon ? myPublicBeacon : null);
+
             setStaticLocations([]);
             setPinType('none');
             setCentralizeActive(false);

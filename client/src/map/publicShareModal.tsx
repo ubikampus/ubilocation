@@ -13,7 +13,7 @@ interface Props {
   isOpen: boolean;
   onClose(): void;
   isPublic: boolean;
-  nickname: string;
+  nickname: string | null;
   publishLocation(a: boolean): void;
 }
 
@@ -80,7 +80,7 @@ const PublicShareModal = ({
           </label>
           <ModalParagraph>
             {nickname === null ? (
-              'loading...'
+              'nickname not set'
             ) : (
               <>
                 using nickname <Nickname>{nickname}</Nickname>

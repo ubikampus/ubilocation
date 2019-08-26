@@ -67,7 +67,7 @@ export const requireBeaconToken = (
     return res.status(401).json({ error: 'invalid token' });
   }
 
-  if (!decodedToken.beaconId || !decodedToken.nickname) {
+  if (!decodedToken.beaconId || decodedToken.beaconId.length === 0) {
     return res.status(401).json({ error: 'invalid token' });
   }
 

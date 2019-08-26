@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { DecodedToken } from '../middleware/requireLogin';
+const hri = require('human-readable-ids').hri;
 const publicRouter = express.Router();
 
 interface PublicBeacon {
@@ -8,6 +9,10 @@ interface PublicBeacon {
 }
 
 let publicBeacons: PublicBeacon[] = [];
+
+const generateNickname = () => {
+  return hri.random();
+};
 
 publicRouter.get('/', (request: Request, response: Response) => {
   response.status(200).send(publicBeacons);
@@ -27,15 +32,17 @@ publicRouter.get('/:beaconId', (request: Request, response: Response) => {
 publicRouter.post(
   '/',
   (request: Request & DecodedToken, response: Response) => {
-    // All the information we need is stored in the token
+    // Beacon ID is stored in the token
     // The body of the POST request should be empty
     const beaconId = request.decodedToken.beaconId;
-    const nickname = request.decodedToken.nickname;
+
+    const nickname = generateNickname();
+    const pubBeacon = { beaconId, nickname };
 
     remove(beaconId);
-    add(beaconId, nickname);
+    add(pubBeacon);
 
-    response.status(200).send({});
+    response.status(200).send(pubBeacon);
   }
 );
 
@@ -63,8 +70,8 @@ const find = (beaconId: string) => {
   return publicBeacons.find(b => b.beaconId === beaconId);
 };
 
-const add = (beaconId: string, nickname: string) => {
-  publicBeacons.push({ beaconId, nickname });
+const add = (pubBeacon: PublicBeacon) => {
+  publicBeacons.push(pubBeacon);
 };
 
 const remove = (beaconId: string) => {
