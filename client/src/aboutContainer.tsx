@@ -25,6 +25,7 @@ const Wrap = styled.div`
 
 /** Header */
 const Header = styled.article`
+  width: auto;
   justify-content: space-evenly;
 
   text-align: center;
@@ -87,11 +88,23 @@ const SplitContent = styled.div`
 
   & > div {
     max-width: 50%;
-    padding-right: 30px;
 
     @media (max-width: 575px) {
       max-width: 100%;
     }
+  }
+
+
+  & > div:first-child {
+    padding-right: 30px;
+    @media (max-width: 575px) {
+      padding-right: 0px;
+      padding-bottom: 15px;
+    }
+  }
+
+  & > div:nth-child(2) {
+    min-width: 50%;
   }
 `;
 
@@ -101,15 +114,18 @@ const ContentItem = styled.div`
       text-align: center;
     }
   }
+
 `;
 
 const ContentHeadline = styled.h2`
+  height: 35px;
   padding: 10px 0;
 
   font-size: 16px;
   font-weight: 700;
   text-transform: uppercase;
   font-family: 'Comfortaa', cursive;
+  background-color: lightgray;
 `;
 
 const ContentText = styled.div`
@@ -140,7 +156,6 @@ const AboutContainer = () => (
             <Logo src={githubLogo} />
             <ButtonText>View on GitHub</ButtonText>
           </ButtonComponent>
-          <Divider />
         </Header>
 
         <Content>
@@ -155,8 +170,8 @@ const AboutContainer = () => (
               as Raspberry PIs placed on the walls. Ubilocation is part of the
               Ubikampus project and is built on the specifications and
               requirements of Ubikampus’ coordinator Petri Savolainen.
-            </ContentText>
-            <ContentText>
+              <br />
+              <br />
               Please note that users need to carry Bluetooth beacons with them
               (the size of small, electronic keys) or download a beacon
               simulation app in order to be positioned.
@@ -168,23 +183,30 @@ const AboutContainer = () => (
               <ContentHeadline>Contributing</ContentHeadline>
               <ContentText>
                 Ubilocation is an Open Source project consisting of three
-                independent code repositories: Android scanner, Ubilocation
-                library and an user interface. If you would like to develop the
+                code repositories: Android scanner, Ubilocation
+                library and an user application. If you would like to develop the
                 project further please visit Ubilocation’s GitHub page and
-                submit an issue and/or pull request.
+                submit an issue and/or pull request in one of the repositories.
+                <br />
+                <br />
+                Android Scanner
+                <br />
+                Ubilocation Library
+                <br />
+                Ubilocation User Application
               </ContentText>
             </ContentItem>
 
             <ContentItem>
               <ContentHeadline>Creators</ContentHeadline>
               <ContentText>
-                Elizabeth Berg, UI/UX <br />
-                Matti Riekkinen, front end <br />
-                Jere Lahelma, front end <br />
-                Atte Haarni, full stack <br />
-                Joni Kokko, back end <br />
-                Emil Andersson, back end <br />
-                Aleksander Matikainen, back end <br />
+                Elizabeth Berg, UI/UX<br />
+                Matti Riekkinen, front-end<br />
+                Jere Lahelma, front-end<br />
+                Atte Haarni, full-stack<br />
+                Joni Kokko, back-end<br />
+                Emil Andersson, back-end<br />
+                Aleksander Matikainen, back-end<br />
               </ContentText>
             </ContentItem>
           </SplitContent>
