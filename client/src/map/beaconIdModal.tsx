@@ -54,12 +54,13 @@ const BeaconIdModal = ({ confirmId, onClose }: Props) => {
         <IdRow>
           <IdInput
             autoFocus
+            type="password"
             placeholder="Beacon ID"
             value={beaconId}
             onChange={e => setBeaconId(e.target.value)}
           />
         </IdRow>
-        <ModalParagraph>Allow Ubimaps to track my location</ModalParagraph>
+        <ModalParagraph>Allow Ubilocation to track my location</ModalParagraph>
         <ModalButtonRow>
           <SecondaryButton
             type="button"

@@ -1,6 +1,7 @@
 import { Admin } from './authApi';
 
-const STORE_ID = 'loggedUbimapsAdmin';
+const LEGACY_STORE_ID = 'loggedUbimapsAdmin';
+const STORE_ID = 'loggedUbilocationAdmin';
 
 const get = (): Admin | null => {
   const loggedAdminUserJSON = window.localStorage.getItem(STORE_ID);
@@ -16,6 +17,7 @@ const set = (adminUser: Admin): void => {
 };
 
 const clear = (): void => {
+  window.localStorage.removeItem(LEGACY_STORE_ID);
   window.localStorage.removeItem(STORE_ID);
 };
 
