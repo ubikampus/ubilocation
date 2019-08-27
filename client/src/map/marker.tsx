@@ -103,7 +103,7 @@ export const LocationMarker = ({
 
 /**
  * Why can there be multiple markers for the user? Because may not be able to get
- * an unique ID for the device thanks to bluetooth security limits. Hence, we don't
+ * an unique ID for the device thanks to Bluetooth security limits. Hence, we don't
  * assume the IDs to be unique.
  */
 export const divideMarkers = (

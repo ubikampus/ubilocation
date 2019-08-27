@@ -8,9 +8,9 @@ import {
   GenuineBusContainer,
   MockBusContainer,
 } from './3dVisualisation/screenContainer';
-import UrlPromptContainer, { MQTT_URL } from './location/urlPromptContainer';
+import UrlPromptContainer from './location/urlPromptContainer';
 import MapContainer from './map/mapContainer';
-import AdminPanel, { RaspberryLocation } from './admin/adminPanel';
+import AdminPanel, { AndroidLocation } from './admin/adminPanel';
 import { Location } from './common/typeUtil';
 import NavBar from './common/navBar';
 
@@ -23,9 +23,12 @@ import BeaconIdModal from './map/beaconIdModal';
 import ShareLocationModal from './map/shareLocationModal';
 import PublicShareModal from './map/publicShareModal';
 import { parseQuery, MapLocationQueryDecoder } from './common/urlParse';
-import { useUbiMqtt } from './location/mqttConnection';
+import { useUbiMqtt, lastKnownPosCache } from './location/mqttConnection';
 import { BeaconGeoLocation } from './location/mqttDeserialize';
 import { PinKind } from './map/marker';
+import { ClientConfig } from './common/environment';
+
+const inferLastKnownPosition = lastKnownPosCache();
 
 const NotFound = () => <h3>404 page not found</h3>;
 
@@ -33,6 +36,8 @@ const Fullscreen = styled.div`
   height: 100vh;
   display: flex;
   flex-direction: column;
+
+  overflow-x: hidden;
 `;
 
 const MainRow = styled.div`
@@ -61,15 +66,22 @@ export const isBeaconIdPromptOpen = (
   return false;
 };
 
-const Router = () => {
+interface Props {
+  appConfig: ClientConfig;
+}
+
+const Router = ({ appConfig }: Props) => {
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [isAdminPanelOpen, openAdminPanel] = useState(false);
   const [getDeviceLocation, setDeviceLocation] = useState<Location | null>(
     null
   );
-  const [devices, setDevices] = useState<RaspberryLocation[]>([]);
+  const [devices, setDevices] = useState<AndroidLocation[]>([]);
   const [newName, setNewName] = useState('');
   const [newHeight, setNewHeight] = useState('');
+
+  // setRoomReserved can be used for controlling room reservation status.
+  // TODO: use genuine MQTT bus data for room reservation status
   const [roomReserved, setRoomReserved] = useState(false);
   const [isShareLocationModalOpen, openShareLocationModal] = useState(false);
   const [isShareLocationDropdownOpen, openShareLocationDropdown] = useState(
@@ -106,12 +118,13 @@ const Router = () => {
   const [pinType, setPinType] = useState<PinKind>(initialPinType);
 
   const mqttHost =
-    queryParams && queryParams.host ? queryParams.host : MQTT_URL;
-  const { beacons, lastKnownPosition } = useUbiMqtt(
+    queryParams && queryParams.host ? queryParams.host : appConfig.MQTT_URL;
+  const beacons = useUbiMqtt(
     mqttHost,
-    beaconId,
     queryParams && queryParams.topic ? queryParams.topic : undefined
   );
+
+  const lastKnownPosition = inferLastKnownPosition(beacons, beaconId);
 
   const [centralizeActive, setCentralizeActive] = useState(
     queryParams && queryParams.lat ? true : false
@@ -221,9 +234,6 @@ const Router = () => {
                   (props => (
                     <AdminPanel
                       style={props}
-                      toggleRoomReservation={() =>
-                        setRoomReserved(!roomReserved)
-                      }
                       newHeight={newHeight}
                       setNewHeight={setNewHeight}
                       newName={newName}
@@ -271,6 +281,7 @@ const Router = () => {
               render={props => (
                 <MapContainer
                   {...props}
+                  appConfig={appConfig}
                   isAdmin={admin !== null}
                   beacons={beacons}
                   pinType={pinType}

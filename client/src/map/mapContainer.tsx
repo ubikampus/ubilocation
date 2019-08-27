@@ -3,12 +3,12 @@ import { Marker } from 'react-map-gl';
 import { RouteComponentProps, withRouter } from 'react-router';
 
 import applyMapboxColors from './shapeDraw/mapboxStyle';
-import { MapboxButton as CentralizationButton } from '../common/button';
+import { CentralizationButton } from '../common/button';
 import UbikampusMap, { flyToUserlocation } from './ubikampusMap';
 import QrCodeModal from './qrCodeModal';
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
 import { urlForLocation } from '../location/mqttConnection';
-import { RaspberryLocation } from '../admin/adminPanel';
+import { AndroidLocation } from '../admin/adminPanel';
 import {
   StaticUbiMarker,
   OfflineMarker,
@@ -22,19 +22,25 @@ import {
 import { Location } from '../common/typeUtil';
 import { Style } from 'mapbox-gl';
 import { MapLocationQueryDecoder, parseQuery } from '../common/urlParse';
+import { ClientConfig } from '../common/environment';
 import { PublicBeacon } from './shareLocationApi';
 import SharedLocationMarkers from './sharedLocationMarkers';
 
-const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
-const DEFAULT_NONTRACKED_ZOOM = 17;
-const SHOW_NICKNAMES_ABOVE_ZOOM_LEVEL = 17;
-
 /**
- * When user lands to the page with a position.
+ * When user lands to the page with a position. Probs not needed as env
+ * variable..
  */
 const DEFAULT_TRACKED_ZOOM = 18;
 
+/**
+ * Show nicknames for publicly shared locations only if the zoom level is
+ * sufficiently high. This should prevent the nickname text boxes from
+ * occluding each other too much.
+ */
+const SHOW_NICKNAMES_ABOVE_ZOOM_LEVEL = 17;
+
 interface Props {
+  appConfig: ClientConfig;
   beacons: BeaconGeoLocation[];
   beaconId: string | null;
   setCentralizeActive(a: boolean): void;
@@ -44,7 +50,7 @@ interface Props {
   isAdmin: boolean;
   getDeviceLocation: Location | null;
   setDeviceLocation(a: Location): void;
-  devices: RaspberryLocation[];
+  devices: AndroidLocation[];
   setPinType(a: PinKind): void;
   roomReserved: boolean;
   staticLocations: BeaconGeoLocation[];
@@ -52,6 +58,7 @@ interface Props {
 }
 
 const MapContainer = ({
+  appConfig,
   location,
   setDeviceLocation,
   isAdminPanelOpen,
@@ -76,7 +83,7 @@ const MapContainer = ({
   const initialCoords =
     queryParams && queryParams.lat && queryParams.lon
       ? { lat: queryParams.lat, lon: queryParams.lon }
-      : KUMPULA_COORDS;
+      : { lat: appConfig.INITIAL_LATITUDE, lon: appConfig.INITIAL_LONGITUDE };
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const mapStyle = applyMapboxColors(roomReserved);
   const [modalText, setModalText] = useState('');
@@ -92,7 +99,7 @@ const MapContainer = ({
     zoom:
       queryParams && queryParams.lat
         ? DEFAULT_TRACKED_ZOOM
-        : DEFAULT_NONTRACKED_ZOOM,
+        : appConfig.INITIAL_ZOOM,
   });
 
   const { isOnline, allUserMarkers, nonUserMarkers } = divideMarkers(
@@ -138,6 +145,7 @@ const MapContainer = ({
         />
       </CentralizationButton>
       <UbikampusMap
+        minZoom={appConfig.MINIMUM_ZOOM}
         mapStyle={mapStyle as Style}
         onClick={e => {
           const [lon, lat] = e.lngLat;
@@ -167,7 +175,7 @@ const MapContainer = ({
         />
         {allStaticMarkers.map((device, i) => (
           <StaticUbiMarker
-            key={'raspberry-' + i}
+            key={'android-' + i}
             latitude={device.lat}
             longitude={device.lon}
           />

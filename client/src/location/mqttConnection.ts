@@ -4,7 +4,6 @@ import Deserializer, {
   BabylonBeacon,
   mqttMessageToBabylon,
   BeaconGeoLocation,
-  MqttMessage,
   mqttMessageToGeo,
 } from './mqttDeserialize';
 import queryString from 'query-string';
@@ -14,18 +13,19 @@ const MOCK_MESSAGE_INTERVAL = 2000;
 
 const ROOM_HEIGHT_METERS = 3.8;
 
-export const refreshBeacons = (
-  parsed: MqttMessage[],
-  beaconId: string | null,
-  lastKnownPosition: BeaconGeoLocation | null
-) => {
-  const geoBeacons = parsed.map(i => mqttMessageToGeo(i));
+export const lastKnownPosCache = () => {
+  let lastKnownPosition: null | BeaconGeoLocation = null;
 
-  const ourBeacon = geoBeacons.find(beacon => beacon.beaconId === beaconId);
+  return (beacons: BeaconGeoLocation[], beaconId: null | string) => {
+    if (beaconId !== null) {
+      const ourBeacon = beacons.find(b => b.beaconId === beaconId);
 
-  return {
-    beacons: geoBeacons,
-    lastKnownPosition: ourBeacon !== undefined ? ourBeacon : lastKnownPosition,
+      if (ourBeacon) {
+        lastKnownPosition = ourBeacon;
+      }
+    }
+
+    return lastKnownPosition;
   };
 };
 
@@ -44,18 +44,10 @@ export const urlForLocation = (
   return updatedQueryString;
 };
 
-export const useUbiMqtt = (
-  host: string,
-  beaconId: string | null,
-  topic?: string
-) => {
+export const useUbiMqtt = (host: string, topic?: string) => {
   const parser = new Deserializer();
 
   const [beacons, setBeacons] = useState<BeaconGeoLocation[]>([]);
-  const [
-    lastKnownPosition,
-    setLastKnownPosition,
-  ] = useState<null | BeaconGeoLocation>(null);
 
   useEffect(() => {
     const ubiClient = new UbiMqtt(host, { silent: true });
@@ -73,14 +65,8 @@ export const useUbiMqtt = (
               return;
             }
 
-            const nextBeacons = refreshBeacons(
-              locations,
-              beaconId,
-              lastKnownPosition
-            );
-
-            setBeacons(nextBeacons.beacons);
-            setLastKnownPosition(nextBeacons.lastKnownPosition);
+            const nextBeacons = locations.map(i => mqttMessageToGeo(i));
+            setBeacons(nextBeacons);
           },
           (err: any) => {
             if (err) {
@@ -98,7 +84,7 @@ export const useUbiMqtt = (
     };
   }, []);
 
-  return { beacons, lastKnownPosition };
+  return beacons;
 };
 
 export class FakeMqttGenerator {

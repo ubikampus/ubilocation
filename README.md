@@ -1,11 +1,10 @@
-## Ubikampus bluetooth viz
+## Ubilocation
 
-[![Build Status](https://travis-ci.org/ubikampus/bluetooth-dev-visualizer.svg?branch=master)](https://travis-ci.org/ubikampus/bluetooth-dev-visualizer)
-[![codecov](https://codecov.io/gh/ubikampus/bluetooth-dev-visualizer/branch/master/graph/badge.svg)](https://codecov.io/gh/ubikampus/bluetooth-dev-visualizer)
+[![Build Status](https://travis-ci.org/ubikampus/ubilocation.svg?branch=master)](https://travis-ci.org/ubikampus/ubilocation)
+[![codecov](https://codecov.io/gh/ubikampus/ubilocation/branch/master/graph/badge.svg)](https://codecov.io/gh/ubikampus/ubilocation)
 
-This is a visualization tool for development of Ubikampus bluetooth tracker
-project. See main repo
-[here](https://github.com/ubikampus/Bluetooth-location-server).
+Ubilocation is a map application for Ubikampus Bluetooth tracking project. See
+main repo [here](https://github.com/ubikampus/Bluetooth-location-server).
 
 ### Requirements
 
@@ -30,10 +29,25 @@ See `scripts` section in package.json for other development commands. For
 example run client unit tests via `docker-compose exec bluetooth-client npm
 test`.
 
+### Configuration
+
+ | env variable | description
+----|----
+INITIAL_LATITUDE | latitude as float for the initial map position (WGS84)
+INITIAL_LONGITUDE | longitude as float for the initial map position
+INITIAL_ZOOM | mapbox zoom level, from 1 to 22
+MINIMUM_ZOOM | mapbox minimum zoom level
+ADMIN_USER | username for admin login (/admin)
+ADMIN_PASSWORD | password for admin login
+JWT_SECRET | secret key for JWT sign/verify process
+MQTT_URL | URL for mqtt bus, used for location data, calibration messages and location sharing. E.g. `wss://example.com:9002/mqtt`
+
+
 ### Deploy to production
 
-* Set SECRET variable in .env file. The secret is used for JWT sign/verify
-  process.
+* Set secret environment variables (ADMIN_* and JWT_SECRET) in .env file and
+  other configuration into docker-compose.prod.yml. See explanation for
+  configuration parameters above.
 
 * Generate a separate production private key for as described above into
   `pkey/pkey.pem`.

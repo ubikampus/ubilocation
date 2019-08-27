@@ -1,17 +1,12 @@
 import jwt from 'jsonwebtoken';
 import express, { Request, Response } from 'express';
+import { appConfig } from '../validation';
 const registerRouter = express.Router();
 
 export interface Beacon {
   token: string;
   beaconId: string;
 }
-
-if (!process.env.SECRET) {
-  throw new Error('SECRET env variable cannot be empty');
-}
-
-const { SECRET } = process.env;
 
 registerRouter.post('/', (request: Request, response: Response) => {
   const body = request.body;
@@ -22,7 +17,7 @@ registerRouter.post('/', (request: Request, response: Response) => {
   }
 
   const tokenContents = { beaconId };
-  const token = jwt.sign(tokenContents, SECRET);
+  const token = jwt.sign(tokenContents, appConfig.JWT_SECRET);
 
   response.status(200).send({ token, beaconId } as Beacon);
 });

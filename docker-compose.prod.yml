@@ -15,9 +15,10 @@ services:
         API_URL: "/api"
         TILE_URL: "/tiles"
     volumes:
-      - "./nginx:/etc/nginx/"
+      - "./nginx/nginx.conf:/etc/nginx/nginx.conf"
+
     ports:
-      - "80:80"
+      - "8000:8000"
 
       # TODO: add TLS supports via letsencrypt
       # - "443:443"
@@ -28,15 +29,23 @@ services:
       driver: journald
     container_name: bluetooth-server
     environment:
-      SECRET: $SECRET
+      INITIAL_LATITUDE: 60.2046657
+      INITIAL_LONGITUDE: 24.9621132
+      INITIAL_ZOOM: 17
+      MINIMUM_ZOOM: 9
+      MQTT_URL: ws://iot.ubikampus.net:9001/mqtt
+      JWT_SECRET: $JWT_SECRET
+      ADMIN_USER: $ADMIN_USER
+      ADMIN_PASSWORD: $ADMIN_PASSWORD
 
       # Used for signing admin messages for MQTT bus
-      KEY_PATH: pkey/pkey.pem
+      KEY_PATH: privatekey/pkey.pem
+
     build:
       context: auth-server
       dockerfile: Dockerfile.prod
     volumes:
-      - "./pkey:/auth-server/pkey"
+      - "./privatekey:/auth-server/privatekey"
 
   bluetooth-tileserver:
     restart: unless-stopped
@@ -44,4 +53,4 @@ services:
       driver: journald
     container_name: bluetooth-tileserver
     build: maptiles
-    command: /bin/bash /usr/src/app/run.sh --config /server/opts-prod.json
+    command: /bin/bash /usr/src/app/run.sh --config /server/opts-prod.json -u https://map.ubikampus.net/tiles

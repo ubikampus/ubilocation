@@ -1,11 +1,6 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-
-if (!process.env.SECRET) {
-  throw new Error('SECRET env variable cannot be empty');
-}
-
-const { SECRET } = process.env;
+import { appConfig } from '../validation';
 
 export interface DecodedToken {
   decodedToken: any;
@@ -32,7 +27,7 @@ export const requireAdminLogin = (
 
   let decodedToken;
   try {
-    decodedToken = jwt.verify(token, SECRET) as any;
+    decodedToken = jwt.verify(token, appConfig.JWT_SECRET) as any;
   } catch (exception) {
     return res.status(401).json({ error: 'invalid token' });
   }
@@ -62,7 +57,7 @@ export const requireBeaconToken = (
 
   let decodedToken;
   try {
-    decodedToken = jwt.verify(token, SECRET) as any;
+    decodedToken = jwt.verify(token, appConfig.JWT_SECRET) as any;
   } catch (exception) {
     return res.status(401).json({ error: 'invalid token' });
   }

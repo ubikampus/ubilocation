@@ -3,11 +3,12 @@ import express from 'express';
 import sign from './signer';
 import fs from 'fs';
 import cors from 'cors';
-import loginRouter from './controllers/login';
 import {
   requireAdminLogin,
   requireBeaconToken,
 } from './middleware/requireLogin';
+import loginRouter from './controllers/login';
+import config from './controllers/config';
 import registerRouter from './controllers/register';
 import publicRouter from './controllers/public';
 
@@ -31,5 +32,6 @@ app.post('/sign', async (req, res) => {
   const signed = await sign(PKEY, message);
   res.json(signed);
 });
+app.get('/config', config);
 
 export default app;

@@ -13,13 +13,20 @@ const DropdownContent = styled.div`
    */
   position: absolute;
   top: 48px;
-  background-color: #68a0fd;
+  background-color: #4287f5;
   border-radius: 0 0 8px 8px;
   /**
    * So that the corners stay rounded also when hovering over a link
    * (since links don't have rounded corners)
    */
   overflow: hidden;
+
+  margin-left: -7px;
+
+  /* hack for collapsed nav button positioning */
+  @media (max-width: 750px) {
+    margin-left: -117px;
+  }
 `;
 
 const DropdownLink = styled.div`
@@ -27,7 +34,7 @@ const DropdownLink = styled.div`
   font-size: 12px;
   color: white;
   &:hover {
-    background-color: #7db2ff;
+    background-color: #68a0fd;
   }
   cursor: pointer;
   padding: 10px 15px;
@@ -73,7 +80,7 @@ const ShareLocationDropdown = ({
             Share privately
           </DropdownLink>
           <DropdownLink onClick={onOpenPublishLocationModal}>
-            Publish to Ubimaps
+            Publish to Ubilocation
           </DropdownLink>
         </DropdownContent>
       )}

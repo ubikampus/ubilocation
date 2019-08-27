@@ -7,9 +7,6 @@
       "styles": "",
       "mbtiles": ""
     },
-    "domains": [
-      "localhost:80/tiles"
-    ],
     "formatQuality": {
       "jpeg": 80,
       "webp": 90

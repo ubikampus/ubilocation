@@ -39,36 +39,40 @@ const BeaconIdModal = ({ confirmId, onClose }: Props) => {
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose}>
       <ModalHeader>Ubikampus indoor positioning</ModalHeader>
-      <ModalParagraph>Enter your beacon ID</ModalParagraph>
-      <IdRow>
-        <IdInput
-          placeholder="Beacon ID"
-          value={beaconId}
-          onChange={e => setBeaconId(e.target.value)}
-        />
-      </IdRow>
-      <ModalParagraph>Allow Ubimaps to track my location</ModalParagraph>
-      <ModalButtonRow>
-        <SecondaryButton
-          onClick={() => {
-            onClose();
-          }}
-        >
-          No
-        </SecondaryButton>
-        <Button
-          onClick={() => {
-            if (!beaconId) {
-              // TODO: Show an error message: beacon id cannot be empty
-              return;
-            }
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          if (!beaconId) {
+            // TODO: Show an error message: beacon id cannot be empty
+            return;
+          }
 
-            confirmId(beaconId);
-          }}
-        >
-          Yes
-        </Button>
-      </ModalButtonRow>
+          confirmId(beaconId);
+        }}
+      >
+        <ModalParagraph>Enter your beacon ID</ModalParagraph>
+        <IdRow>
+          <IdInput
+            autoFocus
+            type="password"
+            placeholder="Beacon ID"
+            value={beaconId}
+            onChange={e => setBeaconId(e.target.value)}
+          />
+        </IdRow>
+        <ModalParagraph>Allow Ubilocation to track my location</ModalParagraph>
+        <ModalButtonRow>
+          <SecondaryButton
+            type="button"
+            onClick={() => {
+              onClose();
+            }}
+          >
+            No
+          </SecondaryButton>
+          <Button type="submit">Yes</Button>
+        </ModalButtonRow>
+      </form>
     </Modal>
   );
 };

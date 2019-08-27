@@ -27,7 +27,7 @@ module.exports = {
         options: {
           // disable type checker - we will use it in the ForkTsCheckerWebpackPlugin
           transpileOnly: true,
-          getCustomTransformers: () => ({ before: [styledComponentsTransformer] }),
+          getCustomTransformers: isProd ? undefined : () => ({ before: [styledComponentsTransformer] }),
         }
       },
       {
@@ -50,8 +50,7 @@ module.exports = {
   plugins: [
     new ForkTsCheckerWebpackPlugin({ reportFiles: 'src/**/*.{ts,tsx}', tslint: true }),
     new HtmlWebpackPlugin({
-      template: 'index.html',
-      favicon: 'asset/ubi_ukko_small.png',
+      template: 'index.html'
     }),
 
     // something weird going on with EnvironmentPlugin? Lets use defineplugin
