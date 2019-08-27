@@ -1,4 +1,5 @@
 import React from 'react';
+import Switch from 'react-switch';
 
 import Modal, {
   ModalHeader,
@@ -17,22 +18,6 @@ interface Props {
   publishLocation(a: boolean): void;
 }
 
-/*
-// Fetch generated nickname from auth-server
-const fetchNickname = async (): Promise<Nickname> => {
-  // axios.get('/nickname') . . .
-  return {
-    payload: 'random-nick-12',
-    signatures: [
-      {
-        protected: '123',
-        signature: '123',
-      },
-    ],
-  };
-};
-*/
-
 const Nickname = styled.span`
   font-family: monospace;
 `;
@@ -41,23 +26,26 @@ const MainRow = styled.div`
   display: flex;
 `;
 
+const ToggleSwitch = styled(Switch)`
+  vertical-align: middle;
+  margin-right: 4px;
+`;
+
+interface LabelProps {
+  checked: boolean;
+}
+
+const ToggleLabel = styled.span<LabelProps>`
+  color: ${props => (props.checked ? 'black' : '#70757a')};
+  cursor: pointer;
+`;
+
 const PublicShareModal = ({
   isOpen,
   onClose,
   publicBeacon,
   publishLocation,
 }: Props) => {
-  /*
-  useEffect(() => {
-    const generateNick = async () => {
-      const nick = await fetchNickname();
-
-      setNickname(nick);
-    };
-
-    generateNick();
-  }, []);
-  */
   const isPublic = publicBeacon !== null;
   const nickname = publicBeacon ? publicBeacon.nickname : null;
 
@@ -72,22 +60,21 @@ const PublicShareModal = ({
             Ubilocation users. Generated nickname will be shown on map.
           </ModalParagraph>
           <label>
-            <input
-              type="checkbox"
+            <ToggleSwitch
               checked={isPublic}
-              onChange={e => publishLocation(e.target.checked)}
+              onChange={checked => publishLocation(checked)}
+              height={20}
+              width={48}
             />
-            Share publicly
+            <ToggleLabel checked={isPublic}>Share location</ToggleLabel>
           </label>
-          <ModalParagraph>
-            {nickname === null ? (
-              'nickname not set'
-            ) : (
+          {nickname !== null && (
+            <ModalParagraph>
               <>
                 using nickname <Nickname>{nickname}</Nickname>
               </>
-            )}
-          </ModalParagraph>
+            </ModalParagraph>
+          )}
         </div>
       </MainRow>
 
