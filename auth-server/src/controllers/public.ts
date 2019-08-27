@@ -38,8 +38,8 @@ publicRouter.post(
 publicRouter.delete(
   '/:beaconId',
   (request: Request & DecodedToken, response: Response) => {
+    // Note: Express seems to decode URL encoded request.params automatically
     const beaconId = request.decodedToken.beaconId;
-    // TODO: Do we need to URL decode the beacon ID?
     const beacon = find(request.params.beaconId);
 
     if (!beacon) {

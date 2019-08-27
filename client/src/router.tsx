@@ -118,8 +118,10 @@ const Router = () => {
   );
 
   useEffect(() => {
-    const adminUser = AdminTokenStore.get();
-    setAdmin(adminUser);
+    const adminToken = AdminTokenStore.get();
+    setAdmin(adminToken);
+
+    // TODO: read also beacon token from local store
 
     const fetchPublicBeacons = async () => {
       const pubBeacons = await ShareLocationApi.fetchPublicBeacons();
@@ -128,8 +130,6 @@ const Router = () => {
     };
 
     fetchPublicBeacons();
-
-    // TODO: Handle initialization, read beacon token from local store
   }, []);
 
   return (

@@ -35,8 +35,7 @@ const publish = async (token: string): Promise<PublicBeacon> => {
 };
 
 const unpublish = async (beaconId: string, token: string): Promise<{}> => {
-  // TODO: URL ENCODE THE BEACON ID !!
-  const url = `${PUBLIC_URL}/${beaconId}`;
+  const url = `${PUBLIC_URL}/${encodeURIComponent(beaconId)}`;
   const config = getConfig(token);
   const response = await axios.delete<{}>(url, config);
   return response.data;
