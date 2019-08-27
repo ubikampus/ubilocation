@@ -64,7 +64,7 @@ const Logo = styled.img`
 `;
 
 /** Content */
-const Content = styled.div`
+const Body = styled.div`
   flex: 1 0 auto;
   padding-bottom: 25px;
 
@@ -76,7 +76,7 @@ const Content = styled.div`
   }
 `;
 
-const SplitContent = styled.div`
+const SplitContainer = styled.div`
   display: flex;
 
   @media (max-width: 575px) {
@@ -105,7 +105,7 @@ const SplitContent = styled.div`
 `;
 
 /** Align text to center on mobile */
-const ContentItem = styled.div`
+const Article = styled.div`
   & > * {
     @media (max-width: 575px) {
       text-align: center;
@@ -113,7 +113,7 @@ const ContentItem = styled.div`
   }
 `;
 
-const ContentHeadline = styled.h2`
+const ArticleHeadline = styled.h2`
   display: flex;
   align-items: center;
   height: 33px;
@@ -127,20 +127,20 @@ const ContentHeadline = styled.h2`
   border-bottom: 5px solid salmon;
 
   /** Align headlin text to center on mobile */
-  @media (max-width: 575px) { 
+  @media (max-width: 575px) {
     text-align: center;
     justify-content: center;
   }
 `;
 
-const ContentText = styled.div`
+const ArticleText = styled.div`
   padding: 15px;
 
   font-size: 15px;
   font-family: 'Raleway', sans-serif;
 `;
 
-const ContentTextBold = styled(ContentText)`
+const ArticleBoldText = styled(ArticleText)`
   font-weight: 700;
 `;
 
@@ -174,10 +174,10 @@ const AboutContainer = () => (
           </ButtonComponent>
         </Header>
 
-        <Content>
-          <ContentItem>
-            <ContentHeadline>What is Ubilocation?</ContentHeadline>
-            <ContentText>
+        <Body>
+          <Article>
+            <ArticleHeadline>What is Ubilocation?</ArticleHeadline>
+            <ArticleText>
               Ubilocation is a Bluetooth-positioning system developed on the
               course Software Engineering Lab at the University of Helsinki,
               department of Computer Science. The aim of the project is to
@@ -187,30 +187,30 @@ const AboutContainer = () => (
               Ubilocation is part of the Ubikampus project and is built on the
               specifications and requirements of Ubikampus’ coordinator Petri
               Savolainen.
-            </ContentText>
-            <ContentTextBold>
+            </ArticleText>
+            <ArticleBoldText>
               Please note that users need to carry Bluetooth beacons with them
               (the size of small, electronic keys) or download a beacon
               simulation app in order to be positioned.
-            </ContentTextBold>
-          </ContentItem>
+            </ArticleBoldText>
+          </Article>
 
-          <SplitContent>
-            <ContentItem>
-              <ContentHeadline>Contributing</ContentHeadline>
-              <ContentText>
+          <SplitContainer>
+            <Article>
+              <ArticleHeadline>Contributing</ArticleHeadline>
+              <ArticleText>
                 Ubilocation is an Open Source project consisting of five code
                 repositories: Android scanner, Indoor Positioning library, Room
                 reservator, Ubilocation server and Ubilocation client. If you
                 would like to develop the project further please visit
                 Ubilocation’s GitHub page and submit an issue and/or pull
                 request in one of the repositories.
-              </ContentText>
-            </ContentItem>
+              </ArticleText>
+            </Article>
 
-            <ContentItem>
-              <ContentHeadline>Creators</ContentHeadline>
-              <ContentText>
+            <Article>
+              <ArticleHeadline>Creators</ArticleHeadline>
+              <ArticleText>
                 Elizabeth Berg, UI/UX
                 <br />
                 Jere Lahelma, front-end
@@ -225,10 +225,10 @@ const AboutContainer = () => (
                 <br />
                 Aleksander Matikainen, back-end
                 <br />
-              </ContentText>
-            </ContentItem>
-          </SplitContent>
-        </Content>
+              </ArticleText>
+            </Article>
+          </SplitContainer>
+        </Body>
       </About>
       <Footer>
         <FooterText>&#169; University of Helsinki 2019</FooterText>
