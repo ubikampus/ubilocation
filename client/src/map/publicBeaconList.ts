@@ -1,7 +1,7 @@
 import { PublicBeacon } from './shareLocationApi';
 
 class PublicBeaconList {
-  publicBeacons: PublicBeacon[];
+  private publicBeacons: PublicBeacon[];
 
   constructor(publicBeacons: PublicBeacon[]) {
     this.publicBeacons = publicBeacons;

@@ -23,9 +23,11 @@ import { Location } from '../common/typeUtil';
 import { Style } from 'mapbox-gl';
 import { MapLocationQueryDecoder, parseQuery } from '../common/urlParse';
 import { PublicBeacon } from './shareLocationApi';
+import SharedLocationMarkers from './sharedLocationMarkers';
 
 const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
 const DEFAULT_NONTRACKED_ZOOM = 17;
+const SHOW_NICKNAMES_ABOVE_ZOOM_LEVEL = 17;
 
 /**
  * When user lands to the page with a position.
@@ -110,35 +112,13 @@ const MapContainer = ({
   const trackedBeaconId =
     queryParams && queryParams.track ? queryParams.track : null;
 
-  const privateLocationMarkers = trackedBeaconId
-    ? nonUserMarkers.filter(b => b.beaconId === trackedBeaconId)
-    : [];
-
-  const filterPublicMarkers = (
-    markers: BeaconGeoLocation[],
-    pubBeacons: PublicBeacon[]
-  ) => {
-    return markers.filter(
-      b => pubBeacons.find(p => p.beaconId === b.beaconId) !== undefined
-    );
-  };
-
-  const publicLocationMarkers = filterPublicMarkers(
+  const sharedMarkers = new SharedLocationMarkers(
     nonUserMarkers,
     publicBeacons
   );
 
-  const getNicknameForMarker = (
-    marker: BeaconGeoLocation,
-    pubBeacons: PublicBeacon[]
-  ) => {
-    const beacon = pubBeacons.find(p => p.beaconId === marker.beaconId);
-    if (!beacon) {
-      return null;
-    }
-
-    return beacon.nickname;
-  };
+  const privateMarkers = sharedMarkers.filterPrivateMarkers(trackedBeaconId);
+  const publicMarkers = sharedMarkers.filterPublicMarkers();
 
   return (
     <>
@@ -201,7 +181,7 @@ const MapContainer = ({
           />
         ))}
         {trackedBeaconId
-          ? privateLocationMarkers.map((beacon, i) => (
+          ? privateMarkers.map((beacon, i) => (
               <PrivateLocationMarker
                 key={'privateLocationMarker-' + i}
                 latitude={beacon.lat}
@@ -209,16 +189,18 @@ const MapContainer = ({
                 className="mapboxgl-user-location-dot"
               />
             ))
-          : publicLocationMarkers.map((beacon, i) => (
+          : publicMarkers.map((beacon, i) => (
               <PublicLocationMarker
                 key={'publicLocationMarker' + i}
                 latitude={beacon.lat}
                 longitude={beacon.lon}
                 className="mapboxgl-user-location-dot"
               >
-                <div style={{ fontSize: 12, paddingTop: 12 }}>
-                  {getNicknameForMarker(beacon, publicBeacons)}
-                </div>
+                {viewport.zoom >= SHOW_NICKNAMES_ABOVE_ZOOM_LEVEL && (
+                  <div style={{ fontSize: 11, paddingTop: 12 }}>
+                    {sharedMarkers.getNicknameForMarker(beacon)}
+                  </div>
+                )}
               </PublicLocationMarker>
             ))}
       </UbikampusMap>
