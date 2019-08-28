@@ -32,9 +32,11 @@ const inferLastKnownPosition = lastKnownPosCache();
 const NotFound = () => <h3>404 page not found</h3>;
 
 const Fullscreen = styled.div`
-  height: 100vh;
   display: flex;
   flex-direction: column;
+
+  height: 100vh; /* fallback */
+  height: calc(var(--vh, 1vh) * 100);
 
   overflow-x: hidden;
 `;
@@ -146,16 +148,28 @@ const Router = ({ appConfig }: Props) => {
   const beaconTokenStore = new TokenStore<Beacon>(BEACON_STORE_ID);
 
   useEffect(() => {
-    setAdmin(adminTokenStore.get());
-    setBeacon(beaconTokenStore.get());
-
     const fetchPublicBeacons = async () => {
       const pubBeacons = await ShareLocationApi.fetchPublicBeacons();
       const pubBeaconsList = new PublicBeaconList(pubBeacons);
       setPublicBeacons(pubBeaconsList);
     };
 
+    const updateViewportHeight = () => {
+      // 100vh hack for mobile https://css-tricks.com/the-trick-to-viewport-units-on-mobile/
+      // Without this, the content will overflow from the bottom.
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    window.addEventListener('resize', updateViewportHeight);
+
     fetchPublicBeacons();
+    setAdmin(adminTokenStore.get());
+    setBeacon(beaconTokenStore.get());
+    updateViewportHeight();
+    return () => {
+      window.removeEventListener('resize', updateViewportHeight);
+    };
   }, []);
 
   return (

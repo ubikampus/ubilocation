@@ -54,6 +54,10 @@ MQTT_URL | URL for mqtt bus, used for location data, calibration messages and lo
 
 * Run `docker-compose -f docker-compose.prod.yml up --build`
 
+### Import your own floor plan
+
+See [How to import your own floor plan and OSM basemap](doc/import-floorplan.md).
+
 ### Deprecated 3D visualization
 
 Before the current mapping solution was created, the project produced a 3D visualization. This visualization featured a 3D model of the library based on architectural schematics. To access this much earlier version of the project, see the branch [3d-visualization](https://github.com/ubikampus/ubilocation-client/tree/3d-visualization).
