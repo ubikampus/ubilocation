@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "ts-node-dev --respawn --files src/index.ts",
+    "build": "NODE_ENV=production tsc --build tsconfig.json",
     "test": "jest",
     "coverage": "jest --silent --verbose --coverage --forceExit",
     "lint": "tslint -p .",
@@ -22,6 +23,9 @@
     "@types/supertest": "^2.0.8",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "fp-ts": "^2.0.5",
+    "human-readable-ids": "^1.0.4",
+    "io-ts": "^2.0.1",
     "jest": "^24.8.0",
     "jsonwebtoken": "^8.5.1",
     "node-jose": "^1.1.3",
@@ -30,7 +34,8 @@
     "tslint": "^5.18.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "^3.5.3"
+    "typescript": "^3.5.3",
+    "ubimqtt": "^2.0.5"
   },
   "devDependencies": {
     "supertest": "^4.0.2",

@@ -1,14 +1,15 @@
 import React from 'react';
 import { useState } from 'react';
 import { NavLink, withRouter, RouteComponentProps } from 'react-router-dom';
-
-import styled from 'styled-components';
-import { IoIosSearch } from 'react-icons/io';
 import { TiCog, TiLocationArrow } from 'react-icons/ti';
 import { HamburgerSqueeze } from 'react-animated-burgers';
+import styled from 'styled-components';
+import { IoIosSearch } from 'react-icons/io';
 
 import btlogo from '../../asset/bluetooth_logo.svg';
 import ShareLocationDropdown from './../map/shareLocationDropdown';
+import MobileMenuItem, { MenuSubItem } from './mobileMenuItem';
+import { Icon } from './icon';
 
 /** Container */
 const Navigation = styled.nav`
@@ -134,15 +135,6 @@ const RightMenuText = styled.div`
   }
 `;
 
-const Icon = styled.div`
-  width: 30px;
-
-  & > svg {
-    height: 100%;
-    width: 100%;
-  }
-`;
-
 /** Mobile */
 const HamburgerMenu = styled.div`
   width: 100%;
@@ -207,7 +199,6 @@ const MobileSearch = styled.input`
 `;
 
 interface Props {
-  bluetoothName: string | null;
   openPublicShare(a: boolean): void;
   isAdmin: boolean;
   openAdminPanel(a: boolean): void;
@@ -229,7 +220,7 @@ const NavBar = ({
   openShareLocationDropdown,
   openShareLocationModal,
 }: Props & RouteComponentProps) => {
-  const [isActive, setActive] = useState(false);
+  const [isMobileMenuExpanded, expandMobileMenu] = useState(false);
 
   const navigateHomeAndRun = (after: () => void) => () => {
     if (pathname !== '/') {
@@ -238,6 +229,15 @@ const NavBar = ({
 
     after();
   };
+
+  const sharePrivateClicked = navigateHomeAndRun(() => {
+    openShareLocationDropdown(false);
+    openShareLocationModal(true);
+  });
+
+  const publishLocationClicked = navigateHomeAndRun(() => {
+    openPublicShare(true);
+  });
 
   return (
     <Navigation>
@@ -273,13 +273,8 @@ const NavBar = ({
             <ShareLocationDropdown
               isOpen={isShareLocationDropdownOpen}
               openDropdown={openShareLocationDropdown}
-              onOpenShareLocationModal={navigateHomeAndRun(() => {
-                openShareLocationDropdown(false);
-                openShareLocationModal(true);
-              })}
-              onOpenPublishLocationModal={navigateHomeAndRun(() => {
-                openPublicShare(true);
-              })}
+              onOpenShareLocationModal={sharePrivateClicked}
+              onOpenPublishLocationModal={publishLocationClicked}
             />
           </RightMenuItem>
 
@@ -304,8 +299,8 @@ const NavBar = ({
 
         <HamburgerMenu>
           <HamburgerSqueeze
-            isActive={isActive}
-            toggleButton={() => setActive(!isActive)}
+            isActive={isMobileMenuExpanded}
+            toggleButton={() => expandMobileMenu(!isMobileMenuExpanded)}
             buttonWidth={30}
             buttonColor="#4287f5"
             barColor="white"
@@ -313,24 +308,31 @@ const NavBar = ({
         </HamburgerMenu>
       </TopNav>
 
-      <Mobile active={isActive}>
+      <Mobile active={isMobileMenuExpanded}>
         <MobileMenu>
-          <MobileMenuItem>
-            <Icon>
-              <IoIosSearch />
-            </Icon>
+          <MobileMenuItem itemIcon={IoIosSearch}>
             <MobileSearch placeholder="Search .." />
           </MobileMenuItem>
 
-          <MobileMenuItem>
-            <Icon>
-              <TiLocationArrow />
-            </Icon>
+          <MobileMenuItem
+            itemIcon={TiLocationArrow}
+            renderSubItems={() => (
+              <>
+                <MenuSubItem onClick={sharePrivateClicked}>
+                  Share privately
+                </MenuSubItem>
+                <MenuSubItem onClick={publishLocationClicked}>
+                  Publish to Ubilocation
+                </MenuSubItem>
+              </>
+            )}
+          >
             <MobileMenuText>Location Sharing</MobileMenuText>
           </MobileMenuItem>
 
           {isAdmin && (
             <MobileMenuItem
+              itemIcon={TiCog}
               onClick={() => {
                 if (pathname !== '/') {
                   history.push('/');
@@ -340,9 +342,6 @@ const NavBar = ({
                 }
               }}
             >
-              <Icon>
-                <TiCog />
-              </Icon>
               <MobileMenuText>Admin Panel</MobileMenuText>
             </MobileMenuItem>
           )}

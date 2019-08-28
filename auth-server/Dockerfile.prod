@@ -1,0 +1,16 @@
+FROM node:12-alpine
+
+COPY package-lock.json package.json /auth-server/
+WORKDIR /auth-server
+RUN npm ci
+
+COPY . /auth-server
+RUN npm run build
+RUN npm prune --production
+
+ENV NODE_ENV production
+
+# We don't want to run as root in production
+USER node
+
+CMD ["node", "dist/src/index.js"]

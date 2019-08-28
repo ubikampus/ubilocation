@@ -20,6 +20,13 @@ const DropdownContent = styled.div`
    * (since links don't have rounded corners)
    */
   overflow: hidden;
+
+  margin-left: -7px;
+
+  /* hack for collapsed nav button positioning */
+  @media (max-width: 750px) {
+    margin-left: -117px;
+  }
 `;
 
 const DropdownLink = styled.div`
@@ -73,7 +80,7 @@ const ShareLocationDropdown = ({
             Share privately
           </DropdownLink>
           <DropdownLink onClick={onOpenPublishLocationModal}>
-            Publish to Ubimaps
+            Publish to Ubilocation
           </DropdownLink>
         </DropdownContent>
       )}

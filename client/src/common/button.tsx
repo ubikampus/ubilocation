@@ -43,13 +43,12 @@ export const PrimaryButton = styled(Button)`
 
 export default Button;
 
-export const MapboxButton = styled.div`
+export const CentralizationButton = styled.div`
   && {
     display: inline-block;
   }
 
   position: absolute;
-  bottom: 50px;
-  right: 10px;
+  margin-top: 10px;
   z-index: 1000;
 `;

@@ -1,4 +1,7 @@
-FROM node:12-alpine
+FROM node:12-alpine AS builder
+
+ARG API_URL
+ARG TILE_URL
 
 RUN apk add --no-cache git curl bash
 
@@ -11,4 +14,10 @@ RUN npm ci
 
 COPY . /client
 
-CMD ["npm", "run", "build"]
+RUN npm run build
+
+FROM nginx:1.17-alpine
+
+COPY --from=builder /client/dist/ /usr/share/nginx/html/
+
+CMD nginx -g 'daemon off;'

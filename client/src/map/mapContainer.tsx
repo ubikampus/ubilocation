@@ -3,17 +3,18 @@ import { Marker } from 'react-map-gl';
 import { RouteComponentProps, withRouter } from 'react-router';
 
 import applyMapboxColors from './shapeDraw/mapboxStyle';
-import { MapboxButton as CentralizationButton } from '../common/button';
+import { CentralizationButton } from '../common/button';
 import UbikampusMap, { flyToUserlocation } from './ubikampusMap';
 import QrCodeModal from './qrCodeModal';
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
 import { urlForLocation } from '../location/mqttConnection';
-import { RaspberryLocation } from '../admin/adminPanel';
+import { AndroidLocation } from '../admin/adminPanel';
 import {
   StaticUbiMarker,
   OfflineMarker,
   NonUserMarker,
-  SharedLocationMarker,
+  PrivateLocationMarker,
+  PublicLocationMarker,
   LocationMarker,
   divideMarkers,
   PinKind,
@@ -21,18 +22,27 @@ import {
 import { Location } from '../common/typeUtil';
 import { Style } from 'mapbox-gl';
 import { MapLocationQueryDecoder, parseQuery } from '../common/urlParse';
-
-const KUMPULA_COORDS = { lat: 60.2046657, lon: 24.9621132 };
-const DEFAULT_NONTRACKED_ZOOM = 17;
+import { ClientConfig } from '../common/environment';
+import { PublicBeacon } from './shareLocationApi';
+import SharedLocationMarkers from './sharedLocationMarkers';
 
 /**
- * When user lands to the page with a position.
+ * When user lands to the page with a position. Probs not needed as env
+ * variable..
  */
 const DEFAULT_TRACKED_ZOOM = 18;
 
+/**
+ * Show nicknames for publicly shared locations only if the zoom level is
+ * sufficiently high. This should prevent the nickname text boxes from
+ * occluding each other too much.
+ */
+const SHOW_NICKNAMES_ABOVE_ZOOM_LEVEL = 17;
+
 interface Props {
+  appConfig: ClientConfig;
   beacons: BeaconGeoLocation[];
-  bluetoothName: string | null;
+  beaconId: string | null;
   setCentralizeActive(a: boolean): void;
   pinType: PinKind;
   lastKnownPosition: BeaconGeoLocation | null;
@@ -40,13 +50,15 @@ interface Props {
   isAdmin: boolean;
   getDeviceLocation: Location | null;
   setDeviceLocation(a: Location): void;
-  devices: RaspberryLocation[];
+  devices: AndroidLocation[];
   setPinType(a: PinKind): void;
   roomReserved: boolean;
   staticLocations: BeaconGeoLocation[];
+  publicBeacons: PublicBeacon[];
 }
 
 const MapContainer = ({
+  appConfig,
   location,
   setDeviceLocation,
   isAdminPanelOpen,
@@ -58,9 +70,10 @@ const MapContainer = ({
   lastKnownPosition,
   roomReserved,
   setPinType,
-  bluetoothName,
+  beaconId,
   pinType,
   setCentralizeActive,
+  publicBeacons,
 }: RouteComponentProps & Props) => {
   const queryParams =
     location.search === ''
@@ -70,7 +83,7 @@ const MapContainer = ({
   const initialCoords =
     queryParams && queryParams.lat && queryParams.lon
       ? { lat: queryParams.lat, lon: queryParams.lon }
-      : KUMPULA_COORDS;
+      : { lat: appConfig.INITIAL_LATITUDE, lon: appConfig.INITIAL_LONGITUDE };
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const mapStyle = applyMapboxColors(roomReserved);
   const [modalText, setModalText] = useState('');
@@ -86,12 +99,12 @@ const MapContainer = ({
     zoom:
       queryParams && queryParams.lat
         ? DEFAULT_TRACKED_ZOOM
-        : DEFAULT_NONTRACKED_ZOOM,
+        : appConfig.INITIAL_ZOOM,
   });
 
   const { isOnline, allUserMarkers, nonUserMarkers } = divideMarkers(
     beacons,
-    bluetoothName,
+    beaconId,
     lastKnownPosition
   );
 
@@ -103,30 +116,32 @@ const MapContainer = ({
     ? [...staticMarkers, getDeviceLocation]
     : staticMarkers;
 
-  const trackedBtName =
+  const trackedBeaconId =
     queryParams && queryParams.track ? queryParams.track : null;
 
-  const sharedLocationMarkers = trackedBtName
-    ? nonUserMarkers.filter(b => b.beaconId === trackedBtName)
-    : [];
+  const sharedMarkers = new SharedLocationMarkers(
+    nonUserMarkers,
+    publicBeacons
+  );
+
+  const privateMarkers = sharedMarkers.filterPrivateMarkers(trackedBeaconId);
+  const publicMarkers = sharedMarkers.filterPublicMarkers();
 
   return (
     <>
-      <CentralizationButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
-        <button
-          onClick={() => {
-            if (bluetoothName === null) {
-              setCentralizeActive(true);
-            } else {
-              // Use first known user location.
+      <UbikampusMap
+        minZoom={appConfig.MINIMUM_ZOOM}
+        mapStyle={mapStyle as Style}
+        onCentralizeClick={() => {
+          if (beaconId === null) {
+            setCentralizeActive(true);
+          } else {
+            // Use first known user location.
+            if (allUserMarkers.length > 0) {
               setViewport(flyToUserlocation(viewport, allUserMarkers[0]));
             }
-          }}
-          className="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate"
-        />
-      </CentralizationButton>
-      <UbikampusMap
-        mapStyle={mapStyle as Style}
+          }
+        }}
         onClick={e => {
           const [lon, lat] = e.lngLat;
 
@@ -155,7 +170,7 @@ const MapContainer = ({
         />
         {allStaticMarkers.map((device, i) => (
           <StaticUbiMarker
-            key={'raspberry-' + i}
+            key={'android-' + i}
             latitude={device.lat}
             longitude={device.lon}
           />
@@ -168,22 +183,28 @@ const MapContainer = ({
             className="mapboxgl-user-location-dot"
           />
         ))}
-        {trackedBtName
-          ? sharedLocationMarkers.map((beacon, i) => (
-              <SharedLocationMarker
-                key={'sharedLocationMarker-' + i}
+        {trackedBeaconId
+          ? privateMarkers.map((beacon, i) => (
+              <PrivateLocationMarker
+                key={'privateLocationMarker-' + i}
                 latitude={beacon.lat}
                 longitude={beacon.lon}
                 className="mapboxgl-user-location-dot"
               />
             ))
-          : nonUserMarkers.map((beacon, i) => (
-              <NonUserMarker
-                key={i}
+          : publicMarkers.map((beacon, i) => (
+              <PublicLocationMarker
+                key={'publicLocationMarker' + i}
                 latitude={beacon.lat}
                 longitude={beacon.lon}
                 className="mapboxgl-user-location-dot"
-              />
+              >
+                {viewport.zoom >= SHOW_NICKNAMES_ABOVE_ZOOM_LEVEL && (
+                  <div style={{ fontSize: 11, paddingTop: 12 }}>
+                    {sharedMarkers.getNicknameForMarker(beacon)}
+                  </div>
+                )}
+              </PublicLocationMarker>
             ))}
       </UbikampusMap>
     </>
