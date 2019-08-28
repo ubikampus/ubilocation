@@ -39,13 +39,13 @@ services:
       ADMIN_PASSWORD: $ADMIN_PASSWORD
 
       # Used for signing admin messages for MQTT bus
-      KEY_PATH: privatekey/pkey.pem
+      KEY_PATH: pkey/pkey.pem
 
     build:
       context: auth-server
       dockerfile: Dockerfile.prod
     volumes:
-      - "./privatekey:/auth-server/privatekey"
+      - "./pkey:/auth-server/pkey"
 
   bluetooth-tileserver:
     restart: unless-stopped

@@ -10,6 +10,16 @@ import styled from 'styled-components';
 
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
 import { CentralizationButton } from '../common/button';
+import poiLayer from './shapeDraw/poiLayer.json';
+
+// https://icons-for-free.com/exit+stairs+stairway+icon-1320085825255624486/
+import stairs from '../../asset/stairs.png';
+
+// https://www.flaticon.com/free-icon/toilet_185547
+import toiletIcon from '../../asset/toilet.png';
+
+// https://www.flaticon.com/free-icon/coffee_251078#term=coffee&page=1&position=28
+import coffeeIcon from '../../asset/coffee.png';
 
 export const flyToUserlocation = (
   viewport: ViewState,
@@ -58,6 +68,32 @@ const UbikampusMap: FC<Props> = ({
     {...viewport}
     mapStyle={mapStyle}
     width="100%"
+    onLoad={async map => {
+      const images = [
+        { id: 'stairs', url: stairs },
+        { id: 'toilet', url: toiletIcon },
+        { id: 'coffee', url: coffeeIcon },
+      ];
+
+      await Promise.all(
+        images.map(
+          img =>
+            new Promise((res, rej) => {
+              map.target.loadImage(img.url, (error: any, image: any) => {
+                if (error) {
+                  rej(error);
+                }
+
+                map.target.addImage(img.id, image);
+
+                res();
+              });
+            })
+        )
+      );
+
+      map.target.addLayer(poiLayer as any);
+    }}
     height="auto"
     minZoom={minZoom}
     getCursor={pointerCursor ? () => 'pointer' : undefined}
