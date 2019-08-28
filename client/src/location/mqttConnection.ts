@@ -7,7 +7,8 @@ import Deserializer, {
   mqttMessageToGeo,
 } from './mqttDeserialize';
 import queryString from 'query-string';
-import { DEFAULT_TOPIC } from '../location/urlPromptContainer';
+
+const DEFAULT_TOPIC = 'ohtu/test/locations';
 
 const MOCK_MESSAGE_INTERVAL = 2000;
 
