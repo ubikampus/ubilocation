@@ -5,8 +5,8 @@ import { Beacon } from '../src/controllers/register';
 const api = supertest(app);
 
 /**
- * NOTE: The state of the server is not cleared in-between tests.
- * Hence, different tests may share some state on the server.
+ * NOTE: The state of auth-server is not cleared in-between tests.
+ * Hence, different tests may share some state on auth-server.
  * For instance, if test A makes beacons 1 and 2 public, then
  * test B may see two public beacons, even if B has not made any
  * beacons public itself. The tests have been structured so that
