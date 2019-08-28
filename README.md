@@ -53,3 +53,7 @@ MQTT_URL | URL for mqtt bus, used for location data, calibration messages and lo
   `pkey/pkey.pem`.
 
 * Run `docker-compose -f docker-compose.prod.yml up --build`
+
+### Import a floor plan
+
+See [How to import your own floor plan and OSM basemap](doc/import-floorplan.md).
