@@ -13,7 +13,8 @@ import {
   StaticUbiMarker,
   OfflineMarker,
   NonUserMarker,
-  SharedLocationMarker,
+  PrivateLocationMarker,
+  PublicLocationMarker,
   LocationMarker,
   divideMarkers,
   PinKind,
@@ -22,12 +23,21 @@ import { Location } from '../common/typeUtil';
 import { Style } from 'mapbox-gl';
 import { MapLocationQueryDecoder, parseQuery } from '../common/urlParse';
 import { ClientConfig } from '../common/environment';
+import { PublicBeacon } from './shareLocationApi';
+import SharedLocationMarkers from './sharedLocationMarkers';
 
 /**
  * When user lands to the page with a position. Probs not needed as env
  * variable..
  */
 const DEFAULT_TRACKED_ZOOM = 18;
+
+/**
+ * Show nicknames for publicly shared locations only if the zoom level is
+ * sufficiently high. This should prevent the nickname text boxes from
+ * occluding each other too much.
+ */
+const SHOW_NICKNAMES_ABOVE_ZOOM_LEVEL = 17;
 
 interface Props {
   appConfig: ClientConfig;
@@ -44,6 +54,7 @@ interface Props {
   setPinType(a: PinKind): void;
   roomReserved: boolean;
   staticLocations: BeaconGeoLocation[];
+  publicBeacons: PublicBeacon[];
 }
 
 const MapContainer = ({
@@ -62,6 +73,7 @@ const MapContainer = ({
   beaconId,
   pinType,
   setCentralizeActive,
+  publicBeacons,
 }: RouteComponentProps & Props) => {
   const queryParams =
     location.search === ''
@@ -107,9 +119,13 @@ const MapContainer = ({
   const trackedBeaconId =
     queryParams && queryParams.track ? queryParams.track : null;
 
-  const sharedLocationMarkers = trackedBeaconId
-    ? nonUserMarkers.filter(b => b.beaconId === trackedBeaconId)
-    : [];
+  const sharedMarkers = new SharedLocationMarkers(
+    nonUserMarkers,
+    publicBeacons
+  );
+
+  const privateMarkers = sharedMarkers.filterPrivateMarkers(trackedBeaconId);
+  const publicMarkers = sharedMarkers.filterPublicMarkers();
 
   return (
     <>
@@ -173,21 +189,27 @@ const MapContainer = ({
           />
         ))}
         {trackedBeaconId
-          ? sharedLocationMarkers.map((beacon, i) => (
-              <SharedLocationMarker
-                key={'sharedLocationMarker-' + i}
+          ? privateMarkers.map((beacon, i) => (
+              <PrivateLocationMarker
+                key={'privateLocationMarker-' + i}
                 latitude={beacon.lat}
                 longitude={beacon.lon}
                 className="mapboxgl-user-location-dot"
               />
             ))
-          : nonUserMarkers.map((beacon, i) => (
-              <NonUserMarker
-                key={i}
+          : publicMarkers.map((beacon, i) => (
+              <PublicLocationMarker
+                key={'publicLocationMarker' + i}
                 latitude={beacon.lat}
                 longitude={beacon.lon}
                 className="mapboxgl-user-location-dot"
-              />
+              >
+                {viewport.zoom >= SHOW_NICKNAMES_ABOVE_ZOOM_LEVEL && (
+                  <div style={{ fontSize: 11, paddingTop: 12 }}>
+                    {sharedMarkers.getNicknameForMarker(beacon)}
+                  </div>
+                )}
+              </PublicLocationMarker>
             ))}
       </UbikampusMap>
     </>

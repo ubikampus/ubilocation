@@ -18,6 +18,7 @@ import LoginPromptContainer from './admin/loginPromptContainer';
 import AuthApi, { Admin } from './admin/authApi';
 import AdminTokenStore from './admin/adminTokenStore';
 import ShareLocationApi, { Beacon } from './map/shareLocationApi';
+import PublicBeaconList from './map/publicBeaconList';
 import BeaconIdModal from './map/beaconIdModal';
 import ShareLocationModal from './map/shareLocationModal';
 import PublicShareModal from './map/publicShareModal';
@@ -88,10 +89,16 @@ const Router = ({ appConfig }: Props) => {
   );
   const [publicShareOpen, openPublicShare] = useState(false);
   const [beaconId, setBeaconId] = useState<string | null>(null);
+  const [beaconToken, setBeaconToken] = useState<string | null>(null);
 
   const setBeacon = (beacon: Beacon) => {
     setBeaconId(beacon.beaconId);
+    setBeaconToken(beacon.token);
   };
+
+  const [publicBeacons, setPublicBeacons] = useState<PublicBeaconList>(
+    new PublicBeaconList([])
+  );
 
   /**
    * Used when user selects "only current" from the location prompt.
@@ -124,8 +131,18 @@ const Router = ({ appConfig }: Props) => {
   );
 
   useEffect(() => {
-    const adminUser = AdminTokenStore.get();
-    setAdmin(adminUser);
+    const adminToken = AdminTokenStore.get();
+    setAdmin(adminToken);
+
+    // TODO: read also beacon token from local store
+
+    const fetchPublicBeacons = async () => {
+      const pubBeacons = await ShareLocationApi.fetchPublicBeacons();
+      const pubBeaconsList = new PublicBeaconList(pubBeacons);
+      setPublicBeacons(pubBeaconsList);
+    };
+
+    fetchPublicBeacons();
   }, []);
 
   return (
@@ -139,11 +156,31 @@ const Router = ({ appConfig }: Props) => {
       )}
       {publicShareOpen && beaconId && (
         <PublicShareModal
-          publishLocation={nickname => {
-            // TODO
-            console.log('publishing our location as user', nickname.payload);
-            openPublicShare(false);
+          publishLocation={async enable => {
+            if (!beaconToken) {
+              console.log('cannot publish: beacon token not set');
+              return;
+            }
+
+            if (enable) {
+              const pubBeacon = await ShareLocationApi.publish(beaconToken);
+              publicBeacons.update(pubBeacon);
+
+              console.log('published our location as user', pubBeacon.nickname);
+            } else {
+              try {
+                console.log('disabling public location sharing');
+                publicBeacons.remove(beaconId);
+                await ShareLocationApi.unpublish(beaconId, beaconToken);
+              } catch (e) {
+                // The beacon we tried to remove doesn't exist on the server
+                // This could happen, e.g. because the server was restarted
+                console.log('cannot unpublish', beaconId);
+                console.log(e.message());
+              }
+            }
           }}
+          publicBeacon={publicBeacons.find(beaconId)}
           onClose={() => openPublicShare(false)}
           isOpen={publicShareOpen}
         />
@@ -258,6 +295,7 @@ const Router = ({ appConfig }: Props) => {
                   getDeviceLocation={getDeviceLocation}
                   setDeviceLocation={setDeviceLocation}
                   isAdminPanelOpen={isAdminPanelOpen}
+                  publicBeacons={publicBeacons.asList()}
                 />
               )}
             />

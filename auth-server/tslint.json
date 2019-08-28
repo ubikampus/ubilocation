@@ -16,6 +16,7 @@
     "interface-name": [true, "never-prefix"],
     "file-name-casing": [true, "camel-case"],
     "no-console": false,
+    "no-var-requires": false,
     "prettier": [true, {
       "printWidth": 80,
       "trailingComma": "es5",

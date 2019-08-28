@@ -32,11 +32,8 @@ loginRouter.post('/', async (request: Request, response: Response) => {
     return;
   }
 
-  const userForToken = {
-    username: body.username,
-  };
-
-  const token = jwt.sign(userForToken, appConfig.JWT_SECRET);
+  const tokenContents = { username: body.username };
+  const token = jwt.sign(tokenContents, appConfig.JWT_SECRET);
 
   await response.status(200).send({ token, username: body.username } as Admin);
 });

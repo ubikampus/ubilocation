@@ -19,4 +19,15 @@ describe('tests for the register router', () => {
       .expect('Content-Type', /json/)
       .expect(400);
   });
+
+  test('successful register operation returns specified properties', async () => {
+    const response = await api
+      .post('/register')
+      .send({ beaconId: 'My-Unique-BeaconId' })
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body.token).toBeDefined();
+    expect(response.body.beaconId).toBeDefined();
+  });
 });
