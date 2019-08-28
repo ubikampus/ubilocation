@@ -304,7 +304,7 @@ const NavBar = ({
                   Share privately
                 </MenuSubItem>
                 <MenuSubItem onClick={publishLocationClicked}>
-                  Publish to Ubimaps
+                  Publish to Ubilocation
                 </MenuSubItem>
               </>
             )}

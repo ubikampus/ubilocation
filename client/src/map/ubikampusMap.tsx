@@ -9,6 +9,7 @@ import { easeCubic } from 'd3-ease';
 import styled from 'styled-components';
 
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
+import { CentralizationButton } from '../common/button';
 
 export const flyToUserlocation = (
   viewport: ViewState,
@@ -28,7 +29,7 @@ export const flyToUserlocation = (
 
 const Navigation = styled.div`
   position: absolute;
-  right: 10px;
+  right: 15px;
   bottom: 100px;
 `;
 
@@ -37,12 +38,14 @@ interface Props {
   viewport: ViewState;
   setViewport(a: ViewState): void;
   pointerCursor: boolean;
+  onCentralizeClick(): void;
   mapStyle: Style;
   minZoom: number;
 }
 
 const UbikampusMap: FC<Props> = ({
   onClick,
+  onCentralizeClick,
   children,
   viewport,
   setViewport,
@@ -67,6 +70,13 @@ const UbikampusMap: FC<Props> = ({
     {children}
     <Navigation>
       <NavigationControl />
+
+      <CentralizationButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
+        <button
+          onClick={() => onCentralizeClick()}
+          className="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate"
+        />
+      </CentralizationButton>
     </Navigation>
   </ReactMapGl>
 );

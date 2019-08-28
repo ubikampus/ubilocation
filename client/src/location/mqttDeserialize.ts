@@ -1,12 +1,16 @@
 import * as t from 'io-ts';
-import { unsafeDecode } from '../common/typeUtil';
 import destination from '@turf/destination';
+import distance from '@turf/distance';
+import nearestPointOnLine from '@turf/nearest-point-on-line';
+import { lineString } from '@turf/helpers';
+
+import { unsafeDecode, Location } from '../common/typeUtil';
+
+const LIBRARY_NORTH = [24.962112, 60.205323];
+const LIBRARY_WEST = [24.961545, 60.205045];
+const LIBRARY_EAST = [24.962691, 60.20503];
 
 const LIBRARY_BEARING = 42.5;
-const LIBRARY_ORIGO = {
-  lat: 60.205318,
-  lon: 24.962113,
-};
 
 /**
  * Represents shared properties between received MQTT location message, and
@@ -81,7 +85,7 @@ export type BeaconGeoLocation = t.TypeOf<typeof MessageLocationShared> & {
  */
 export const mqttMessageToGeo = (message: MqttMessage): BeaconGeoLocation => {
   const firstAxis = destination(
-    [LIBRARY_ORIGO.lon, LIBRARY_ORIGO.lat],
+    LIBRARY_NORTH,
     message.y / 1000,
     -90 - LIBRARY_BEARING,
     { units: 'metres' }
@@ -108,6 +112,24 @@ export const mqttMessageToGeo = (message: MqttMessage): BeaconGeoLocation => {
     lon: finalCoords.geometry.coordinates[0],
     height: message.z,
   };
+};
+
+export const geoCoordsToPlaneCoords = (
+  coords: Location,
+  heightMillis: number
+) => {
+  const turfCoord = [coords.lon, coords.lat];
+
+  const northWestWall = lineString([LIBRARY_NORTH, LIBRARY_WEST]);
+  const northEastWall = lineString([LIBRARY_NORTH, LIBRARY_EAST]);
+  const northWestPoint = nearestPointOnLine(northWestWall, turfCoord);
+
+  const northEastPoint = nearestPointOnLine(northEastWall, turfCoord);
+
+  const y = distance(northEastPoint, turfCoord, { units: 'meters' }) * 1000;
+  const x = distance(northWestPoint, turfCoord, { units: 'meters' }) * 1000;
+
+  return { x, y, z: heightMillis };
 };
 
 /**
