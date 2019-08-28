@@ -48,30 +48,7 @@ export const MqttMessageDecoder = t.intersection([
   }),
 ]);
 
-/**
- * We want to have the coordinates in meters, because babylon uses meters
- * everywhere.
- */
-export type BabylonBeacon = t.TypeOf<typeof MessageLocationShared> & {
-  xMeters: number;
-  yMeters: number;
-  zMeters: number;
-};
-
 export type MqttMessage = t.TypeOf<typeof MqttMessageDecoder>;
-
-/**
- * Convert untouched mqtt message into babylon-friendly format. Babylon uses
- * meters as coordinate units.
- */
-export const mqttMessageToBabylon = (message: MqttMessage): BabylonBeacon => {
-  return {
-    ...message,
-    xMeters: message.x / 1000,
-    yMeters: message.z / 1000,
-    zMeters: -message.y / 1000,
-  };
-};
 
 export type BeaconGeoLocation = t.TypeOf<typeof MessageLocationShared> & {
   lat: number;
