@@ -1,0 +1,86 @@
+{
+  "type": "geojson",
+  "data": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            24.962460,
+            60.205079
+          ]
+        },
+        "properties": {
+          "icon": "stairs"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            24.961904,
+            60.205196
+          ]
+        },
+        "properties": {
+          "icon": "toilet"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            24.961786,
+            60.205128
+          ]
+        },
+        "properties": {
+          "icon": "toilet"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            24.962124,
+            60.204879
+          ]
+        },
+        "properties": {
+          "icon": "toilet"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            24.962709,
+            60.204895
+          ]
+        },
+        "properties": {
+          "icon": "coffee"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            24.961786,
+            60.205096
+          ]
+        },
+        "properties": {
+          "icon": "coffee"
+        }
+      }
+    ]
+  }
+}

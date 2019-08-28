@@ -1,0 +1,10 @@
+{
+  "id": "pois",
+  "type": "symbol",
+  "source": "poiSource",
+  "minzoom": 17,
+  "layout": {
+    "icon-image": "{icon}",
+    "icon-size": 0.35
+  }
+}
