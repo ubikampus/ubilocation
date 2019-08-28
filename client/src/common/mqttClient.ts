@@ -1,11 +1,11 @@
 import UbiMqtt from 'ubimqtt';
 import authApi from '../admin/authApi';
-import { MQTT_URL } from '../location/urlPromptContainer';
 
-const ubiMqttClient = new UbiMqtt(MQTT_URL);
 let connected = false;
 
-const getConnection = async (): Promise<any> => {
+const getConnection = async (mqttUrl: string): Promise<any> => {
+  const ubiMqttClient = new UbiMqtt(mqttUrl);
+
   return new Promise((resolve, reject) => {
     if (connected) {
       resolve(ubiMqttClient);
@@ -22,7 +22,7 @@ const getConnection = async (): Promise<any> => {
   });
 };
 
-const sendSignedMqttMessage = async (message: string) => {
+const sendSignedMqttMessage = async (mqttUrl: string, message: string) => {
   let token: string | null = null;
   const admin = window.localStorage.getItem('loggedUbimapsAdmin');
   if (admin) {
@@ -31,7 +31,7 @@ const sendSignedMqttMessage = async (message: string) => {
 
   if (token) {
     const signedMessage = await authApi.sign(message, token);
-    const connection = await getConnection();
+    const connection = await getConnection(mqttUrl);
     await connection.publish(
       'ohtu/config',
       JSON.stringify(signedMessage),

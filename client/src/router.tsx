@@ -269,6 +269,7 @@ const Router = ({ appConfig }: Props) => {
                           AuthApi.sign(message, admin.token).then(
                             signedMessage => {
                               mqttClient.sendSignedMqttMessage(
+                                appConfig.WEB_MQTT_URL,
                                 JSON.stringify(signedMessage)
                               );
                             }

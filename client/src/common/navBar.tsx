@@ -166,24 +166,6 @@ const MobileMenu = styled.ul`
   justify-content: space-between;
 `;
 
-const MobileMenuItem = styled.li`
-  width: 100%;
-  display: inherit;
-  align-items: center;
-  padding: 5px;
-
-  &:hover {
-    background-color: #5e9bfc;
-  }
-  &:active {
-    background-color: #5e9bfc;
-  }
-  & > div > svg {
-    height: 80%;
-    width: 80%;
-  }
-`;
-
 const MobileMenuText = styled.div``;
 
 const MobileSearch = styled.input`
