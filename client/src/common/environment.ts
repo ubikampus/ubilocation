@@ -7,7 +7,7 @@ const ClientConfigDecoder = t.type({
   INITIAL_LONGITUDE: t.number,
   INITIAL_ZOOM: t.number,
   MINIMUM_ZOOM: t.number,
-  MQTT_URL: t.string,
+  WEB_MQTT_URL: t.string,
 });
 
 export type ClientConfig = t.TypeOf<typeof ClientConfigDecoder>;

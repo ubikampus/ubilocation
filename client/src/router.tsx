@@ -120,7 +120,7 @@ const Router = ({ appConfig }: Props) => {
   const [pinType, setPinType] = useState<PinKind>(initialPinType);
 
   const mqttHost =
-    queryParams && queryParams.host ? queryParams.host : appConfig.MQTT_URL;
+    queryParams && queryParams.host ? queryParams.host : appConfig.WEB_MQTT_URL;
   const beacons = useUbiMqtt(
     mqttHost,
     queryParams && queryParams.topic ? queryParams.topic : undefined

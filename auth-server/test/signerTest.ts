@@ -1,5 +1,5 @@
 import jose from 'node-jose';
-import sign from '../src/signer';
+import sign from '../src/services/signer';
 
 const PKEY = `
   -----BEGIN EC PRIVATE KEY-----
