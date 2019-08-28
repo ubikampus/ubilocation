@@ -129,24 +129,19 @@ const MapContainer = ({
 
   return (
     <>
-      <CentralizationButton className="mapboxgl-ctrl mapboxgl-ctrl-group">
-        <button
-          onClick={() => {
-            if (beaconId === null) {
-              setCentralizeActive(true);
-            } else {
-              // Use first known user location.
-              if (allUserMarkers.length > 0) {
-                setViewport(flyToUserlocation(viewport, allUserMarkers[0]));
-              }
-            }
-          }}
-          className="mapboxgl-ctrl-icon mapboxgl-ctrl-geolocate"
-        />
-      </CentralizationButton>
       <UbikampusMap
         minZoom={appConfig.MINIMUM_ZOOM}
         mapStyle={mapStyle as Style}
+        onCentralizeClick={() => {
+          if (beaconId === null) {
+            setCentralizeActive(true);
+          } else {
+            // Use first known user location.
+            if (allUserMarkers.length > 0) {
+              setViewport(flyToUserlocation(viewport, allUserMarkers[0]));
+            }
+          }
+        }}
         onClick={e => {
           const [lon, lat] = e.lngLat;
 
