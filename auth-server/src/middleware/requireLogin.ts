@@ -33,7 +33,7 @@ export const requireAdminLogin = (
   }
 
   if (!decodedToken.username) {
-    return res.status(401).json({ error: 'invalid token' });
+    return res.status(401).json({ error: 'invalid token: no username' });
   }
 
   if (decodedToken.username !== 'admin') {
@@ -63,7 +63,7 @@ export const requireBeaconToken = (
   }
 
   if (!decodedToken.beaconId || decodedToken.beaconId.length === 0) {
-    return res.status(401).json({ error: 'invalid token' });
+    return res.status(401).json({ error: 'invalid token: no beacon ID' });
   }
 
   req.decodedToken = decodedToken;
