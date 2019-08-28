@@ -24,11 +24,14 @@ const IdInput = styled.input`
 interface Props {
   confirmId(id: string): void;
   onClose(): void;
+  currentBeaconId: string | null;
 }
 
-const BeaconIdModal = ({ confirmId, onClose }: Props) => {
+const BeaconIdModal = ({ confirmId, onClose, currentBeaconId }: Props) => {
   const [isOpen, setIsOpen] = useState(true);
-  const [beaconId, setBeaconId] = useState('');
+  const [beaconId, setBeaconId] = useState(
+    currentBeaconId ? currentBeaconId : ''
+  );
 
   useEffect(() => {
     return () => {

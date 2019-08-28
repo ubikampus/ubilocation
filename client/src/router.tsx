@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Transition } from 'react-spring/renderprops';
 
 import AboutContainer from './aboutContainer';
-import UrlPromptContainer from './location/urlPromptContainer';
+import SettingsContainer from './settingsContainer';
 import MapContainer from './map/mapContainer';
 import AdminPanel, { AndroidLocation } from './admin/adminPanel';
 import { Location } from './common/typeUtil';
@@ -45,7 +45,8 @@ export const isBeaconIdPromptOpen = (
   beaconId: string | null,
   isShareLocationModalOpen: boolean,
   isPublicShareOpen: boolean,
-  isCentralizationButtonActive: boolean
+  isCentralizationButtonActive: boolean,
+  isSettingsModeActive: boolean
 ) => {
   if (isCentralizationButtonActive) {
     return true;
@@ -56,6 +57,10 @@ export const isBeaconIdPromptOpen = (
   }
 
   if (isPublicShareOpen && beaconId === null) {
+    return true;
+  }
+
+  if (isSettingsModeActive) {
     return true;
   }
 
@@ -126,6 +131,8 @@ const Router = ({ appConfig }: Props) => {
     queryParams && queryParams.lat ? true : false
   );
 
+  const [isSettingsModeActive, setSettingsModeActive] = useState(false);
+
   useEffect(() => {
     const adminToken = AdminTokenStore.get();
     setAdmin(adminToken);
@@ -185,13 +192,15 @@ const Router = ({ appConfig }: Props) => {
         beaconId,
         isShareLocationModalOpen,
         publicShareOpen,
-        centralizeActive
+        centralizeActive,
+        isSettingsModeActive
       ) && (
         <BeaconIdModal
           onClose={() => {
             setCentralizeActive(false);
             openShareLocationModal(false);
             openPublicShare(false);
+            setSettingsModeActive(false);
           }}
           confirmId={async id => {
             const newBeacon = await ShareLocationApi.registerBeacon(id);
@@ -199,7 +208,9 @@ const Router = ({ appConfig }: Props) => {
             setStaticLocations([]);
             setPinType('none');
             setCentralizeActive(false);
+            setSettingsModeActive(false);
           }}
+          currentBeaconId={beaconId}
         />
       )}
       <Fullscreen>
@@ -295,7 +306,18 @@ const Router = ({ appConfig }: Props) => {
                 />
               )}
             />
-            <Route exact path="/config" component={UrlPromptContainer} />
+
+            <Route
+              exact
+              path="/settings"
+              render={props => (
+                <SettingsContainer
+                  {...props}
+                  setSettingsModeActive={setSettingsModeActive}
+                />
+              )}
+            />
+
             <Route exact path="/about" component={AboutContainer} />
 
             <Route
