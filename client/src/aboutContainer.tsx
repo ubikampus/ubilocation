@@ -1,201 +1,242 @@
 import React from 'react';
 import { withRouter } from 'react-router';
 import styled from 'styled-components';
+// TODO: add missing file
+// import githubLogo from '../asset/GitHub-Mark-Light-64px.png';
+import { PrimaryButton } from '../src/common/button';
 
-/** Containers */
-const Container = styled.div`
+/** Container */
+const About = styled.div`
   max-width: 800px;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  margin: 5rem auto;
-  padding: 15px 0 15px 0;
+  margin: auto;
+  padding: 40px 0 0;
+
+  @media (max-width: 840px) {
+    margin: auto 2rem;
+  }
 `;
 
-const Article = styled.article`
-  padding: 0 0 30px 0;
+const Wrap = styled.div`
+  width: 100vw;
+  margin: auto;
 `;
 
 /** Header */
-const HeaderRow = styled.ul`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  list-style-type: none;
-  padding: 0 0 15px 0;
+const Header = styled.article`
+  width: auto;
+  padding: 15px;
 
-  @media (min-width: 750px) {
-    flex-direction: row;
-  }
-`;
-
-const HeaderColumn = styled.li`
-  text-align: left;
-  font-family: 'Helvetica', 'Arial', sans-serif;
+  text-align: center;
+  font-family: 'Comfortaa', cursive;
 `;
 
 const Headline = styled.h1`
-  font-family: 'Comfortaa', cursive;
+  padding-bottom: 15px;
+
   font-size: 40px;
 `;
 
-const Button = styled.button`
-  border: none;
-  margin: 5px;
-  border-radius: 5px;
-  padding: 10px 25px;
-  color: #ffffff;
-  text-transform: uppercase;
-  font-weight: 700;
-  background-color: #4287f5;
-  font-family: 'Comfortaa', cursive;
-  font-size: 11px;
-  cursor: pointer;
+const ButtonComponent = styled(PrimaryButton)`
+  height: 75px;
+  width: 160px;
+
+  background-color: #20262b;
+
   &:hover {
-    background-color: #3670cf;
+    background-color: #282e33;
   }
-`;
-
-/** Lightweight navigation bar */
-const NavRow = styled.ul`
-  display: flex;
-  flex-direction: column;
-  justify-content: left;
-  list-style-type: none;
-  border-bottom: 1px solid lightgray;
-  border-top: 1px solid lightgray;
-  @media (min-width: 750px) {
-    flex-direction: row;
-  }
-`;
-
-const NavColumn = styled.li`
-  padding: 15px 15px 15px 0;
-  text-align: left;
-  font-family: 'Helvetica', 'Arial', sans-serif;
-`;
-
-const NavLink = styled.li`
   &:active {
-    color: #4287f5;
+    background-color: #282e33;
   }
-  &:hover {
-    color: #4287f5;
-  }
+`;
+
+/** GitHub button */
+const ButtonText = styled.div`
+  padding-top: 5px;
+
+  font-size: 12px;
+`;
+
+const Logo = styled.img`
+  height: 50%;
 `;
 
 /** Content */
-const BodyRow = styled.ul`
-  display: flex;
-  padding: 0 0 15px 0;
-  flex-direction: column;
-  list-style-type: none;
-  justify-content: space-between;
+const Body = styled.div`
+  flex: 1 0 auto;
+  padding-bottom: 25px;
 
-  @media (min-width: 750px) {
-    flex-direction: row;
+  text-align: left;
+  line-height: 1.6;
+
+  & > div {
+    padding-top: 15px;
   }
 `;
 
-const BodyColumn = styled.li`
-  text-align: left;
-  font-size: 15px;
-  line-height: 1.6;
-  font-family: 'Raleway', sans-serif;
+const SplitContainer = styled.div`
+  display: flex;
+
+  @media (max-width: 575px) {
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  & > div {
+    max-width: 50%;
+    @media (max-width: 575px) {
+      max-width: 100%;
+    }
+  }
+
+  & > div:first-child {
+    padding-right: 30px;
+    @media (max-width: 575px) {
+      padding-right: 0px;
+      padding-bottom: 15px;
+    }
+  }
+
+  & > div:nth-child(2) {
+    min-width: 50%;
+  }
 `;
 
-const HalfBodyColumn = styled.li`
-  width: 49%;
-  text-align: left;
-  font-size: 15px;
-  line-height: 1.6;
-  font-family: 'Raleway', sans-serif;
-  justify-content: space-between;
+/** Align text to center on mobile */
+const Article = styled.div`
+  & > * {
+    @media (max-width: 575px) {
+      text-align: center;
+    }
+  }
 `;
 
-const BodyHeadline = styled.h2`
-  text-align: left;
-  text-transform: uppercase;
-  font-family: 'Comfortaa', cursive;
+const ArticleHeadline = styled.h2`
+  display: flex;
+  align-items: center;
+  height: 33px;
+  padding: 10px 0;
+  padding: 0 15px;
+
+  font-size: 16px;
   font-weight: 700;
-  font-size: 14px;
+  font-family: 'Comfortaa', cursive;
+  text-transform: uppercase;
+  border-bottom: 5px solid salmon;
+
+  /** Align headlin text to center on mobile */
+  @media (max-width: 575px) {
+    text-align: center;
+    justify-content: center;
+  }
 `;
+
+const ArticleText = styled.div`
+  padding: 15px;
+
+  font-size: 15px;
+  font-family: 'Raleway', sans-serif;
+`;
+
+const ArticleBoldText = styled(ArticleText)`
+  font-weight: 700;
+`;
+
+/** Footer */
+const Footer = styled.footer`
+  display: flex;
+  padding: 10px;
+  height: 50px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+
+  color: white;
+  font-size: 13px;
+  text-align: center;
+  font-family: inherit;
+  background-color: #20262b;
+`;
+
+const FooterText = styled.div``;
 
 const AboutContainer = () => (
   <>
-    <Container>
-      <Article>
-        <HeaderRow>
-          <HeaderColumn>
-            <Headline>Ubikampus Location Service</Headline>
-          </HeaderColumn>
-        </HeaderRow>
-        <HeaderRow>
-          <HeaderColumn>
-            <Button>Download</Button>
-          </HeaderColumn>
-        </HeaderRow>
-      </Article>
+    <Wrap>
+      <About>
+        <Header>
+          <Headline>Ubikampus Location Service</Headline>
+          <a href="https://github.com/ubikampus/ubi-Indoor-Positioning">
+            <ButtonComponent>
+              <Logo src="TODO add real url" />
+              <ButtonText>View on GitHub</ButtonText>
+            </ButtonComponent>
+          </a>
+        </Header>
 
-      <Article>
-        <NavRow>
-          <NavColumn>
-            <NavLink>Info X</NavLink>
-          </NavColumn>
-          <NavColumn>
-            <NavLink>Info Y</NavLink>
-          </NavColumn>
-          <NavColumn>
-            <NavLink>Info Z</NavLink>
-          </NavColumn>
-        </NavRow>
-      </Article>
+        <Body>
+          <Article>
+            <ArticleHeadline>What is Ubilocation?</ArticleHeadline>
+            <ArticleText>
+              Ubilocation is a Bluetooth-positioning system developed on the
+              course Software Engineering Lab at the University of Helsinki,
+              department of Computer Science. The aim of the project is to
+              calculate campus visitors’ indoor position by using an inverse
+              technique of collecting Bluetooth signals via minicomputers (in
+              this case Android devices) placed on the floors, tables or walls.
+              Ubilocation is part of the Ubikampus project and is built on the
+              specifications and requirements of Ubikampus’ coordinator Petri
+              Savolainen.
+            </ArticleText>
+            <ArticleBoldText>
+              Please note that users need to carry Bluetooth beacons with them
+              (the size of small, electronic keys) or download a beacon
+              simulation app in order to be positioned.
+            </ArticleBoldText>
+          </Article>
 
-      <Article>
-        <BodyRow>
-          <BodyColumn>
-            <BodyHeadline>Is Ubilocation for you?</BodyHeadline>
-          </BodyColumn>
-        </BodyRow>
+          <SplitContainer>
+            <Article>
+              <ArticleHeadline>Contributing</ArticleHeadline>
+              <ArticleText>
+                Ubilocation is an Open Source project consisting of five code
+                repositories: Android scanner, Indoor Positioning library, Room
+                reservator, Ubilocation server and Ubilocation client. If you
+                would like to develop the project further please visit
+                Ubilocation’s GitHub page and submit an issue and/or pull
+                request in one of the repositories.
+              </ArticleText>
+            </Article>
 
-        <BodyRow>
-          <BodyColumn>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent
-            ultrices, tortor vel volutpat placerat, lectus mauris tempus ex, non
-            pharetra leo justo at odio. Etiam feugiat nibh nec nibh vehicula, et
-            porta massa luctus. Fusce ut purus facilisis nunc ullamcorper
-            gravida id vitae mauris. Nulla interdum dignissim risus, vitae
-            placerat velit malesuada quis. Aenean eget nibh vitae sapien
-            suscipit laoreet vel quis neque. Vestibulum v olutpat nisl sed orci
-            venenatis, vel feugiat nibh posuere. Nam a enim gravida, aliquet
-            magna vel, placerat mauris. Nam ut nisl in
-          </BodyColumn>
-        </BodyRow>
-        <BodyRow>
-          <HalfBodyColumn>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent
-            ultrices, tortor vel volutpat placerat, lectus mauris tempus ex, non
-            pharetra leo justo at odio. Etiam feugiat nibh nec nibh vehicula, et
-            porta massa luctus. Fusce ut purus facilisis nunc ullamcorper
-            gravida id vitae mauris. Nulla interdum dignissim risus, vitae
-            placerat velit malesuada quis. Aenean eget nibh vitae sapien
-            suscipit laoreet vel quis neque. Vestibulum v olutpat nisl sed orci
-            venenatis, vel feugiat nibh posuere. Nam a enim gravida, aliquet
-            magna vel, placerat mauris. Nam ut nisl in
-          </HalfBodyColumn>
-          <HalfBodyColumn>
-            magna tempor cursus quis eget velit. Sed nunc nunc, convallis et
-            tempus vel, finibus eu sem. Quisque sit amet ultrices mi, at
-            ullamcorper purus. Nulla tristique augue a arcu dictum tincidunt.
-            Etiam in sollicitudin nisi. In ut ex nunc. Praesent tellus magna,
-            ultrices nec turpis a, hendrerit fringilla magna. Phasellus
-            consequat dui sed neque sollicitudin varius. Nulla vitae volutpat
-            ligula. Sed aliquet rhoncus nunc ut venenatis. Vivamus nibh risus,
-            egestas vel tincidunt eu, imperdiet nec ex. Donec sit amet suscipit
-            nisi. Curabitur bibendum leo quis sem eleifend fermentum. Fusce id
-            imperdiet felis, ut aliquet magna. gravida id vitae mauris.
-          </HalfBodyColumn>
-        </BodyRow>
-      </Article>
-    </Container>
+            <Article>
+              <ArticleHeadline>Creators</ArticleHeadline>
+              <ArticleText>
+                Elizabeth Berg, UI/UX
+                <br />
+                Jere Lahelma, front-end
+                <br />
+                Matti Riekkinen, front-end
+                <br />
+                Atte Haarni, full-stack
+                <br />
+                Joni Kokko, back-end
+                <br />
+                Emil Andersson, back-end
+                <br />
+                Aleksander Matikainen, back-end
+                <br />
+              </ArticleText>
+            </Article>
+          </SplitContainer>
+        </Body>
+      </About>
+      <Footer>
+        <FooterText>&#169; University of Helsinki 2019</FooterText>
+      </Footer>
+    </Wrap>
   </>
 );
 
