@@ -1,13 +1,16 @@
 import * as t from 'io-ts';
-import queryStringParser from 'query-string';
-import { unsafeDecode } from '../common/typeUtil';
 import destination from '@turf/destination';
+import distance from '@turf/distance';
+import nearestPointOnLine from '@turf/nearest-point-on-line';
+import { lineString } from '@turf/helpers';
+
+import { unsafeDecode, Location } from '../common/typeUtil';
+
+const LIBRARY_NORTH = [24.962112, 60.205323];
+const LIBRARY_WEST = [24.961545, 60.205045];
+const LIBRARY_EAST = [24.962691, 60.20503];
 
 const LIBRARY_BEARING = 42.5;
-const LIBRARY_ORIGO = {
-  lat: 60.205318,
-  lon: 24.962113,
-};
 
 /**
  * Represents shared properties between received MQTT location message, and
@@ -82,7 +85,7 @@ export type BeaconGeoLocation = t.TypeOf<typeof MessageLocationShared> & {
  */
 export const mqttMessageToGeo = (message: MqttMessage): BeaconGeoLocation => {
   const firstAxis = destination(
-    [LIBRARY_ORIGO.lon, LIBRARY_ORIGO.lat],
+    LIBRARY_NORTH,
     message.y / 1000,
     -90 - LIBRARY_BEARING,
     { units: 'metres' }
@@ -111,6 +114,24 @@ export const mqttMessageToGeo = (message: MqttMessage): BeaconGeoLocation => {
   };
 };
 
+export const geoCoordsToPlaneCoords = (
+  coords: Location,
+  heightMillis: number
+) => {
+  const turfCoord = [coords.lon, coords.lat];
+
+  const northWestWall = lineString([LIBRARY_NORTH, LIBRARY_WEST]);
+  const northEastWall = lineString([LIBRARY_NORTH, LIBRARY_EAST]);
+  const northWestPoint = nearestPointOnLine(northWestWall, turfCoord);
+
+  const northEastPoint = nearestPointOnLine(northEastWall, turfCoord);
+
+  const y = distance(northEastPoint, turfCoord, { units: 'meters' }) * 1000;
+  const x = distance(northWestPoint, turfCoord, { units: 'meters' }) * 1000;
+
+  return { x, y, z: heightMillis };
+};
+
 /**
  * The purpose of Deserializer is to provide strict conversion from strings into
  * static types, so that errors in types are immediately caught.
@@ -118,45 +139,19 @@ export const mqttMessageToGeo = (message: MqttMessage): BeaconGeoLocation => {
 export default class Deserializer {
   /**
    * Convert raw mqtt message into static type, crash on unexpected input.
+   *
+   * Sometimes server returns invalid JSON with "NaN" values, null is returned
+   * then.
    */
-  deserializeMessage(rawMessage: string): MqttMessage[] {
+  deserializeMessage(rawMessage: string): MqttMessage[] | null {
     let parsed;
     try {
       parsed = JSON.parse(rawMessage);
     } catch (err) {
-      console.error('error parsing json', err);
-      console.error('json:', rawMessage);
-      return [];
+      console.log('received invalid JSON from location server');
+      return null;
     }
 
-    return parsed.map((obj: unknown) => {
-      const message = unsafeDecode(MqttMessageDecoder, obj);
-      return message;
-    });
-  }
-
-  /**
-   * Parse query string into regular javascript object.
-   *
-   * @param type Decoder for the deserialized object
-   * @param queryString see https://en.wikipedia.org/wiki/Query_string
-   */
-  parseQuery<A>(type: t.Decoder<unknown, A>, queryString: string) {
-    const parsed = queryStringParser.parse(queryString, {
-      parseNumbers: true,
-    });
-
-    return unsafeDecode<A>(type, parsed);
+    return unsafeDecode(t.array(MqttMessageDecoder), parsed);
   }
 }
-
-export const MapLocationQueryDecoder = t.type({
-  lat: t.union([t.undefined, t.number]),
-  lon: t.union([t.undefined, t.number]),
-  host: t.union([t.string, t.undefined]),
-  topic: t.union([t.string, t.undefined]),
-});
-
-export const VizQueryDecoder = t.type({ host: t.string, topic: t.string });
-
-export type VizQuery = t.TypeOf<typeof VizQueryDecoder>;

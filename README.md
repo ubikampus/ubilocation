@@ -1,11 +1,10 @@
-## Ubikampus bluetooth viz
+## Ubilocation-client
 
-[![Build Status](https://travis-ci.org/ubikampus/bluetooth-dev-visualizer.svg?branch=master)](https://travis-ci.org/ubikampus/bluetooth-dev-visualizer)
-[![codecov](https://codecov.io/gh/ubikampus/bluetooth-dev-visualizer/branch/master/graph/badge.svg)](https://codecov.io/gh/ubikampus/bluetooth-dev-visualizer)
+[![Build Status](https://travis-ci.org/ubikampus/ubilocation.svg?branch=master)](https://travis-ci.org/ubikampus/ubilocation)
+[![codecov](https://codecov.io/gh/ubikampus/ubilocation-client/branch/master/graph/badge.svg)](https://codecov.io/gh/ubikampus/ubilocation-client)
 
-This is a visualization tool for development of Ubikampus bluetooth tracker
-project. See main repo
-[here](https://github.com/ubikampus/Bluetooth-location-server).
+Ubilocation-client is a map application for Ubikampus Bluetooth tracking project. See
+main repo [here](https://github.com/ubikampus/Bluetooth-location-server).
 
 ### Requirements
 
@@ -22,27 +21,39 @@ project. See main repo
    [Tslint](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-tslint-plugin)
    and [Styled
    components](https://marketplace.visualstudio.com/items?itemName=jpoissonnier.vscode-styled-components)
-1. Optional - copy .env.example to .env and set mapbox API token. If not
-   supplied, fallback raster map is used.
-1. `docker-compose up`
+1. `docker-compose up` (use `docker-compose up --build --renew-anon-volumes` if
+   there are changes to dependencies)
 1. Open browser at localhost:8080
 
 See `scripts` section in package.json for other development commands. For
 example run client unit tests via `docker-compose exec bluetooth-client npm
 test`.
 
-### Deploy client to production
+### Configuration
 
-Do not deploy to prod without mapbox api key.
+ | env variable | description
+----|----
+INITIAL_LATITUDE | latitude as float for the initial map position (WGS84)
+INITIAL_LONGITUDE | longitude as float for the initial map position
+INITIAL_ZOOM | mapbox zoom level, from 1 to 22
+MINIMUM_ZOOM | mapbox minimum zoom level
+ADMIN_USER | username for admin login (/admin)
+ADMIN_PASSWORD | password for admin login
+JWT_SECRET | secret key for JWT sign/verify process
+MQTT_URL | URL for mqtt bus, used for location data, calibration messages and location sharing. E.g. `wss://example.com:9002/mqtt`
 
-1. cd to repo root
-1. `docker build -t bluetooth-client -f client/Dockerfile.prod client`
-1. `docker run -v $(pwd)/client/dist:/client/dist -e MAPBOX_TOKEN=<token>
-   bluetooth-client npm run build`
-1. cd to client and run `npx gh-pages -d dist`
 
-http://ubikampus.github.io/bluetooth-dev-visualizer
+### Deploy to production
 
-### Run auth-server in production
+* Set secret environment variables (ADMIN_* and JWT_SECRET) in .env file and
+  other configuration into docker-compose.prod.yml. See explanation for
+  configuration parameters above.
 
-TODO
+* Generate a separate production private key for as described above into
+  `pkey/pkey.pem`.
+
+* Run `docker-compose -f docker-compose.prod.yml up --build`
+
+### Import a floor plan
+
+See [How to import your own floor plan and OSM basemap](doc/import-floorplan.md).

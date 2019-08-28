@@ -2,27 +2,16 @@ import React from 'react';
 import styled from 'styled-components';
 import { animated } from 'react-spring';
 
-import Button from '../common/button';
+import { PrimaryButton, SecondaryButton } from '../common/button';
+import { TiChevronLeft } from 'react-icons/ti';
 import { Location } from '../common/typeUtil';
+import { geoCoordsToPlaneCoords } from '../location/mqttDeserialize';
 
-const PrimaryButton = styled(Button)`
-  background: #4287f5;
-  color: white;
-
-  &&:hover {
-    color: #eee;
-  }
+const CancelButton = styled(SecondaryButton)`
+  border: none;
 `;
 
-const CancelButton = styled(Button)`
-  background: white;
-`;
-
-const SecondaryButton = styled(Button)`
-  background: #f3f6f7;
-`;
-
-export interface RaspberryLocation {
+export interface AndroidLocation {
   name: string;
   lat: number;
   lon: number;
@@ -48,10 +37,6 @@ const InputRow = styled.div`
   flex-wrap: wrap;
 `;
 
-const LogoutButton = styled(Button)`
-  margin-top: auto;
-`;
-
 const InputCol = styled.div`
   display: flex;
   flex-direction: column;
@@ -62,7 +47,7 @@ const Input = styled.input`
   margin: 5px 0;
 `;
 
-const RaspberryRow = styled.div`
+const AndroidRow = styled.div`
   margin: 10px 0;
 `;
 
@@ -71,7 +56,7 @@ const LocationRow = styled.div`
   margin: 5px 0;
 `;
 
-const RaspberryHeader = styled.h5`
+const AndroidHeader = styled.h5`
   font-size: 16px;
   margin: 5px 0;
 `;
@@ -106,28 +91,47 @@ const Sidebar = styled(animated.nav)`
 
 interface Props {
   getDeviceLocation: Location | null;
-  devices: RaspberryLocation[];
-  setDevices(a: RaspberryLocation[]): void;
+  devices: AndroidLocation[];
+  setDevices(a: AndroidLocation[]): void;
   onCancel(): void;
-  onSubmit(a: RaspberryLocation[]): void;
+  onSubmit(a: AndroidLocation[]): void;
   resetDeviceLocation(): void;
   onLogout(): void;
   style: object;
-  toggleRoomReservation(): void;
   newName: string;
   setNewName(a: string): void;
   newHeight: string;
   setNewHeight(a: string): void;
 }
 
-const CalibrationContainer = ({
+const HeaderRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const CloseButton = styled.div`
+  width: 30px;
+  height: 30px;
+  margin-top: -10px;
+  margin-right: -10px;
+  padding: 5px;
+
+  color: #4d4d4d;
+  cursor: pointer;
+
+  & > svg {
+    height: 100%;
+    width: 100%;
+  }
+`;
+
+const AdminPanel = ({
   getDeviceLocation,
   devices,
   setDevices,
   onCancel,
   onSubmit,
   style,
-  toggleRoomReservation,
   onLogout,
   resetDeviceLocation,
   newName,
@@ -138,18 +142,27 @@ const CalibrationContainer = ({
   <Sidebar style={style}>
     <SidebarContent>
       <div>
-        <CalibrationHeader>Set Raspberry Pi locations</CalibrationHeader>
+        <HeaderRow>
+          <CalibrationHeader>Set Android scanner locations</CalibrationHeader>
+          <CloseButton>
+            <TiChevronLeft onClick={() => onCancel()} />
+          </CloseButton>
+        </HeaderRow>
         <InfoSection>
           Click location on map, and enter name and height in millimeters for
-          the Raspberry Pi. Height should be given relative to the second floor.
+          the Android device. Height should be given relative to the second
+          floor.
         </InfoSection>
         {devices.map((device, i) => (
-          <RaspberryRow key={'rpi-' + i}>
-            <RaspberryHeader>{device.name}</RaspberryHeader>
+          <AndroidRow key={'rpi-' + i}>
+            <AndroidHeader>{device.name}</AndroidHeader>
             <LocationRow>
-              N {device.lat.toFixed(6)}° E {device.lon.toFixed(6)}°
+              N {device.lat.toFixed(6)}° E {device.lon.toFixed(6)}° x:
+              {geoCoordsToPlaneCoords(device, device.height).x} y:
+              {geoCoordsToPlaneCoords(device, device.height).y} z:
+              {device.height}
             </LocationRow>
-          </RaspberryRow>
+          </AndroidRow>
         ))}
         <Divider />
         <form
@@ -202,12 +215,9 @@ const CalibrationContainer = ({
       </div>
       <BottomRow>
         <SecondaryButton onClick={() => onLogout()}>Log out</SecondaryButton>
-        <SecondaryButton onClick={() => toggleRoomReservation()}>
-          Room reservation
-        </SecondaryButton>
       </BottomRow>
     </SidebarContent>
   </Sidebar>
 );
 
-export default animated(CalibrationContainer);
+export default animated(AdminPanel);

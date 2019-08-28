@@ -2,17 +2,10 @@ const path = require('path');
 const process = require('process');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
-const CopyPlugin = require('copy-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const styledComponentsTransformer = require('typescript-plugin-styled-components').default();
 
 const isProd = process.env.NODE_ENV === 'production';
-
-if (!process.env.MAPBOX_TOKEN) {
-  console.error(
-    'MAPBOX_TOKEN is missing from .env file, falling back to raster maps'
-  );
-}
 
 module.exports = {
   mode: isProd ? 'production' : 'development',
@@ -34,7 +27,7 @@ module.exports = {
         options: {
           // disable type checker - we will use it in the ForkTsCheckerWebpackPlugin
           transpileOnly: true,
-          getCustomTransformers: () => ({ before: [styledComponentsTransformer] }),
+          getCustomTransformers: isProd ? undefined : () => ({ before: [styledComponentsTransformer] }),
         }
       },
       {
@@ -63,9 +56,9 @@ module.exports = {
     // something weird going on with EnvironmentPlugin? Lets use defineplugin
     // instead
     new webpack.DefinePlugin({
-      DEFINE_NODE_ENV: JSON.stringify(isProd ? 'production' : 'development'),
-      DEFINE_MAPBOX_TOKEN: JSON.stringify(process.env.MAPBOX_TOKEN),
-    }),
-    new CopyPlugin(['asset/404.html'])
+      'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
+      'process.env.API_URL': JSON.stringify(process.env.API_URL),
+      'process.env.TILE_URL': JSON.stringify(process.env.TILE_URL),
+    })
   ]
 }

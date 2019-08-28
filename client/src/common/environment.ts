@@ -1,5 +1,22 @@
 import * as t from 'io-ts';
 import { unsafeDecode } from './typeUtil';
+import axios from 'axios';
+
+const ClientConfigDecoder = t.type({
+  INITIAL_LATITUDE: t.number,
+  INITIAL_LONGITUDE: t.number,
+  INITIAL_ZOOM: t.number,
+  MINIMUM_ZOOM: t.number,
+  WEB_MQTT_URL: t.string,
+});
+
+export type ClientConfig = t.TypeOf<typeof ClientConfigDecoder>;
+
+export const fetchConfig = async () => {
+  const response = await axios.get(`${process.env.API_URL}/config`);
+
+  return unsafeDecode(ClientConfigDecoder, response.data);
+};
 
 const EnvDecoder = t.type({
   NODE_ENV: t.union([
@@ -11,7 +28,8 @@ const EnvDecoder = t.type({
      */
     t.literal('test'),
   ]),
-  MAPBOX_TOKEN: t.union([t.undefined, t.string]),
+  API_URL: t.string,
+  TILE_URL: t.string,
 });
 
 export type Env = t.TypeOf<typeof EnvDecoder>;
@@ -21,17 +39,10 @@ export type Env = t.TypeOf<typeof EnvDecoder>;
  */
 const loadEnv = (): Env => {
   return unsafeDecode(EnvDecoder, {
-    NODE_ENV: DEFINE_NODE_ENV,
-    MAPBOX_TOKEN: DEFINE_MAPBOX_TOKEN,
+    NODE_ENV: process.env.NODE_ENV,
+    API_URL: process.env.API_URL,
+    TILE_URL: process.env.TILE_URL,
   });
 };
 
 export const currentEnv = loadEnv();
-
-export const apiRoot = () => {
-  if (currentEnv.NODE_ENV === 'production') {
-    return '/bluetooth-dev-visualizer';
-  } else {
-    return '/';
-  }
-};

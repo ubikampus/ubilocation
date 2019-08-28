@@ -1,34 +1,31 @@
-import process from 'process';
-import express, { Request, Response } from 'express';
-import sign from './signer';
-import fs from 'fs';
+import express from 'express';
+import signRouter from './controllers/sign';
+import reservationRouter from './controllers/reservation';
 import cors from 'cors';
+import {
+  requireAdminToken,
+  requireBeaconToken,
+} from './middleware/requireLogin';
 import loginRouter from './controllers/login';
-import loginCheck from './middleware/loginCheck';
-
-if (process.env.TYPECHECK) {
-  console.log('type check success!');
-  process.exit(0);
-}
+import config from './controllers/config';
+import registerRouter from './controllers/register';
+import publicRouter from './controllers/public';
 
 const app = express();
-const KEY_PATH = process.env.KEY_PATH || 'pkey.pem';
-const PKEY = fs.readFileSync(KEY_PATH);
 
 app.use(cors());
 app.use(express.json());
-app.use(loginCheck);
+
 app.use('/login', loginRouter);
+app.use('/reservations', reservationRouter);
+app.use('/sign', requireAdminToken);
+app.use('/sign', signRouter);
+app.use('/register', registerRouter);
 
-app.post('/sign', async (req, res) => {
-  const message = req.body.message;
-  const signed = await sign(PKEY, message);
-  res.json(signed);
-});
+app.post('/public', requireBeaconToken);
+app.delete('/public/:beaconId', requireBeaconToken);
+app.use('/public', publicRouter);
 
-const PORT = 3001;
-app.listen(PORT, () => {
-  console.log('Listening at', PORT);
-});
+app.get('/config', config);
 
 export default app;

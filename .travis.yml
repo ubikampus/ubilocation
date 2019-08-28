@@ -2,10 +2,16 @@ language: node_js
 
 services: docker
 
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+
 script:
   - ci_env=`bash <(curl -s https://codecov.io/env)`
   - openssl ecparam -genkey -name secp521r1 -noout > $TRAVIS_BUILD_DIR/auth-server/pkey.pem
   - docker build --no-cache -t bluetooth-auth-server auth-server
-  - docker run -e SECRET=aaaa $ci_env bluetooth-auth-server npm run travis
+  - docker-compose run $ci_env bluetooth-auth-server npm run travis
   - docker build --no-cache -t bluetooth-client client
-  - docker run $ci_env bluetooth-client npm run travis
+  - docker-compose run $ci_env bluetooth-client npm run travis

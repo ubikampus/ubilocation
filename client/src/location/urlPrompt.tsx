@@ -16,7 +16,7 @@ const UrlPrompt = ({
   onPromptSubmit,
 }: RouteComponentProps & Props) => (
   <>
-    <h3>Ubikampus bluetooth visualizer</h3>
+    <h3>Ubilocation</h3>
     <form id="urlPromptForm" onSubmit={onPromptSubmit}>
       <div>
         mqtt topic

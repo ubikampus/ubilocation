@@ -59,17 +59,36 @@ export const NonUserMarker = styled(OfflineMarker)`
   }
 `;
 
+export const PrivateLocationMarker = styled(NonUserMarker)`
+  background-color: green;
+`;
+
+export const PublicLocationMarker = styled(NonUserMarker)``;
+
+export type PinKind = 'configure' | 'show' | 'none';
+
 interface PinProps {
-  type: 'configure' | 'show' | 'none';
+  type: PinKind;
   coords: Location;
+  onClose(): void;
   onClick(a: MouseEvent<HTMLButtonElement>): void;
 }
 
-export const LocationPinMarker = ({ type, coords, onClick }: PinProps) => {
+export const LocationMarker = ({
+  onClose,
+  type,
+  coords,
+  onClick,
+}: PinProps) => {
   switch (type) {
     case 'configure':
       return (
-        <Popup anchor="bottom" longitude={coords.lon} latitude={coords.lat}>
+        <Popup
+          onClose={onClose}
+          anchor="bottom"
+          longitude={coords.lon}
+          latitude={coords.lat}
+        >
           <button onClick={onClick}>qr code</button>
         </Popup>
       );
@@ -83,18 +102,18 @@ export const LocationPinMarker = ({ type, coords, onClick }: PinProps) => {
 };
 
 /**
- * Why can there be multiple markers for the user? Because we cannot get unique
- * Id for the device thanks to bluetooth security limits. Instead we can utilize
- * the non-unique bluetooth name.
+ * Why can there be multiple markers for the user? Because may not be able to get
+ * an unique ID for the device thanks to Bluetooth security limits. Hence, we don't
+ * assume the IDs to be unique.
  */
 export const divideMarkers = (
   beacons: BeaconGeoLocation[],
-  bluetoothName: string | null,
+  beaconId: string | null,
   lastKnownPosition: BeaconGeoLocation | null
 ) => {
   const [userMarkers, nonUserMarkers] = partition(
     beacons,
-    beacon => beacon.beaconId === bluetoothName
+    beacon => beacon.beaconId === beaconId
   );
 
   const allUserMarkers =

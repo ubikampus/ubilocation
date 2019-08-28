@@ -3,6 +3,7 @@ import Deserializer, {
   BabylonBeacon,
   MqttMessageDecoder,
   mqttMessageToGeo,
+  geoCoordsToPlaneCoords,
 } from './mqttDeserialize';
 import * as t from 'io-ts';
 import { unsafeDecode } from '../common/typeUtil';
@@ -42,37 +43,11 @@ describe('MQTT parsing', () => {
   it('should return empty list for odd input', () => {
     const parser = new Deserializer();
     const res = parser.deserializeMessage('asdfasdf');
-    expect(res.length).toBe(0);
+    expect(res).toBe(null);
   });
 });
 
-describe('query string parsing', () => {
-  it('should throw if required number is missing', () => {
-    const queryDecoder = t.type({
-      lat: t.number,
-      lon: t.number,
-    });
-
-    const parser = new Deserializer();
-
-    expect(() => {
-      parser.parseQuery(queryDecoder, '?lon=60.1');
-    }).toThrow();
-  });
-
-  it('should parse float in the query string', () => {
-    const decoder = t.type({
-      lat: t.number,
-    });
-
-    const parser = new Deserializer();
-
-    expect(parser.parseQuery(decoder, '?lat=50.5').lat).toBeCloseTo(50.5);
-    expect(parser.parseQuery(decoder, 'lat=50.1').lat).toBeCloseTo(50.1);
-  });
-});
-
-describe('geographic coordinate conversion', () => {
+describe('coordinate conversion into geographic format', () => {
   it('should convert zero coordinates nearby to the origo', () => {
     const input = exampleMqttMessage(1);
     input.x = 0.0;
@@ -95,7 +70,7 @@ describe('geographic coordinate conversion', () => {
     input.y = 41000.0; // length of library wall
 
     const westCorner = {
-      lat: 60.2050688,
+      lat: 60.2050738,
       lon: 24.9615679,
     };
 
@@ -116,5 +91,24 @@ describe('geographic coordinate conversion', () => {
 
     expect(geoCoords.lat).toBeCloseTo(southCorner.lat, 5);
     expect(geoCoords.lon).toBeCloseTo(southCorner.lon, 5);
+  });
+});
+
+describe('coordinate conversion into plane format', () => {
+  it('should return origo for northern corner', () => {
+    const input = { lat: 60.205323, lon: 24.962112 };
+
+    const result = geoCoordsToPlaneCoords(input, 10);
+
+    expect(result.x).toBeCloseTo(0.0);
+  });
+
+  it('should return right coords for java room corner', () => {
+    const input = { lat: 60.205092, lon: 24.96174 };
+
+    const result = geoCoordsToPlaneCoords(input, 10);
+
+    expect(result.y).toBeCloseTo(32662.0972328);
+    expect(result.x).toBeCloseTo(3847.381576);
   });
 });

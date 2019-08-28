@@ -1,0 +1,28 @@
+{
+  "options": {
+    "paths": {
+      "root": "/server",
+      "fonts": "fonts",
+      "sprites": "",
+      "styles": "",
+      "mbtiles": ""
+    },
+    "formatQuality": {
+      "jpeg": 80,
+      "webp": 90
+    },
+    "maxScaleFactor": 3,
+    "maxSize": 2048,
+    "pbfAlias": "pbf",
+    "serveAllFonts": true,
+    "serveStaticMaps": true
+  },
+  "data": {
+    "basemap": {
+      "mbtiles": "basemap.mbtiles"
+    },
+    "floorplan": {
+      "mbtiles": "floorplan.mbtiles"
+    }
+  }
+}

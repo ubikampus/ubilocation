@@ -1,5 +1,7 @@
 import axios from 'axios';
-const baseUrl = 'http://localhost:3001';
+import { currentEnv } from '../common/environment';
+
+const API_URL = currentEnv.API_URL;
 
 export interface Credentials {
   username: string;
@@ -15,24 +17,24 @@ export interface Admin {
   username: string;
 }
 
-export interface Signature {
-  protected: any;
+export interface Signature<T> {
+  protected: T;
   signature: string;
 }
 
-export interface SignedMessage {
+export interface SignedMessage<T = any> {
   payload: string;
-  signatures: Signature[];
+  signatures: Array<Signature<T>>;
 }
 
 const login = async (credentials: Credentials): Promise<Admin> => {
-  const url = `${baseUrl}/login`;
+  const url = `${API_URL}/login`;
   const response = await axios.post<Admin>(url, credentials);
   return response.data;
 };
 
 const sign = async (message: string, token: string): Promise<SignedMessage> => {
-  const url = `${baseUrl}/sign`;
+  const url = `${API_URL}/sign`;
   const config = {
     headers: {
       Authorization: 'Bearer ' + token,
