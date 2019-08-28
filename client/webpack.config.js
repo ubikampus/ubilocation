@@ -27,7 +27,7 @@ module.exports = {
         options: {
           // disable type checker - we will use it in the ForkTsCheckerWebpackPlugin
           transpileOnly: true,
-          getCustomTransformers: () => ({ before: [styledComponentsTransformer] }),
+          getCustomTransformers: isProd ? undefined : () => ({ before: [styledComponentsTransformer] }),
         }
       },
       {

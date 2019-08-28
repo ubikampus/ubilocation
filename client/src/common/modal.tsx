@@ -21,20 +21,24 @@ const modalStyles = {
     zIndex: '1001',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    backgroundColor: 'auto',
   },
   content: {
-    boxShadow: '2px 2px 10px hsla(0, 0%, 0%, 15%)',
+    boxShadow: 'rgba(0, 0, 0, 0.10) 7px 7px 0px',
     border: 'none',
-    flex: '0 1 400px',
+    flex: '0 1 380px',
     position: 'static',
-    margin: '140px 10px 20px 10px',
+    margin: '15px',
+    maxHeight: '100vh',
   },
 };
 
 export const ModalParagraph = styled.p`
-  line-height: 1.25;
+  line-height: 1.3;
   margin: 10px 0;
+
+  font-size: 15px;
 `;
 
 export const ModalButtonRow = styled.div`
@@ -44,10 +48,10 @@ export const ModalButtonRow = styled.div`
 `;
 
 export const ModalHeader = styled.h3`
-  margin-top: 0;
-  font-size: 18px;
+  margin-top: 5px;
+  font-size: 16px;
   font-weight: 700;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 `;
 
 const UbiLogoImg = styled.img`

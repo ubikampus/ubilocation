@@ -5,12 +5,13 @@ import { animated } from 'react-spring';
 import { PrimaryButton, SecondaryButton } from '../common/button';
 import { TiChevronLeft } from 'react-icons/ti';
 import { Location } from '../common/typeUtil';
+import { geoCoordsToPlaneCoords } from '../location/mqttDeserialize';
 
 const CancelButton = styled(SecondaryButton)`
   border: none;
 `;
 
-export interface RaspberryLocation {
+export interface AndroidLocation {
   name: string;
   lat: number;
   lon: number;
@@ -46,7 +47,7 @@ const Input = styled.input`
   margin: 5px 0;
 `;
 
-const RaspberryRow = styled.div`
+const AndroidRow = styled.div`
   margin: 10px 0;
 `;
 
@@ -55,7 +56,7 @@ const LocationRow = styled.div`
   margin: 5px 0;
 `;
 
-const RaspberryHeader = styled.h5`
+const AndroidHeader = styled.h5`
   font-size: 16px;
   margin: 5px 0;
 `;
@@ -90,10 +91,10 @@ const Sidebar = styled(animated.nav)`
 
 interface Props {
   getDeviceLocation: Location | null;
-  devices: RaspberryLocation[];
-  setDevices(a: RaspberryLocation[]): void;
+  devices: AndroidLocation[];
+  setDevices(a: AndroidLocation[]): void;
   onCancel(): void;
-  onSubmit(a: RaspberryLocation[]): void;
+  onSubmit(a: AndroidLocation[]): void;
   resetDeviceLocation(): void;
   onLogout(): void;
   style: object;
@@ -142,22 +143,26 @@ const AdminPanel = ({
     <SidebarContent>
       <div>
         <HeaderRow>
-          <CalibrationHeader>Set Raspberry Pi locations</CalibrationHeader>
+          <CalibrationHeader>Set Android scanner locations</CalibrationHeader>
           <CloseButton>
             <TiChevronLeft onClick={() => onCancel()} />
           </CloseButton>
         </HeaderRow>
         <InfoSection>
           Click location on map, and enter name and height in millimeters for
-          the Raspberry Pi. Height should be given relative to the second floor.
+          the Android device. Height should be given relative to the second
+          floor.
         </InfoSection>
         {devices.map((device, i) => (
-          <RaspberryRow key={'rpi-' + i}>
-            <RaspberryHeader>{device.name}</RaspberryHeader>
+          <AndroidRow key={'rpi-' + i}>
+            <AndroidHeader>{device.name}</AndroidHeader>
             <LocationRow>
-              N {device.lat.toFixed(6)}° E {device.lon.toFixed(6)}°
+              N {device.lat.toFixed(6)}° E {device.lon.toFixed(6)}° x:
+              {geoCoordsToPlaneCoords(device, device.height).x} y:
+              {geoCoordsToPlaneCoords(device, device.height).y} z:
+              {device.height}
             </LocationRow>
-          </RaspberryRow>
+          </AndroidRow>
         ))}
         <Divider />
         <form

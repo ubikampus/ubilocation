@@ -1,11 +1,10 @@
-## Ubikampus bluetooth viz
+## Ubilocation-client
 
-[![Build Status](https://travis-ci.org/ubikampus/bluetooth-dev-visualizer.svg?branch=master)](https://travis-ci.org/ubikampus/bluetooth-dev-visualizer)
-[![codecov](https://codecov.io/gh/ubikampus/bluetooth-dev-visualizer/branch/master/graph/badge.svg)](https://codecov.io/gh/ubikampus/bluetooth-dev-visualizer)
+[![Build Status](https://travis-ci.org/ubikampus/ubilocation.svg?branch=master)](https://travis-ci.org/ubikampus/ubilocation)
+[![codecov](https://codecov.io/gh/ubikampus/ubilocation-client/branch/master/graph/badge.svg)](https://codecov.io/gh/ubikampus/ubilocation-client)
 
-This is a visualization tool for development of Ubikampus bluetooth tracker
-project. See main repo
-[here](https://github.com/ubikampus/Bluetooth-location-server).
+Ubilocation-client is a map application for Ubikampus Bluetooth tracking project. See
+main repo [here](https://github.com/ubikampus/Bluetooth-location-server).
 
 ### Requirements
 

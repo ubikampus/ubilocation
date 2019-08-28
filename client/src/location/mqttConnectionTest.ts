@@ -1,7 +1,7 @@
 import {
   FakeMqttGenerator,
-  refreshBeacons,
   urlForLocation,
+  lastKnownPosCache,
 } from './mqttConnection';
 import Deserializer, { mqttMessageToGeo } from './mqttDeserialize';
 import { exampleMqttMessage } from './mqttDeserializeTest';
@@ -21,27 +21,32 @@ describe('mqtt message generator', () => {
 });
 
 describe('map beacon lifecycle', () => {
-  /**
-   * TODO: fetch actual bluetooth name from web bluetooth
-   */
-  it('should infer new bt name if its missing', () => {
-    const messages = [exampleMqttMessage(1), exampleMqttMessage(1)];
+  it('deduces the last position with same beacon id', () => {
+    const inferLastPosition = lastKnownPosCache();
 
-    const res = refreshBeacons(messages, 'undefined-1', null);
+    const message = exampleMqttMessage(1);
+    const lastKnownPosition = inferLastPosition(
+      [mqttMessageToGeo(message)],
+      'undefined-1'
+    );
 
-    expect((res.lastKnownPosition as any).lat).toBeTruthy();
+    expect(lastKnownPosition).toBeTruthy();
   });
 
-  it('should display old position if user device is not found', () => {
-    const messages = [exampleMqttMessage(1), exampleMqttMessage(1)];
+  it('deduces the correct coordinates from multiple messages', () => {
+    const inferLastPosition = lastKnownPosCache();
 
-    const lastPos = mqttMessageToGeo(exampleMqttMessage(2));
-    lastPos.lat = 1;
-    lastPos.lon = 2;
+    const message1 = mqttMessageToGeo(exampleMqttMessage(1));
+    const message2 = mqttMessageToGeo(exampleMqttMessage(2));
+    message2.lat = 2.2;
+    const message3 = mqttMessageToGeo(exampleMqttMessage(3));
 
-    const nextState = refreshBeacons(messages, 'huawei-153', lastPos);
-    expect((nextState.lastKnownPosition as any).lat).toBe(1);
-    expect((nextState.lastKnownPosition as any).lon).toBe(2);
+    const lastKnownPosition = inferLastPosition(
+      [message1, message2, message3],
+      'undefined-2'
+    );
+
+    expect((lastKnownPosition as any).lat).toBeCloseTo(2.2);
   });
 });
 

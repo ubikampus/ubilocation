@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import Switch from 'react-switch';
 
 import Modal, {
   ModalHeader,
@@ -6,35 +7,16 @@ import Modal, {
   ModalButtonRow,
   UbiLogo,
 } from '../common/modal';
-import { SignedMessage } from '../admin/authApi';
 import styled from 'styled-components';
-import { PrimaryButton, SecondaryButton } from '../common/button';
-
-type Nickname = string;
+import { PrimaryButton } from '../common/button';
+import { PublicBeacon } from './shareLocationApi';
 
 interface Props {
   isOpen: boolean;
   onClose(): void;
-  publishLocation(message: SignedMessage<Nickname>): void;
+  publicBeacon: PublicBeacon | null;
+  publishLocation(a: boolean): void;
 }
-
-/**
- * TODO: implement
- *
- * Fetch generated nickname from auth-server
- */
-const fetchNickname = async (): Promise<SignedMessage<Nickname>> => {
-  // axios.get('/nickname') . . .
-  return {
-    payload: 'random-nick-12',
-    signatures: [
-      {
-        protected: '123',
-        signature: '123',
-      },
-    ],
-  };
-};
 
 const Nickname = styled.span`
   font-family: monospace;
@@ -44,20 +26,28 @@ const MainRow = styled.div`
   display: flex;
 `;
 
-const PublicShareModal = ({ isOpen, onClose, publishLocation }: Props) => {
-  const [nickname, setNickname] = useState<SignedMessage<Nickname> | null>(
-    null
-  );
+const ToggleSwitch = styled(Switch)`
+  vertical-align: middle;
+  margin-right: 4px;
+`;
 
-  useEffect(() => {
-    const generateNick = async () => {
-      const nick = await fetchNickname();
+interface LabelProps {
+  checked: boolean;
+}
 
-      setNickname(nick);
-    };
+const ToggleLabel = styled.span<LabelProps>`
+  color: ${props => (props.checked ? 'black' : '#70757a')};
+  cursor: pointer;
+`;
 
-    generateNick();
-  }, []);
+const PublicShareModal = ({
+  isOpen,
+  onClose,
+  publicBeacon,
+  publishLocation,
+}: Props) => {
+  const isPublic = publicBeacon !== null;
+  const nickname = publicBeacon ? publicBeacon.nickname : null;
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose}>
@@ -69,23 +59,27 @@ const PublicShareModal = ({ isOpen, onClose, publishLocation }: Props) => {
             Display your current position on Ubikampus info screen and for other
             Ubilocation users. Generated nickname will be shown on map.
           </ModalParagraph>
-          <ModalParagraph>
-            {nickname === null ? (
-              'loading...'
-            ) : (
+          <label>
+            <ToggleSwitch
+              checked={isPublic}
+              onChange={checked => publishLocation(checked)}
+              height={20}
+              width={48}
+            />
+            <ToggleLabel checked={isPublic}>Share location</ToggleLabel>
+          </label>
+          {nickname !== null && (
+            <ModalParagraph>
               <>
-                using nickname <Nickname>{nickname.payload}</Nickname>
+                using nickname <Nickname>{nickname}</Nickname>
               </>
-            )}
-          </ModalParagraph>
+            </ModalParagraph>
+          )}
         </div>
       </MainRow>
 
       <ModalButtonRow>
-        <SecondaryButton onClick={() => onClose()}>Cancel</SecondaryButton>
-        <PrimaryButton onClick={() => nickname && publishLocation(nickname)}>
-          Ok
-        </PrimaryButton>
+        <PrimaryButton onClick={() => onClose()}>Ok</PrimaryButton>
       </ModalButtonRow>
     </Modal>
   );

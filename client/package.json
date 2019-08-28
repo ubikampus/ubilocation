@@ -1,9 +1,8 @@
 {
-  "name": "bluetooth-dev-visualizer",
+  "name": "ubilocation",
   "version": "1.0.0",
-  "description": "Development tool for Ubikampus bluetooth tracker",
-  "repository": "github:ubikampus/bluetooth-dev-visualizer",
-  "homepage": "https://ubikampus.github.io/bluetooth-dev-visualizer",
+  "description": "Map application for Ubikampus Bluetooth tracker",
+  "repository": "github:ubikampus/ubilocation",
   "scripts": {
     "build": "NODE_ENV=production webpack",
     "test": "jest --silent",
@@ -39,6 +38,7 @@
     "react-modal": "^3.8.2",
     "react-router-dom": "^5.0.1",
     "react-spring": "^8.0.27",
+    "react-switch": "^5.0.1",
     "styled-components": "^4.3.2",
     "ubimqtt": "github:je-l/ubimqtt#ccd88c59c9"
   },

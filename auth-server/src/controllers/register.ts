@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { Request, Response } from 'express';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { appConfig } from '../validation';
 const registerRouter = express.Router();
 
@@ -9,20 +8,18 @@ export interface Beacon {
   beaconId: string;
 }
 
-registerRouter.post('/', (request: Request, response: Response) => {
+registerRouter.post('/', async (request: Request, response: Response) => {
   const body = request.body;
+  const beaconId = body.beaconId;
 
-  if (!body.beaconId) {
+  if (!beaconId || beaconId.length === 0) {
     return response.status(400).json({ error: 'beacon ID is missing' });
   }
 
-  const tokenContents = {
-    beaconId: body.beaconId,
-  };
-
+  const tokenContents = { beaconId };
   const token = jwt.sign(tokenContents, appConfig.JWT_SECRET);
 
-  response.status(200).send({ token, beaconId: body.beaconId } as Beacon);
+  response.status(200).send({ token, beaconId } as Beacon);
 });
 
 export default registerRouter;

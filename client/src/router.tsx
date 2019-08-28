@@ -10,7 +10,7 @@ import {
 } from './3dVisualisation/screenContainer';
 import UrlPromptContainer from './location/urlPromptContainer';
 import MapContainer from './map/mapContainer';
-import AdminPanel, { RaspberryLocation } from './admin/adminPanel';
+import AdminPanel, { AndroidLocation } from './admin/adminPanel';
 import { Location } from './common/typeUtil';
 import NavBar from './common/navBar';
 
@@ -18,21 +18,26 @@ import LoginPromptContainer from './admin/loginPromptContainer';
 import AuthApi, { Admin } from './admin/authApi';
 import AdminTokenStore from './admin/adminTokenStore';
 import ShareLocationApi, { Beacon } from './map/shareLocationApi';
+import PublicBeaconList from './map/publicBeaconList';
 import BeaconIdModal from './map/beaconIdModal';
 import ShareLocationModal from './map/shareLocationModal';
 import PublicShareModal from './map/publicShareModal';
 import { parseQuery, MapLocationQueryDecoder } from './common/urlParse';
-import { useUbiMqtt } from './location/mqttConnection';
+import { useUbiMqtt, lastKnownPosCache } from './location/mqttConnection';
 import { BeaconGeoLocation } from './location/mqttDeserialize';
 import { PinKind } from './map/marker';
 import { ClientConfig } from './common/environment';
 
+const inferLastKnownPosition = lastKnownPosCache();
+
 const NotFound = () => <h3>404 page not found</h3>;
 
 const Fullscreen = styled.div`
-  height: 100vh;
   display: flex;
   flex-direction: column;
+
+  height: 100vh; /* fallback */
+  height: calc(var(--vh, 1vh) * 100);
 
   overflow-x: hidden;
 `;
@@ -73,7 +78,7 @@ const Router = ({ appConfig }: Props) => {
   const [getDeviceLocation, setDeviceLocation] = useState<Location | null>(
     null
   );
-  const [devices, setDevices] = useState<RaspberryLocation[]>([]);
+  const [devices, setDevices] = useState<AndroidLocation[]>([]);
   const [newName, setNewName] = useState('');
   const [newHeight, setNewHeight] = useState('');
 
@@ -86,10 +91,16 @@ const Router = ({ appConfig }: Props) => {
   );
   const [publicShareOpen, openPublicShare] = useState(false);
   const [beaconId, setBeaconId] = useState<string | null>(null);
+  const [beaconToken, setBeaconToken] = useState<string | null>(null);
 
   const setBeacon = (beacon: Beacon) => {
     setBeaconId(beacon.beaconId);
+    setBeaconToken(beacon.token);
   };
+
+  const [publicBeacons, setPublicBeacons] = useState<PublicBeaconList>(
+    new PublicBeaconList([])
+  );
 
   /**
    * Used when user selects "only current" from the location prompt.
@@ -110,19 +121,40 @@ const Router = ({ appConfig }: Props) => {
 
   const mqttHost =
     queryParams && queryParams.host ? queryParams.host : appConfig.MQTT_URL;
-  const { beacons, lastKnownPosition } = useUbiMqtt(
+  const beacons = useUbiMqtt(
     mqttHost,
-    beaconId,
     queryParams && queryParams.topic ? queryParams.topic : undefined
   );
+
+  const lastKnownPosition = inferLastKnownPosition(beacons, beaconId);
 
   const [centralizeActive, setCentralizeActive] = useState(
     queryParams && queryParams.lat ? true : false
   );
 
   useEffect(() => {
+    const fetchPublicBeacons = async () => {
+      const pubBeacons = await ShareLocationApi.fetchPublicBeacons();
+      const pubBeaconsList = new PublicBeaconList(pubBeacons);
+      setPublicBeacons(pubBeaconsList);
+    };
+
+    const updateViewportHeight = () => {
+      // 100vh hack for mobile https://css-tricks.com/the-trick-to-viewport-units-on-mobile/
+      // Without this, the content will overflow from the bottom.
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    window.addEventListener('resize', updateViewportHeight);
     const adminUser = AdminTokenStore.get();
+
+    fetchPublicBeacons();
     setAdmin(adminUser);
+    updateViewportHeight();
+    return () => {
+      window.removeEventListener('resize', updateViewportHeight);
+    };
   }, []);
 
   return (
@@ -136,11 +168,31 @@ const Router = ({ appConfig }: Props) => {
       )}
       {publicShareOpen && beaconId && (
         <PublicShareModal
-          publishLocation={nickname => {
-            // TODO
-            console.log('publishing our location as user', nickname.payload);
-            openPublicShare(false);
+          publishLocation={async enable => {
+            if (!beaconToken) {
+              console.log('cannot publish: beacon token not set');
+              return;
+            }
+
+            if (enable) {
+              const pubBeacon = await ShareLocationApi.publish(beaconToken);
+              publicBeacons.update(pubBeacon);
+
+              console.log('published our location as user', pubBeacon.nickname);
+            } else {
+              try {
+                console.log('disabling public location sharing');
+                publicBeacons.remove(beaconId);
+                await ShareLocationApi.unpublish(beaconId, beaconToken);
+              } catch (e) {
+                // The beacon we tried to remove doesn't exist on the server
+                // This could happen, e.g. because the server was restarted
+                console.log('cannot unpublish', beaconId);
+                console.log(e.message());
+              }
+            }
           }}
+          publicBeacon={publicBeacons.find(beaconId)}
           onClose={() => openPublicShare(false)}
           isOpen={publicShareOpen}
         />
@@ -255,6 +307,7 @@ const Router = ({ appConfig }: Props) => {
                   getDeviceLocation={getDeviceLocation}
                   setDeviceLocation={setDeviceLocation}
                   isAdminPanelOpen={isAdminPanelOpen}
+                  publicBeacons={publicBeacons.asList()}
                 />
               )}
             />
