@@ -16,6 +16,7 @@ import NavBar from './common/navBar';
 
 import LoginPromptContainer from './admin/loginPromptContainer';
 import AuthApi, { Admin } from './admin/authApi';
+import mqttClient from './common/mqttClient';
 import AdminTokenStore from './admin/adminTokenStore';
 import ShareLocationApi, { Beacon } from './map/shareLocationApi';
 import PublicBeaconList from './map/publicBeaconList';
@@ -256,16 +257,20 @@ const Router = ({ appConfig }: Props) => {
                       }}
                       setNewName={setNewName}
                       onSubmit={_ => {
-                        console.log(
-                          'TODO: send to mqtt bus after signing the message'
-                        );
-
                         if (admin) {
-                          const message = JSON.stringify(devices);
+                          const formattedDevices = devices.map(d => {
+                            return {
+                              observerId: d.name,
+                              position: [d.lon, d.lat, d.height],
+                            };
+                          });
+
+                          const message = JSON.stringify(formattedDevices);
                           AuthApi.sign(message, admin.token).then(
                             signedMessage => {
-                              console.log('message:', message);
-                              console.log('signedMessage:', signedMessage);
+                              mqttClient.sendSignedMqttMessage(
+                                JSON.stringify(signedMessage)
+                              );
                             }
                           );
                         }

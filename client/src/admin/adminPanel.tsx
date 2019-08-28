@@ -169,15 +169,13 @@ const AdminPanel = ({
           onSubmit={e => {
             e.preventDefault();
             if (getDeviceLocation) {
-              setDevices([
-                ...devices,
-                {
-                  name: newName,
-                  lat: getDeviceLocation.lat,
-                  lon: getDeviceLocation.lon,
-                  height: parseInt(newHeight, 10),
-                },
-              ]);
+              const newDevice = {
+                name: newName,
+                lat: getDeviceLocation.lat,
+                lon: getDeviceLocation.lon,
+                height: parseInt(newHeight, 10),
+              };
+              setDevices([...devices, newDevice]);
               setNewName('');
               setNewHeight('');
               resetDeviceLocation();
