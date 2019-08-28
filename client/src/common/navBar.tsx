@@ -6,7 +6,7 @@ import { HamburgerSqueeze } from 'react-animated-burgers';
 import styled from 'styled-components';
 import { IoIosSearch } from 'react-icons/io';
 
-import btlogo from './bluetooth_logo.svg';
+import btlogo from '../../asset/bluetooth_logo.svg';
 import ShareLocationDropdown from './../map/shareLocationDropdown';
 import MobileMenuItem, { MenuSubItem } from './mobileMenuItem';
 import { Icon } from './icon';
