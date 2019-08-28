@@ -3,6 +3,7 @@ import Deserializer, {
   BabylonBeacon,
   MqttMessageDecoder,
   mqttMessageToGeo,
+  geoCoordsToPlaneCoords,
 } from './mqttDeserialize';
 import * as t from 'io-ts';
 import { unsafeDecode } from '../common/typeUtil';
@@ -46,7 +47,7 @@ describe('MQTT parsing', () => {
   });
 });
 
-describe('geographic coordinate conversion', () => {
+describe('coordinate conversion into geographic format', () => {
   it('should convert zero coordinates nearby to the origo', () => {
     const input = exampleMqttMessage(1);
     input.x = 0.0;
@@ -69,7 +70,7 @@ describe('geographic coordinate conversion', () => {
     input.y = 41000.0; // length of library wall
 
     const westCorner = {
-      lat: 60.2050688,
+      lat: 60.2050738,
       lon: 24.9615679,
     };
 
@@ -90,5 +91,24 @@ describe('geographic coordinate conversion', () => {
 
     expect(geoCoords.lat).toBeCloseTo(southCorner.lat, 5);
     expect(geoCoords.lon).toBeCloseTo(southCorner.lon, 5);
+  });
+});
+
+describe('coordinate conversion into plane format', () => {
+  it('should return origo for northern corner', () => {
+    const input = { lat: 60.205323, lon: 24.962112 };
+
+    const result = geoCoordsToPlaneCoords(input, 10);
+
+    expect(result.x).toBeCloseTo(0.0);
+  });
+
+  it('should return right coords for java room corner', () => {
+    const input = { lat: 60.205092, lon: 24.96174 };
+
+    const result = geoCoordsToPlaneCoords(input, 10);
+
+    expect(result.y).toBeCloseTo(32662.0972328);
+    expect(result.x).toBeCloseTo(3847.381576);
   });
 });

@@ -5,6 +5,7 @@ import { animated } from 'react-spring';
 import { PrimaryButton, SecondaryButton } from '../common/button';
 import { TiChevronLeft } from 'react-icons/ti';
 import { Location } from '../common/typeUtil';
+import { geoCoordsToPlaneCoords } from '../location/mqttDeserialize';
 
 const CancelButton = styled(SecondaryButton)`
   border: none;
@@ -156,7 +157,10 @@ const AdminPanel = ({
           <AndroidRow key={'rpi-' + i}>
             <AndroidHeader>{device.name}</AndroidHeader>
             <LocationRow>
-              N {device.lat.toFixed(6)}° E {device.lon.toFixed(6)}°
+              N {device.lat.toFixed(6)}° E {device.lon.toFixed(6)}° x:
+              {geoCoordsToPlaneCoords(device, device.height).x} y:
+              {geoCoordsToPlaneCoords(device, device.height).y} z:
+              {device.height}
             </LocationRow>
           </AndroidRow>
         ))}
