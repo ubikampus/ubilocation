@@ -8,7 +8,7 @@ export interface Beacon {
   beaconId: string;
 }
 
-registerRouter.post('/', (request: Request, response: Response) => {
+registerRouter.post('/', async (request: Request, response: Response) => {
   const body = request.body;
   const beaconId = body.beaconId;
 

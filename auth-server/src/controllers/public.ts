@@ -14,13 +14,13 @@ const generateNickname = () => {
   return hri.random();
 };
 
-publicRouter.get('/', (request: Request, response: Response) => {
+publicRouter.get('/', async (request: Request, response: Response) => {
   response.status(200).send(publicBeacons);
 });
 
 publicRouter.post(
   '/',
-  (request: Request & DecodedToken, response: Response) => {
+  async (request: Request & DecodedToken, response: Response) => {
     // Beacon ID is stored in the token
     // The body of the POST request should be empty
     const beaconId = request.decodedToken.beaconId;
@@ -37,7 +37,7 @@ publicRouter.post(
 
 publicRouter.delete(
   '/:beaconId',
-  (request: Request & DecodedToken, response: Response) => {
+  async (request: Request & DecodedToken, response: Response) => {
     // Note: Express seems to decode URL encoded request.params automatically
     const beaconId = request.decodedToken.beaconId;
     const beacon = find(request.params.beaconId);
