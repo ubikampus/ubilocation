@@ -4,10 +4,6 @@ import styled from 'styled-components';
 import { Transition } from 'react-spring/renderprops';
 
 import AboutContainer from './aboutContainer';
-import {
-  GenuineBusContainer,
-  MockBusContainer,
-} from './3dVisualisation/screenContainer';
 import UrlPromptContainer from './location/urlPromptContainer';
 import MapContainer from './map/mapContainer';
 import AdminPanel, { AndroidLocation } from './admin/adminPanel';
@@ -313,9 +309,6 @@ const Router = ({ appConfig }: Props) => {
                 />
               )}
             />
-
-            <Route exact path="/mockviz" component={MockBusContainer} />
-            <Route exact path="/viz" component={GenuineBusContainer} />
 
             {/* catch everything else */}
             <Route component={NotFound} />
