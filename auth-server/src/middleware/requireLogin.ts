@@ -15,7 +15,7 @@ const getTokenFrom = (req: Request) => {
   return authorization.substring(7);
 };
 
-export const requireAdminLogin = (
+export const requireAdminToken = (
   req: Request & DecodedToken,
   res: Response,
   next: () => void

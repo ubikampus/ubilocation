@@ -46,7 +46,7 @@ publicRouter.delete(
       return response.status(404).json({ error: 'unknown beacon ID' });
     }
 
-    if (!beacon.beaconId === beaconId) {
+    if (beacon.beaconId !== beaconId) {
       return response.status(403).json({ error: 'access forbidden' });
     }
 

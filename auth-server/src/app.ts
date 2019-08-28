@@ -4,7 +4,7 @@ import sign from './signer';
 import fs from 'fs';
 import cors from 'cors';
 import {
-  requireAdminLogin,
+  requireAdminToken,
   requireBeaconToken,
 } from './middleware/requireLogin';
 import loginRouter from './controllers/login';
@@ -25,7 +25,7 @@ app.post('/public', requireBeaconToken);
 app.delete('/public/:beaconId', requireBeaconToken);
 app.use('/public', publicRouter);
 
-app.use('/sign', requireAdminLogin);
+app.use('/sign', requireAdminToken);
 
 app.post('/sign', async (req, res) => {
   const message = req.body.message;
