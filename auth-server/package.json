@@ -34,7 +34,8 @@
     "tslint": "^5.18.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "^3.5.3"
+    "typescript": "^3.5.3",
+    "ubimqtt": "^2.0.5"
   },
   "devDependencies": {
     "supertest": "^4.0.2",

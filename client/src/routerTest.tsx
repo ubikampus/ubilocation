@@ -24,7 +24,7 @@ describe('<Router />', () => {
       INITIAL_LONGITUDE: 2.2,
       INITIAL_ZOOM: 10,
       MINIMUM_ZOOM: 5,
-      MQTT_URL: 'ws://example.com',
+      WEB_MQTT_URL: 'ws://example.com',
     };
 
     mount(<Router appConfig={config} />);

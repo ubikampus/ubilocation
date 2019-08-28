@@ -7,7 +7,7 @@ const config: RequestHandler = async (_, res) => {
     INITIAL_LONGITUDE: appConfig.INITIAL_LONGITUDE,
     INITIAL_ZOOM: appConfig.INITIAL_ZOOM,
     MINIMUM_ZOOM: appConfig.MINIMUM_ZOOM,
-    MQTT_URL: appConfig.MQTT_URL,
+    WEB_MQTT_URL: appConfig.WEB_MQTT_URL,
   } as ClientConfig);
 };
 

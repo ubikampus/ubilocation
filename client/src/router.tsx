@@ -16,6 +16,7 @@ import TokenStore, {
   ADMIN_STORE_ID,
   BEACON_STORE_ID,
 } from './common/tokenStore';
+import mqttClient from './common/mqttClient';
 import ShareLocationApi, { Beacon } from './map/shareLocationApi';
 import PublicBeaconList from './map/publicBeaconList';
 import BeaconIdModal from './map/beaconIdModal';
@@ -130,7 +131,7 @@ const Router = ({ appConfig }: Props) => {
   const [pinType, setPinType] = useState<PinKind>(initialPinType);
 
   const mqttHost =
-    queryParams && queryParams.host ? queryParams.host : appConfig.MQTT_URL;
+    queryParams && queryParams.host ? queryParams.host : appConfig.WEB_MQTT_URL;
   const beacons = useUbiMqtt(
     mqttHost,
     queryParams && queryParams.topic ? queryParams.topic : undefined
@@ -276,16 +277,21 @@ const Router = ({ appConfig }: Props) => {
                       }}
                       setNewName={setNewName}
                       onSubmit={_ => {
-                        console.log(
-                          'TODO: send to mqtt bus after signing the message'
-                        );
-
                         if (admin) {
-                          const message = JSON.stringify(devices);
+                          const formattedDevices = devices.map(d => {
+                            return {
+                              observerId: d.name,
+                              position: [d.lon, d.lat, d.height],
+                            };
+                          });
+
+                          const message = JSON.stringify(formattedDevices);
                           AuthApi.sign(message, admin.token).then(
                             signedMessage => {
-                              console.log('message:', message);
-                              console.log('signedMessage:', signedMessage);
+                              mqttClient.sendSignedMqttMessage(
+                                appConfig.WEB_MQTT_URL,
+                                JSON.stringify(signedMessage)
+                              );
                             }
                           );
                         }

@@ -1,7 +1,6 @@
-import process from 'process';
 import express from 'express';
-import sign from './signer';
-import fs from 'fs';
+import signRouter from './controllers/sign';
+import reservationRouter from './controllers/reservation';
 import cors from 'cors';
 import {
   requireAdminToken,
@@ -13,25 +12,20 @@ import registerRouter from './controllers/register';
 import publicRouter from './controllers/public';
 
 const app = express();
-const KEY_PATH = process.env.KEY_PATH || 'pkey.pem';
-const PKEY = fs.readFileSync(KEY_PATH);
 
 app.use(cors());
 app.use(express.json());
+
 app.use('/login', loginRouter);
+app.use('/reservations', reservationRouter);
+app.use('/sign', requireAdminToken);
+app.use('/sign', signRouter);
 app.use('/register', registerRouter);
 
 app.post('/public', requireBeaconToken);
 app.delete('/public/:beaconId', requireBeaconToken);
 app.use('/public', publicRouter);
 
-app.use('/sign', requireAdminToken);
-
-app.post('/sign', async (req, res) => {
-  const message = req.body.message;
-  const signed = await sign(PKEY, message);
-  res.json(signed);
-});
 app.get('/config', config);
 
 export default app;
