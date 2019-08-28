@@ -2,7 +2,7 @@ import React, { useState, FormEvent } from 'react';
 import { RouteComponentProps, withRouter, Redirect } from 'react-router';
 import LoginPrompt from './loginPrompt';
 import AuthApi, { Admin } from './authApi';
-import AdminTokenStore from './adminTokenStore';
+import TokenStore, { ADMIN_STORE_ID } from '../common/tokenStore';
 
 interface Props {
   admin: Admin | null;
@@ -21,13 +21,14 @@ const LoginContainer = ({
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const adminUser = await AuthApi.login({
+      const adminToken = await AuthApi.login({
         username,
         password,
       });
 
-      setAdmin(adminUser);
-      AdminTokenStore.set(adminUser);
+      setAdmin(adminToken);
+      const adminTokenStore = new TokenStore<Admin>(ADMIN_STORE_ID);
+      adminTokenStore.set(adminToken);
 
       setUsername('');
       setPassword('');

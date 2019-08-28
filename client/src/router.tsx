@@ -12,7 +12,10 @@ import NavBar from './common/navBar';
 
 import LoginPromptContainer from './admin/loginPromptContainer';
 import AuthApi, { Admin } from './admin/authApi';
-import AdminTokenStore from './admin/adminTokenStore';
+import TokenStore, {
+  ADMIN_STORE_ID,
+  BEACON_STORE_ID,
+} from './common/tokenStore';
 import ShareLocationApi, { Beacon } from './map/shareLocationApi';
 import PublicBeaconList from './map/publicBeaconList';
 import BeaconIdModal from './map/beaconIdModal';
@@ -92,7 +95,13 @@ const Router = ({ appConfig }: Props) => {
   const [beaconId, setBeaconId] = useState<string | null>(null);
   const [beaconToken, setBeaconToken] = useState<string | null>(null);
 
-  const setBeacon = (beacon: Beacon) => {
+  const setBeacon = (beacon: Beacon | null) => {
+    if (beacon === null) {
+      setBeaconId(null);
+      setBeaconToken(null);
+      return;
+    }
+
     setBeaconId(beacon.beaconId);
     setBeaconToken(beacon.token);
   };
@@ -133,11 +142,12 @@ const Router = ({ appConfig }: Props) => {
 
   const [isSettingsModeActive, setSettingsModeActive] = useState(false);
 
-  useEffect(() => {
-    const adminToken = AdminTokenStore.get();
-    setAdmin(adminToken);
+  const adminTokenStore = new TokenStore<Admin>(ADMIN_STORE_ID);
+  const beaconTokenStore = new TokenStore<Beacon>(BEACON_STORE_ID);
 
-    // TODO: read also beacon token from local store
+  useEffect(() => {
+    setAdmin(adminTokenStore.get());
+    setBeacon(beaconTokenStore.get());
 
     const fetchPublicBeacons = async () => {
       const pubBeacons = await ShareLocationApi.fetchPublicBeacons();
@@ -205,6 +215,7 @@ const Router = ({ appConfig }: Props) => {
           confirmId={async id => {
             const newBeacon = await ShareLocationApi.registerBeacon(id);
             setBeacon(newBeacon);
+            beaconTokenStore.set(newBeacon);
             setStaticLocations([]);
             setPinType('none');
             setCentralizeActive(false);
@@ -246,7 +257,7 @@ const Router = ({ appConfig }: Props) => {
                       newName={newName}
                       onLogout={() => {
                         setAdmin(null);
-                        AdminTokenStore.clear();
+                        adminTokenStore.clear();
                         openAdminPanel(false);
                       }}
                       setNewName={setNewName}
