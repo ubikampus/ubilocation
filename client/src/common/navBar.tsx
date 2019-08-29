@@ -233,6 +233,10 @@ const NavBar = ({
             <LeftMenuText>Map</LeftMenuText>
           </LeftMenuItem>
 
+          <LeftMenuItem to="/settings">
+            <LeftMenuText>Settings</LeftMenuText>
+          </LeftMenuItem>
+
           <LeftMenuItem to="/about">
             <LeftMenuText>About</LeftMenuText>
           </LeftMenuItem>

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ts-node-dev --respawn --files src/index.ts",
     "build": "NODE_ENV=production tsc --build tsconfig.json",
-    "test": "jest",
+    "test": "jest --forceExit",
     "coverage": "jest --silent --verbose --coverage --forceExit",
     "lint": "tslint -p .",
     "prepush": "npm run lint && npm run test",

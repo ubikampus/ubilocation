@@ -39,13 +39,15 @@ describe('<Router />', () => {
     const isShareLocationModalOpen = true;
     const isPublicShareOpen = false;
     const isCentralizationButtonActive = false;
+    const isSettingsModeActive = false;
 
     expect(
       isBeaconIdPromptOpen(
         beaconId,
         isShareLocationModalOpen,
         isPublicShareOpen,
-        isCentralizationButtonActive
+        isCentralizationButtonActive,
+        isSettingsModeActive
       )
     ).toBe(true);
   });
@@ -55,13 +57,15 @@ describe('<Router />', () => {
     const isShareLocationModalOpen = false;
     const isPublicShareOpen = true;
     const isCentralizationButtonActive = false;
+    const isSettingsModeActive = false;
 
     expect(
       isBeaconIdPromptOpen(
         beaconId,
         isShareLocationModalOpen,
         isPublicShareOpen,
-        isCentralizationButtonActive
+        isCentralizationButtonActive,
+        isSettingsModeActive
       )
     ).toBe(true);
   });

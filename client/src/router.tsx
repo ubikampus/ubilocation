@@ -4,11 +4,7 @@ import styled from 'styled-components';
 import { Transition } from 'react-spring/renderprops';
 
 import AboutContainer from './aboutContainer';
-import {
-  GenuineBusContainer,
-  MockBusContainer,
-} from './3dVisualisation/screenContainer';
-import UrlPromptContainer from './location/urlPromptContainer';
+import SettingsContainer from './settingsContainer';
 import MapContainer from './map/mapContainer';
 import AdminPanel, { AndroidLocation } from './admin/adminPanel';
 import { Location } from './common/typeUtil';
@@ -16,8 +12,11 @@ import NavBar from './common/navBar';
 
 import LoginPromptContainer from './admin/loginPromptContainer';
 import AuthApi, { Admin } from './admin/authApi';
+import TokenStore, {
+  ADMIN_STORE_ID,
+  BEACON_STORE_ID,
+} from './common/tokenStore';
 import mqttClient from './common/mqttClient';
-import AdminTokenStore from './admin/adminTokenStore';
 import ShareLocationApi, { Beacon } from './map/shareLocationApi';
 import PublicBeaconList from './map/publicBeaconList';
 import BeaconIdModal from './map/beaconIdModal';
@@ -52,7 +51,8 @@ export const isBeaconIdPromptOpen = (
   beaconId: string | null,
   isShareLocationModalOpen: boolean,
   isPublicShareOpen: boolean,
-  isCentralizationButtonActive: boolean
+  isCentralizationButtonActive: boolean,
+  isSettingsModeActive: boolean
 ) => {
   if (isCentralizationButtonActive) {
     return true;
@@ -63,6 +63,10 @@ export const isBeaconIdPromptOpen = (
   }
 
   if (isPublicShareOpen && beaconId === null) {
+    return true;
+  }
+
+  if (isSettingsModeActive) {
     return true;
   }
 
@@ -94,7 +98,13 @@ const Router = ({ appConfig }: Props) => {
   const [beaconId, setBeaconId] = useState<string | null>(null);
   const [beaconToken, setBeaconToken] = useState<string | null>(null);
 
-  const setBeacon = (beacon: Beacon) => {
+  const setBeacon = (beacon: Beacon | null) => {
+    if (beacon === null) {
+      setBeaconId(null);
+      setBeaconToken(null);
+      return;
+    }
+
     setBeaconId(beacon.beaconId);
     setBeaconToken(beacon.token);
   };
@@ -133,6 +143,11 @@ const Router = ({ appConfig }: Props) => {
     queryParams && queryParams.lat ? true : false
   );
 
+  const [isSettingsModeActive, setSettingsModeActive] = useState(false);
+
+  const adminTokenStore = new TokenStore<Admin>(ADMIN_STORE_ID);
+  const beaconTokenStore = new TokenStore<Beacon>(BEACON_STORE_ID);
+
   useEffect(() => {
     const fetchPublicBeacons = async () => {
       const pubBeacons = await ShareLocationApi.fetchPublicBeacons();
@@ -148,10 +163,10 @@ const Router = ({ appConfig }: Props) => {
     };
 
     window.addEventListener('resize', updateViewportHeight);
-    const adminUser = AdminTokenStore.get();
 
     fetchPublicBeacons();
-    setAdmin(adminUser);
+    setAdmin(adminTokenStore.get());
+    setBeacon(beaconTokenStore.get());
     updateViewportHeight();
     return () => {
       window.removeEventListener('resize', updateViewportHeight);
@@ -202,21 +217,26 @@ const Router = ({ appConfig }: Props) => {
         beaconId,
         isShareLocationModalOpen,
         publicShareOpen,
-        centralizeActive
+        centralizeActive,
+        isSettingsModeActive
       ) && (
         <BeaconIdModal
           onClose={() => {
             setCentralizeActive(false);
             openShareLocationModal(false);
             openPublicShare(false);
+            setSettingsModeActive(false);
           }}
           confirmId={async id => {
             const newBeacon = await ShareLocationApi.registerBeacon(id);
             setBeacon(newBeacon);
+            beaconTokenStore.set(newBeacon);
             setStaticLocations([]);
             setPinType('none');
             setCentralizeActive(false);
+            setSettingsModeActive(false);
           }}
+          currentBeaconId={beaconId}
         />
       )}
       <Fullscreen>
@@ -252,7 +272,7 @@ const Router = ({ appConfig }: Props) => {
                       newName={newName}
                       onLogout={() => {
                         setAdmin(null);
-                        AdminTokenStore.clear();
+                        adminTokenStore.clear();
                         openAdminPanel(false);
                       }}
                       setNewName={setNewName}
@@ -317,7 +337,18 @@ const Router = ({ appConfig }: Props) => {
                 />
               )}
             />
-            <Route exact path="/config" component={UrlPromptContainer} />
+
+            <Route
+              exact
+              path="/settings"
+              render={props => (
+                <SettingsContainer
+                  {...props}
+                  setSettingsModeActive={setSettingsModeActive}
+                />
+              )}
+            />
+
             <Route exact path="/about" component={AboutContainer} />
 
             <Route
@@ -331,9 +362,6 @@ const Router = ({ appConfig }: Props) => {
                 />
               )}
             />
-
-            <Route exact path="/mockviz" component={MockBusContainer} />
-            <Route exact path="/viz" component={GenuineBusContainer} />
 
             {/* catch everything else */}
             <Route component={NotFound} />

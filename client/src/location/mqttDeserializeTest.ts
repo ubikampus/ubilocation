@@ -1,11 +1,8 @@
 import Deserializer, {
-  mqttMessageToBabylon,
-  BabylonBeacon,
   MqttMessageDecoder,
   mqttMessageToGeo,
   geoCoordsToPlaneCoords,
 } from './mqttDeserialize';
-import * as t from 'io-ts';
 import { unsafeDecode } from '../common/typeUtil';
 
 export const exampleMqttMessage = (index: number) => {
@@ -23,23 +20,7 @@ export const exampleMqttMessage = (index: number) => {
   return unsafeDecode(MqttMessageDecoder, JSON.parse(rawMessage));
 };
 
-export const exampleMessages = (): BabylonBeacon[] => {
-  return Array.from(Array(10).keys()).map(index => {
-    const mqttMessage = exampleMqttMessage(index);
-    const location = mqttMessageToBabylon(mqttMessage);
-
-    return location;
-  });
-};
-
 describe('MQTT parsing', () => {
-  it('should parse x and y coords from the MQTT message', () => {
-    const parsed = exampleMessages();
-
-    expect(parsed[0].xMeters).toBeTruthy();
-    expect(parsed[0].yMeters).toBeTruthy();
-  });
-
   it('should return empty list for odd input', () => {
     const parser = new Deserializer();
     const res = parser.deserializeMessage('asdfasdf');

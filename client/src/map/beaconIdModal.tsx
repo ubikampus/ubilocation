@@ -24,11 +24,6 @@ const IdInput = styled.input`
   color: #24292e;
 `;
 
-interface Props {
-  confirmId(id: string): void;
-  onClose(): void;
-}
-
 const InstructionListItem = styled.li`
   line-height: 1.3;
   margin: 5px 0;
@@ -66,9 +61,17 @@ const PlayStoreLink = styled.a`
   }
 `;
 
-const BeaconIdModal = ({ confirmId, onClose }: Props) => {
+interface Props {
+  confirmId(id: string): void;
+  onClose(): void;
+  currentBeaconId: string | null;
+}
+
+const BeaconIdModal = ({ confirmId, onClose, currentBeaconId }: Props) => {
   const [isOpen, setIsOpen] = useState(true);
-  const [beaconId, setBeaconId] = useState('');
+  const [beaconId, setBeaconId] = useState(
+    currentBeaconId ? currentBeaconId : ''
+  );
 
   useEffect(() => {
     return () => {
