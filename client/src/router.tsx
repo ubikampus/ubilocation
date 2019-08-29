@@ -18,7 +18,8 @@ import TokenStore, {
 } from './common/tokenStore';
 import mqttClient from './common/mqttClient';
 import ShareLocationApi, { Beacon } from './map/shareLocationApi';
-import PublicBeaconList from './map/publicBeaconList';
+import { PublicBeacon } from './map/shareLocationApi';
+import PublicBeacons from './map/publicBeacons';
 import BeaconIdModal from './map/beaconIdModal';
 import ShareLocationModal from './map/shareLocationModal';
 import PublicShareModal from './map/publicShareModal';
@@ -109,9 +110,7 @@ const Router = ({ appConfig }: Props) => {
     setBeaconToken(beacon.token);
   };
 
-  const [publicBeacons, setPublicBeacons] = useState<PublicBeaconList>(
-    new PublicBeaconList([])
-  );
+  const [publicBeacons, setPublicBeacons] = useState<PublicBeacon[]>([]);
 
   /**
    * Used when user selects "only current" from the location prompt.
@@ -151,8 +150,7 @@ const Router = ({ appConfig }: Props) => {
   useEffect(() => {
     const fetchPublicBeacons = async () => {
       const pubBeacons = await ShareLocationApi.fetchPublicBeacons();
-      const pubBeaconsList = new PublicBeaconList(pubBeacons);
-      setPublicBeacons(pubBeaconsList);
+      setPublicBeacons(pubBeacons);
     };
 
     const updateViewportHeight = () => {
@@ -192,23 +190,23 @@ const Router = ({ appConfig }: Props) => {
 
             if (enable) {
               const pubBeacon = await ShareLocationApi.publish(beaconToken);
-              publicBeacons.update(pubBeacon);
+              setPublicBeacons(PublicBeacons.update(publicBeacons, pubBeacon));
 
               console.log('published our location as user', pubBeacon.nickname);
             } else {
               try {
                 console.log('disabling public location sharing');
-                publicBeacons.remove(beaconId);
+                setPublicBeacons(PublicBeacons.remove(publicBeacons, beaconId));
                 await ShareLocationApi.unpublish(beaconId, beaconToken);
               } catch (e) {
                 // The beacon we tried to remove doesn't exist on the server
                 // This could happen, e.g. because the server was restarted
                 console.log('cannot unpublish', beaconId);
-                console.log(e.message());
+                console.log(e.message);
               }
             }
           }}
-          publicBeacon={publicBeacons.find(beaconId)}
+          publicBeacon={PublicBeacons.find(publicBeacons, beaconId)}
           onClose={() => openPublicShare(false)}
           isOpen={publicShareOpen}
         />
@@ -333,7 +331,7 @@ const Router = ({ appConfig }: Props) => {
                   getDeviceLocation={getDeviceLocation}
                   setDeviceLocation={setDeviceLocation}
                   isAdminPanelOpen={isAdminPanelOpen}
-                  publicBeacons={publicBeacons.asList()}
+                  publicBeacons={publicBeacons}
                 />
               )}
             />
