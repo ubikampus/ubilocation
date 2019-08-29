@@ -27,7 +27,7 @@ const MessageLocationShared = t.type({
    */
   xr: t.number,
   yr: t.number,
-  zr: t.number,
+  zr: t.union([t.number, t.undefined]),
 
   /**
    * Should be from -1.0 to 1.0;
@@ -44,7 +44,7 @@ export const MqttMessageDecoder = t.intersection([
   t.type({
     x: t.number,
     y: t.number,
-    z: t.number,
+    z: t.union([t.number, t.undefined]),
   }),
 ]);
 
@@ -53,7 +53,7 @@ export type MqttMessage = t.TypeOf<typeof MqttMessageDecoder>;
 export type BeaconGeoLocation = t.TypeOf<typeof MessageLocationShared> & {
   lat: number;
   lon: number;
-  height: number;
+  height: number | null;
 };
 
 /**
@@ -87,7 +87,7 @@ export const mqttMessageToGeo = (message: MqttMessage): BeaconGeoLocation => {
     ...message,
     lat: finalCoords.geometry.coordinates[1],
     lon: finalCoords.geometry.coordinates[0],
-    height: message.z,
+    height: message.z ? message.z : null,
   };
 };
 
