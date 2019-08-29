@@ -7,7 +7,7 @@ const PKEY = fs.readFileSync(KEY_PATH);
 
 const signRouter = Router();
 
-signRouter.get('/', async (request, response) => {
+signRouter.post('/', async (request, response) => {
   const message = request.body.message;
   const signed = await sign(PKEY, message);
   response.json(signed);
