@@ -1,6 +1,6 @@
 ## Ubilocation-client
 
-[![Build Status](https://travis-ci.org/ubikampus/ubilocation.svg?branch=master)](https://travis-ci.org/ubikampus/ubilocation)
+[![Build Status](https://travis-ci.org/ubikampus/ubilocation-client.svg?branch=master)](https://travis-ci.org/ubikampus/ubilocation-client)
 [![codecov](https://codecov.io/gh/ubikampus/ubilocation-client/branch/master/graph/badge.svg)](https://codecov.io/gh/ubikampus/ubilocation-client)
 
 Ubilocation-client is a map application for Ubikampus Bluetooth tracking project. See
