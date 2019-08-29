@@ -1,8 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router';
 import styled from 'styled-components';
-// TODO: add missing file
-// import githubLogo from '../asset/GitHub-Mark-Light-64px.png';
+import githubLogo from '../asset/GitHub-Mark-Light-64px.png';
 import { PrimaryButton } from '../src/common/button';
 
 /** Container */
@@ -171,7 +170,7 @@ const AboutContainer = () => (
           <Headline>Ubikampus Location Service</Headline>
           <a href="https://github.com/ubikampus/ubi-Indoor-Positioning">
             <ButtonComponent>
-              <Logo src="TODO add real url" />
+              <Logo src={githubLogo} />
               <ButtonText>View on GitHub</ButtonText>
             </ButtonComponent>
           </a>
