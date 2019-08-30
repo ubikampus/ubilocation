@@ -88,9 +88,6 @@ const Router = ({ appConfig }: Props) => {
   const [newName, setNewName] = useState('');
   const [newHeight, setNewHeight] = useState('');
 
-  // setRoomReserved can be used for controlling room reservation status.
-  // TODO: use genuine MQTT bus data for room reservation status
-  const [roomReserved, setRoomReserved] = useState(false);
   const [isShareLocationModalOpen, openShareLocationModal] = useState(false);
   const [isShareLocationDropdownOpen, openShareLocationDropdown] = useState(
     false
@@ -326,7 +323,6 @@ const Router = ({ appConfig }: Props) => {
                   staticLocations={staticLocations}
                   setCentralizeActive={setCentralizeActive}
                   beaconId={beaconId}
-                  roomReserved={roomReserved}
                   devices={devices}
                   getDeviceLocation={getDeviceLocation}
                   setDeviceLocation={setDeviceLocation}
