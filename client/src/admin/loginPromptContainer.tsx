@@ -1,7 +1,7 @@
 import React, { useState, FormEvent } from 'react';
 import { RouteComponentProps, withRouter, Redirect } from 'react-router';
 import LoginPrompt from './loginPrompt';
-import AuthApi, { Admin } from './authApi';
+import AuthApi, { Admin } from './api';
 import TokenStore, { ADMIN_STORE_ID } from '../common/tokenStore';
 
 interface Props {

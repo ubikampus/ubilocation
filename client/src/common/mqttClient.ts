@@ -1,5 +1,5 @@
 import UbiMqtt from 'ubimqtt';
-import authApi, { Admin } from '../admin/authApi';
+import authApi, { Admin } from '../admin/api';
 import TokenStore, { ADMIN_STORE_ID } from './tokenStore';
 
 let connected = false;
@@ -23,7 +23,7 @@ const getConnection = async (mqttUrl: string): Promise<any> => {
   });
 };
 
-const sendSignedMqttMessage = async (mqttUrl: string, message: string) => {
+const sendAndroidLocations = async (mqttUrl: string, message: string) => {
   let token: string | null = null;
   const admin = new TokenStore<Admin>(ADMIN_STORE_ID).get();
   if (admin) {
@@ -48,4 +48,4 @@ const sendSignedMqttMessage = async (mqttUrl: string, message: string) => {
   }
 };
 
-export default { sendSignedMqttMessage };
+export default { sendAndroidLocations };

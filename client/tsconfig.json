@@ -6,6 +6,7 @@
     "strict": true,
     "target": "es5",
     "allowJs": true,
+    "noUnusedLocals": true,
     "esModuleInterop": true,
     "jsx": "react"
   }

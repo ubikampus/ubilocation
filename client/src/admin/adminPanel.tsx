@@ -1,9 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import { animated } from 'react-spring';
-
-import { PrimaryButton, SecondaryButton } from '../common/button';
+import { Transition } from 'react-spring/renderprops';
 import { TiChevronLeft } from 'react-icons/ti';
+
+import {
+  PrimaryButton,
+  SecondaryButton,
+  SidebarCloseButton,
+} from '../common/button';
 import { Location } from '../common/typeUtil';
 import { geoCoordsToPlaneCoords } from '../location/mqttDeserialize';
 
@@ -89,41 +94,25 @@ const Sidebar = styled(animated.nav)`
   background-color: white;
 `;
 
+const HeaderRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
 interface Props {
   getDeviceLocation: Location | null;
+  isAdminPanelOpen: boolean;
   devices: AndroidLocation[];
   setDevices(a: AndroidLocation[]): void;
   onCancel(): void;
   onSubmit(a: AndroidLocation[]): void;
   resetDeviceLocation(): void;
   onLogout(): void;
-  style: object;
   newName: string;
   setNewName(a: string): void;
   newHeight: string;
   setNewHeight(a: string): void;
 }
-
-const HeaderRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
-const CloseButton = styled.div`
-  width: 30px;
-  height: 30px;
-  margin-top: -10px;
-  margin-right: -10px;
-  padding: 5px;
-
-  color: #4d4d4d;
-  cursor: pointer;
-
-  & > svg {
-    height: 100%;
-    width: 100%;
-  }
-`;
 
 const AdminPanel = ({
   getDeviceLocation,
@@ -131,7 +120,7 @@ const AdminPanel = ({
   setDevices,
   onCancel,
   onSubmit,
-  style,
+  isAdminPanelOpen,
   onLogout,
   resetDeviceLocation,
   newName,
@@ -139,85 +128,104 @@ const AdminPanel = ({
   newHeight,
   setNewHeight,
 }: Props) => (
-  <Sidebar style={style}>
-    <SidebarContent>
-      <div>
-        <HeaderRow>
-          <CalibrationHeader>Set Android scanner locations</CalibrationHeader>
-          <CloseButton>
-            <TiChevronLeft onClick={() => onCancel()} />
-          </CloseButton>
-        </HeaderRow>
-        <InfoSection>
-          Click location on map, and enter name and height in millimeters for
-          the Android device. Height should be given relative to the second
-          floor.
-        </InfoSection>
-        {devices.map((device, i) => (
-          <AndroidRow key={'rpi-' + i}>
-            <AndroidHeader>{device.name}</AndroidHeader>
-            <LocationRow>
-              N {device.lat.toFixed(6)}° E {device.lon.toFixed(6)}° x:
-              {geoCoordsToPlaneCoords(device, device.height).x} y:
-              {geoCoordsToPlaneCoords(device, device.height).y} z:
-              {device.height}
-            </LocationRow>
-          </AndroidRow>
-        ))}
-        <Divider />
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            if (getDeviceLocation) {
-              const newDevice = {
-                name: newName,
-                lat: getDeviceLocation.lat,
-                lon: getDeviceLocation.lon,
-                height: parseInt(newHeight, 10),
-              };
-              setDevices([...devices, newDevice]);
-              setNewName('');
-              setNewHeight('');
-              resetDeviceLocation();
-            }
-          }}
-        >
-          <InputRow>
-            <InputCol>
-              <Input
-                placeholder="Device name"
-                value={newName}
-                onChange={e => setNewName(e.target.value)}
-              />
-              <Input
-                placeholder="Height mm"
-                value={newHeight}
-                type="number"
-                onChange={e => setNewHeight(e.target.value)}
-              />
-            </InputCol>
-            <PrimaryButton
-              disabled={
-                getDeviceLocation === null || newName === '' || newHeight === ''
-              }
-            >
-              Add new
-            </PrimaryButton>
-          </InputRow>
-        </form>
-        <CancelButton onClick={() => onCancel()}>Cancel</CancelButton>
-        <SecondaryButton
-          disabled={devices.length === 0}
-          onClick={() => onSubmit(devices)}
-        >
-          Submit
-        </SecondaryButton>
-      </div>
-      <BottomRow>
-        <SecondaryButton onClick={() => onLogout()}>Log out</SecondaryButton>
-      </BottomRow>
-    </SidebarContent>
-  </Sidebar>
+  <Transition
+    items={isAdminPanelOpen}
+    from={{ marginLeft: -350 }}
+    enter={{ marginLeft: 0 }}
+    leave={{ marginLeft: -350 }}
+    config={{ mass: 1, tension: 275, friction: 25, clamp: true }}
+  >
+    {show =>
+      show &&
+      (props => (
+        <Sidebar style={props}>
+          <SidebarContent>
+            <div>
+              <HeaderRow>
+                <CalibrationHeader>
+                  Set Android scanner locations
+                </CalibrationHeader>
+                <SidebarCloseButton>
+                  <TiChevronLeft onClick={() => onCancel()} />
+                </SidebarCloseButton>
+              </HeaderRow>
+              <InfoSection>
+                Click location on map, and enter name and height in millimeters
+                for the Android device. Height should be given relative to the
+                second floor.
+              </InfoSection>
+              {devices.map((device, i) => (
+                <AndroidRow key={'rpi-' + i}>
+                  <AndroidHeader>{device.name}</AndroidHeader>
+                  <LocationRow>
+                    N {device.lat.toFixed(6)}° E {device.lon.toFixed(6)}° x:
+                    {geoCoordsToPlaneCoords(device, device.height).x} y:
+                    {geoCoordsToPlaneCoords(device, device.height).y} z:
+                    {device.height}
+                  </LocationRow>
+                </AndroidRow>
+              ))}
+              <Divider />
+              <form
+                onSubmit={e => {
+                  e.preventDefault();
+                  if (getDeviceLocation) {
+                    const newDevice = {
+                      name: newName,
+                      lat: getDeviceLocation.lat,
+                      lon: getDeviceLocation.lon,
+                      height: parseInt(newHeight, 10),
+                    };
+                    setDevices([...devices, newDevice]);
+                    setNewName('');
+                    setNewHeight('');
+                    resetDeviceLocation();
+                  }
+                }}
+              >
+                <InputRow>
+                  <InputCol>
+                    <Input
+                      placeholder="Device name"
+                      value={newName}
+                      onChange={e => setNewName(e.target.value)}
+                    />
+                    <Input
+                      placeholder="Height mm"
+                      value={newHeight}
+                      type="number"
+                      onChange={e => setNewHeight(e.target.value)}
+                    />
+                  </InputCol>
+                  <PrimaryButton
+                    disabled={
+                      getDeviceLocation === null ||
+                      newName === '' ||
+                      newHeight === ''
+                    }
+                  >
+                    Add new
+                  </PrimaryButton>
+                </InputRow>
+              </form>
+              <CancelButton onClick={() => onCancel()}>Cancel</CancelButton>
+              <SecondaryButton
+                disabled={devices.length === 0}
+                onClick={() => onSubmit(devices)}
+              >
+                Submit
+              </SecondaryButton>
+            </div>
+            <BottomRow>
+              <SecondaryButton onClick={() => onLogout()}>
+                Log out
+              </SecondaryButton>
+            </BottomRow>
+          </SidebarContent>
+        </Sidebar>
+      ))
+    }
+  </Transition>
 );
 
 export default animated(AdminPanel);

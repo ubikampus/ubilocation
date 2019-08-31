@@ -41,7 +41,21 @@ export const PrimaryButton = styled(Button)`
   }
 `;
 
-export default Button;
+export const SidebarCloseButton = styled.div`
+  width: 30px;
+  height: 30px;
+  margin-top: -10px;
+  margin-right: -10px;
+  padding: 5px;
+
+  color: #4d4d4d;
+  cursor: pointer;
+
+  & > svg {
+    height: 100%;
+    width: 100%;
+  }
+`;
 
 export const CentralizationButton = styled.div`
   && {
@@ -52,3 +66,5 @@ export const CentralizationButton = styled.div`
   margin-top: 10px;
   z-index: 1000;
 `;
+
+export default Button;

@@ -31,14 +31,32 @@ const fetchPublicBeacons = async (): Promise<PublicBeacon[]> => {
 const publish = async (token: string): Promise<PublicBeacon> => {
   const config = getConfig(token);
   const response = await axios.post<PublicBeacon>(PUBLIC_URL, {}, config);
+  console.log('published our location as user', response.data.nickname);
+
   return response.data;
 };
 
-const unpublish = async (beaconId: string, token: string): Promise<{}> => {
+const attemptUnpublish = async (
+  beaconId: string,
+  token: string
+): Promise<{}> => {
   const url = `${PUBLIC_URL}/${encodeURIComponent(beaconId)}`;
   const config = getConfig(token);
-  const response = await axios.delete<{}>(url, config);
-  return response.data;
+
+  try {
+    const response = await axios.delete<{}>(url, config);
+    console.log('disabled public location sharing');
+
+    return response.data;
+  } catch (e) {
+    if (e.response.status === 404) {
+      console.log(`cannot unpublish ${beaconId} because it doesn't exist`);
+    } else {
+      console.error('unknown error when unpublishing beacon', e);
+    }
+
+    return {};
+  }
 };
 
 const getConfig = (token: string): AxiosRequestConfig => {
@@ -53,5 +71,5 @@ export default {
   registerBeacon,
   fetchPublicBeacons,
   publish,
-  unpublish,
+  attemptUnpublish,
 };
