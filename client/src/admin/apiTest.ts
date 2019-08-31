@@ -26,6 +26,6 @@ describe('server api', () => {
     location.name = 'android-2';
 
     const formatted = JSON.parse(formatAndroidLocations([location]));
-    expect(formatted[0].beaconId).toBe('android-2');
+    expect(formatted[0].observerId).toBe('android-2');
   });
 });
