@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Marker } from 'react-map-gl';
 import { RouteComponentProps, withRouter } from 'react-router';
 
-import applyMapboxColors from './shapeDraw/mapboxStyle';
-import { CentralizationButton } from '../common/button';
+import mapStyle from './shapeDraw/mapboxStyle';
 import UbikampusMap, { flyToUserlocation } from './ubikampusMap';
 import QrCodeModal from './qrCodeModal';
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
@@ -12,7 +11,6 @@ import { AndroidLocation } from '../admin/adminPanel';
 import {
   StaticUbiMarker,
   OfflineMarker,
-  NonUserMarker,
   PrivateLocationMarker,
   PublicLocationMarker,
   LocationMarker,
@@ -52,7 +50,6 @@ interface Props {
   setDeviceLocation(a: Location): void;
   devices: AndroidLocation[];
   setPinType(a: PinKind): void;
-  roomReserved: boolean;
   staticLocations: BeaconGeoLocation[];
   publicBeacons: PublicBeacon[];
 }
@@ -68,7 +65,6 @@ const MapContainer = ({
   devices,
   staticLocations,
   lastKnownPosition,
-  roomReserved,
   setPinType,
   beaconId,
   pinType,
@@ -85,7 +81,6 @@ const MapContainer = ({
       ? { lat: queryParams.lat, lon: queryParams.lon }
       : { lat: appConfig.INITIAL_LATITUDE, lon: appConfig.INITIAL_LONGITUDE };
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const mapStyle = applyMapboxColors(roomReserved);
   const [modalText, setModalText] = useState('');
 
   const [pinCoordinates, setPinCoordinates] = useState(initialCoords);
