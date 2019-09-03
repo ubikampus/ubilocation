@@ -13,6 +13,9 @@ main repo [here](https://github.com/ubikampus/Bluetooth-location-server).
 
 ### Development
 
+Please see [Ubilocation-client project
+architecture](doc/architecture-and-development.md) for technical overview.
+
 1. In both `client` and `auth-server` directories run `npm install` (for git hooks and editor dependencies)
 1. Generate private key to /auth-server/pkey.pem with command `openssl ecparam
    -genkey -name secp521r1 -noout`
