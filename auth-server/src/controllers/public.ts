@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { DecodedToken } from '../middleware/requireLogin';
+import { asyncMiddleware } from '../middleware/asyncMiddleware';
 const hri = require('human-readable-ids').hri;
 const publicRouter = express.Router();
 
@@ -14,45 +15,52 @@ const generateNickname = () => {
   return hri.random();
 };
 
-publicRouter.get('/', async (request: Request, response: Response) => {
-  response.status(200).send(publicBeacons);
-});
+publicRouter.get(
+  '/',
+  asyncMiddleware(async (request: Request, response: Response) => {
+    response.status(200).send(publicBeacons);
+  })
+);
 
 publicRouter.post(
   '/',
-  async (request: Request & DecodedToken, response: Response) => {
-    // Beacon ID is stored in the token
-    // The body of the POST request should be empty
-    const beaconId = request.decodedToken.beaconId;
+  asyncMiddleware(
+    async (request: Request & DecodedToken, response: Response) => {
+      // Beacon ID is stored in the token
+      // The body of the POST request should be empty
+      const beaconId = request.decodedToken.beaconId;
 
-    const nickname = generateNickname();
-    const pubBeacon = { beaconId, nickname };
+      const nickname = generateNickname();
+      const pubBeacon = { beaconId, nickname };
 
-    remove(beaconId);
-    add(pubBeacon);
+      remove(beaconId);
+      add(pubBeacon);
 
-    response.status(200).send(pubBeacon);
-  }
+      response.status(200).send(pubBeacon);
+    }
+  )
 );
 
 publicRouter.delete(
   '/:beaconId',
-  async (request: Request & DecodedToken, response: Response) => {
-    // Note: Express seems to decode URL encoded request.params automatically
-    const beaconId = request.decodedToken.beaconId;
-    const beacon = find(request.params.beaconId);
+  asyncMiddleware(
+    async (request: Request & DecodedToken, response: Response) => {
+      // Note: Express seems to decode URL encoded request.params automatically
+      const beaconId = request.decodedToken.beaconId;
+      const beacon = find(request.params.beaconId);
 
-    if (!beacon) {
-      return response.status(404).json({ error: 'unknown beacon ID' });
+      if (!beacon) {
+        return response.status(404).json({ error: 'unknown beacon ID' });
+      }
+
+      if (beacon.beaconId !== beaconId) {
+        return response.status(403).json({ error: 'access forbidden' });
+      }
+
+      remove(beaconId);
+      response.status(200).send({});
     }
-
-    if (beacon.beaconId !== beaconId) {
-      return response.status(403).json({ error: 'access forbidden' });
-    }
-
-    remove(beaconId);
-    response.status(200).send({});
-  }
+  )
 );
 
 const find = (beaconId: string) => {

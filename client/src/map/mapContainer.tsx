@@ -50,7 +50,6 @@ interface Props {
   setDeviceLocation(a: Location): void;
   devices: AndroidLocation[];
   setPinType(a: PinKind): void;
-  staticLocations: BeaconGeoLocation[];
   publicBeacons: PublicBeacon[];
 }
 
@@ -63,7 +62,6 @@ const MapContainer = ({
   getDeviceLocation,
   beacons,
   devices,
-  staticLocations,
   lastKnownPosition,
   setPinType,
   beaconId,
@@ -105,7 +103,7 @@ const MapContainer = ({
 
   const UserMarker = isOnline ? Marker : OfflineMarker;
 
-  const staticMarkers = [...devices, ...staticLocations];
+  const staticMarkers = [...devices];
 
   const allStaticMarkers = getDeviceLocation
     ? [...staticMarkers, getDeviceLocation]

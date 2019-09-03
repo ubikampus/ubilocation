@@ -1,7 +1,8 @@
 import { RequestHandler } from 'express';
 import { appConfig, ClientConfig } from '../validation';
+import { asyncMiddleware } from '../middleware/asyncMiddleware';
 
-const config: RequestHandler = async (_, res) => {
+const config: RequestHandler = asyncMiddleware(async (_, res) => {
   await res.json({
     INITIAL_LATITUDE: appConfig.INITIAL_LATITUDE,
     INITIAL_LONGITUDE: appConfig.INITIAL_LONGITUDE,
@@ -9,6 +10,6 @@ const config: RequestHandler = async (_, res) => {
     MINIMUM_ZOOM: appConfig.MINIMUM_ZOOM,
     WEB_MQTT_URL: appConfig.WEB_MQTT_URL,
   } as ClientConfig);
-};
+});
 
 export default config;

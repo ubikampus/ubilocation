@@ -61,6 +61,32 @@ const PlayStoreLink = styled.a`
   }
 `;
 
+export const isBeaconIdPromptOpen = (
+  beaconId: string | null,
+  isShareLocationModalOpen: boolean,
+  isPublicShareOpen: boolean,
+  isCentralizationButtonActive: boolean,
+  isSettingsModeActive: boolean
+) => {
+  if (isCentralizationButtonActive) {
+    return true;
+  }
+
+  if (isShareLocationModalOpen && beaconId === null) {
+    return true;
+  }
+
+  if (isPublicShareOpen && beaconId === null) {
+    return true;
+  }
+
+  if (isSettingsModeActive) {
+    return true;
+  }
+
+  return false;
+};
+
 interface Props {
   confirmId(id: string): void;
   onClose(): void;
