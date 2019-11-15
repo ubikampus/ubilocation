@@ -21,6 +21,12 @@ interface StaticUbiMarkerProps {
   red?: boolean;
 }
 
+interface EyebudMarkerProps {
+  latitude: number;
+  longitude: number;
+  onClick: any;
+}
+
 export const StaticUbiMarker = ({
   latitude,
   longitude,
@@ -62,6 +68,16 @@ export const NonUserMarker = styled(OfflineMarker)`
 export const PrivateLocationMarker = styled(NonUserMarker)`
   background-color: green;
 `;
+
+export const EyebudLocationMarker = ({
+  latitude,
+  longitude,
+  onClick,
+}: EyebudMarkerProps) => (
+  <Marker latitude={latitude} longitude={longitude}>
+    <div onClick={onClick} className="mapboxgl-user-location-dot" />
+  </Marker>
+);
 
 export const PublicLocationMarker = styled(NonUserMarker)``;
 

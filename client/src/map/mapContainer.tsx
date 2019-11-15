@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Marker } from 'react-map-gl';
+import { Marker, Popup } from 'react-map-gl';
 import { RouteComponentProps, withRouter } from 'react-router';
 
 import mapStyle from './shapeDraw/mapboxStyle';
@@ -16,6 +16,7 @@ import {
   LocationMarker,
   divideMarkers,
   PinKind,
+  EyebudLocationMarker,
 } from './marker';
 import { Location } from '../common/typeUtil';
 import { Style } from 'mapbox-gl';
@@ -23,6 +24,7 @@ import { MapLocationQueryDecoder, parseQuery } from '../common/urlParse';
 import { ClientConfig } from '../common/environment';
 import { PublicBeacon } from './shareLocationApi';
 import SharedLocationMarkers from './sharedLocationMarkers';
+import { EyebudPopup } from './eyebud';
 
 /**
  * When user lands to the page with a position. Probs not needed as env
@@ -80,8 +82,11 @@ const MapContainer = ({
       : { lat: appConfig.INITIAL_LATITUDE, lon: appConfig.INITIAL_LONGITUDE };
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalText, setModalText] = useState('');
+  const [imgSrc, setImgSrc] = useState<null | string>(null);
 
   const [pinCoordinates, setPinCoordinates] = useState(initialCoords);
+
+  const [eyebudPopup, setEyebudPopup] = useState<any>(null);
 
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
@@ -155,6 +160,14 @@ const MapContainer = ({
           closeModal={closeModal}
           modalText={modalText}
         />
+        {eyebudPopup ? (
+          <EyebudPopup
+            eyebud={eyebudPopup}
+            imgSrc={imgSrc}
+            setEyebudPopup={setEyebudPopup}
+            setImgSrc={setImgSrc}
+          />
+        ) : null}
         <LocationMarker
           coords={pinCoordinates}
           onClick={openModal}
@@ -185,20 +198,37 @@ const MapContainer = ({
                 className="mapboxgl-user-location-dot"
               />
             ))
-          : publicMarkers.map((beacon, i) => (
-              <PublicLocationMarker
-                key={'publicLocationMarker' + i}
-                latitude={beacon.lat}
-                longitude={beacon.lon}
-                className="mapboxgl-user-location-dot"
-              >
-                {viewport.zoom >= SHOW_NICKNAMES_ABOVE_ZOOM_LEVEL && (
-                  <div style={{ fontSize: 11, paddingTop: 12 }}>
-                    {sharedMarkers.getNicknameForMarker(beacon)}
-                  </div>
-                )}
-              </PublicLocationMarker>
-            ))}
+          : publicMarkers.map((beacon, i) => {
+              if (beacon.beaconId.startsWith('eyebud')) {
+                return (
+                  <EyebudLocationMarker
+                    latitude={beacon.lat}
+                    longitude={beacon.lon}
+                    onClick={() =>
+                      setEyebudPopup({
+                        id: beacon.beaconId.substring(7),
+                        lat: beacon.lat,
+                        lon: beacon.lon,
+                      })
+                    }
+                  />
+                );
+              }
+              return (
+                <PublicLocationMarker
+                  key={'publicLocationMarker' + i}
+                  latitude={beacon.lat}
+                  longitude={beacon.lon}
+                  className="mapboxgl-user-location-dot"
+                >
+                  {viewport.zoom >= SHOW_NICKNAMES_ABOVE_ZOOM_LEVEL && (
+                    <div style={{ fontSize: 11, paddingTop: 12 }}>
+                      {sharedMarkers.getNicknameForMarker(beacon)}
+                    </div>
+                  )}
+                </PublicLocationMarker>
+              );
+            })}
       </UbikampusMap>
     </>
   );

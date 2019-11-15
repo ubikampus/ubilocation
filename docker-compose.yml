@@ -23,7 +23,7 @@ services:
       INITIAL_ZOOM: 18
       MINIMUM_ZOOM: 9
       WEB_MQTT_URL: ws://localhost:9001/mqtt
-      SERVER_MQTT_URL: mqtt://mqtt
+      SERVER_MQTT_URL: mqtt://localhost
       JWT_SECRET: secret
       ADMIN_USER: admin
       ADMIN_PASSWORD: "#Apollo11"

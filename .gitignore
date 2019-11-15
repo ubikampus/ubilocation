@@ -4,3 +4,4 @@ coverage
 .env
 *.pem
 auth-server/requests/
+.vscode
