@@ -3,7 +3,7 @@ import { Popup } from 'react-map-gl';
 import {
   eyebudCall,
   eyebudStream,
-  eyebudPicture, 
+  eyebudPicture,
 } from '../common/contactEyebud';
 
 interface EyebudPopupProps {
