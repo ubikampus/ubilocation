@@ -38,7 +38,14 @@ export const EyebudPopup = ({
       <div>
         Eyebud: {eyebud.id}
         <EyebudButton text="call" func={() => eyebudCall(eyebud.id)} />
-        <EyebudButton text="photo" func={() => eyebudPicture(eyebud.id)} />
+        <EyebudButton
+          text="photo"
+          func={() => {
+            eyebudPicture(eyebud.id).then(url =>
+              setTimeout(() => setImgSrc(url), 10000)
+            );
+          }}
+        />
         <EyebudButton text="stream" func={() => eyebudStream(eyebud.id)} />
         {imgSrc ? <img src={imgSrc} width={400} /> : null}
       </div>
