@@ -13,7 +13,7 @@ interface EyebudPopupProps {
   imgSrc: any;
 }
 
-const EYEBUD_PHOTO_URL = 'http://108.128.153.197:8181/photo/E3-028/';
+const EYEBUD_PHOTO_URL = 'http://108.128.153.197:8181/photo/';
 
 const EyebudButton = ({ text, func }: any) => (
   <div>
@@ -55,13 +55,14 @@ export const EyebudPopup = ({
             text={stream ? 'stop stream' : 'start stream'}
             func={() => {
               if (!stream) {
-                eyebudStream(eyebud.id).then(id => {
+                const eId = eyebud.id;
+                eyebudStream(eId).then(id => {
                   let incId = id;
 
                   setStream(
                     setInterval(() => {
                       setImgSrc(
-                        `${EYEBUD_PHOTO_URL}${incId}?time=${+new Date()}`
+                        `${EYEBUD_PHOTO_URL}${eId}/${incId}?time=${+new Date()}`
                       );
                       incId++;
                       incId %= 10;
