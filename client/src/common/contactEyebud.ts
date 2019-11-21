@@ -5,7 +5,7 @@ const EYEBUD_SERVER_URL = 'http://localhost:5000';
 export const eyebudCommand = async (id: number, command: string) => {
   const response = await Axios.post(EYEBUD_SERVER_URL, { id, command });
 
-  return response.data.url;
+  return response.data.id;
 };
 
 export const eyebudCall = async (id: number) => {
@@ -13,7 +13,7 @@ export const eyebudCall = async (id: number) => {
 };
 
 export const eyebudStream = async (id: number) => {
-  return await eyebudCommand(id, 'photo_stream');
+  return await eyebudCommand(id, 'start_photo_stream');
 };
 
 export const eyebudPicture = async (id: number) => {
