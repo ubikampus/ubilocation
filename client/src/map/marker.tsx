@@ -1,4 +1,4 @@
-import React, { MouseEvent } from 'react';
+import React, { MouseEvent, useState } from 'react';
 import styled from 'styled-components';
 import { Marker, Popup } from 'react-map-gl';
 
@@ -6,6 +6,7 @@ import LocationPin from './locationPin';
 import { Location } from '../common/typeUtil';
 import { BeaconGeoLocation } from '../location/mqttDeserialize';
 import partition = require('lodash/partition');
+import { taskCommand } from '../common/contactEyebud';
 
 const StaticMarker = styled.div<{ red?: boolean }>`
   svg {
@@ -25,6 +26,7 @@ interface EyebudMarkerProps {
   latitude: number;
   longitude: number;
   onClick: any;
+  children: any;
 }
 
 export const StaticUbiMarker = ({
@@ -73,9 +75,11 @@ export const EyebudLocationMarker = ({
   latitude,
   longitude,
   onClick,
+  children,
 }: EyebudMarkerProps) => (
   <Marker latitude={latitude} longitude={longitude}>
     <div onClick={onClick} className="mapboxgl-user-location-dot" />
+    {children}
   </Marker>
 );
 
@@ -88,6 +92,7 @@ interface PinProps {
   coords: Location;
   onClose(): void;
   onClick(a: MouseEvent<HTMLButtonElement>): void;
+  locateEmployees(lat: number, lon: number): BeaconGeoLocation[];
 }
 
 export const LocationMarker = ({
@@ -95,7 +100,12 @@ export const LocationMarker = ({
   type,
   coords,
   onClick,
+  locateEmployees,
 }: PinProps) => {
+  const [selected, setSelected] = useState('lifting');
+  const [details, setDetails] = useState('');
+  const [helper, setHelper] = useState<string | null>(null);
+
   switch (type) {
     case 'configure':
       return (
@@ -104,8 +114,41 @@ export const LocationMarker = ({
           anchor="bottom"
           longitude={coords.lon}
           latitude={coords.lat}
+          closeOnClick={false}
         >
-          <button onClick={onClick}>qr code</button>
+          <div>
+            <button onClick={onClick}>qr code</button>
+          </div>
+          select a job
+          <div>
+            <select
+              value={selected}
+              onChange={event => setSelected(event.target.value)}
+            >
+              <option value="lifting">lifting</option>
+              <option value="carrying">carrying</option>
+              <option value="thinking">thinking</option>
+            </select>
+          </div>
+          <div>
+            <input
+              type="text"
+              value={details}
+              onChange={event => setDetails(event.target.value)}
+            />
+          </div>
+          <div>
+            <button
+              onClick={() => {
+                const sorted = locateEmployees(coords.lat, coords.lon);
+                const names = sorted.map(s => s.beaconId.substring(7));
+                taskCommand(names, selected, details).then(setHelper);
+              }}
+            >
+              Request help
+            </button>
+            {helper ? <div>{helper} is coming to help </div> : null}
+          </div>
         </Popup>
       );
     case 'show':

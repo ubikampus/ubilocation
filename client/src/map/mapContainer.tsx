@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Marker, Popup } from 'react-map-gl';
+import { Marker } from 'react-map-gl';
 import { RouteComponentProps, withRouter } from 'react-router';
 
 import mapStyle from './shapeDraw/mapboxStyle';
@@ -25,6 +25,7 @@ import { ClientConfig } from '../common/environment';
 import { PublicBeacon } from './shareLocationApi';
 import SharedLocationMarkers from './sharedLocationMarkers';
 import { EyebudPopup } from './eyebud';
+import { locateEmployees } from '../admin/locateEmployee';
 
 /**
  * When user lands to the page with a position. Probs not needed as env
@@ -160,17 +161,12 @@ const MapContainer = ({
           closeModal={closeModal}
           modalText={modalText}
         />
-        {eyebudPopup ? (
-          <EyebudPopup
-            eyebud={eyebudPopup}
-            imgSrc={imgSrc}
-            setEyebudPopup={setEyebudPopup}
-            setImgSrc={setImgSrc}
-          />
-        ) : null}
         <LocationMarker
           coords={pinCoordinates}
           onClick={openModal}
+          locateEmployees={locateEmployees(
+            publicMarkers.filter(b => b.beaconId.startsWith('eyebud'))
+          )}
           onClose={() => setPinType('none')}
           type={pinType}
         />
@@ -211,7 +207,13 @@ const MapContainer = ({
                         lon: beacon.lon,
                       })
                     }
-                  />
+                  >
+                    {viewport.zoom >= SHOW_NICKNAMES_ABOVE_ZOOM_LEVEL && (
+                      <div style={{ fontSize: 11, paddingTop: 12 }}>
+                        {beacon.beaconId.substring(7)}
+                      </div>
+                    )}
+                  </EyebudLocationMarker>
                 );
               }
               return (
@@ -229,6 +231,14 @@ const MapContainer = ({
                 </PublicLocationMarker>
               );
             })}
+        {eyebudPopup ? (
+          <EyebudPopup
+            eyebud={eyebudPopup}
+            imgSrc={imgSrc}
+            setEyebudPopup={setEyebudPopup}
+            setImgSrc={setImgSrc}
+          />
+        ) : null}
       </UbikampusMap>
     </>
   );

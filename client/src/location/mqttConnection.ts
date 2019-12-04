@@ -45,6 +45,7 @@ export const useUbiMqtt = (host: string, topic?: string) => {
   const [beacons, setBeacons] = useState<BeaconGeoLocation[]>([]);
 
   useEffect(() => {
+    console.log('Use-effect-beacons', beacons);
     const ubiClient = new UbiMqtt(host, { silent: true });
     ubiClient.connect((error: any) => {
       if (error) {
