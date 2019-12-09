@@ -6,6 +6,7 @@ import {
   eyebudPicture,
   eyebudCommand,
 } from '../common/contactEyebud';
+import { EyebudListener } from '../common/eyebudListener';
 
 interface Eyebud {
   id: string;
@@ -27,13 +28,13 @@ const owners = new Map<string, string>([
   ['E3-030', 'Atte'],
 ]);
 
-const EYEBUD_PHOTO_URL = 'http://108.128.153.197:8181/photo/';
-
 const EyebudButton = ({ text, func }: any) => (
   <div>
     <button onClick={func}>{text}</button>
   </div>
 );
+
+const eyebudListener = new EyebudListener('ws://localhost:8001');
 
 export const EyebudPopup = ({
   setEyebudPopup,
@@ -42,7 +43,7 @@ export const EyebudPopup = ({
   imgSrc,
 }: EyebudPopupProps) => {
   // const [display, setDisplay] = useState<EyebudDisplay>(null);
-  const [stream, setStream] = useState<any>(null);
+  const [stream, setStream] = useState(false);
 
   return (
     <Popup
@@ -61,37 +62,22 @@ export const EyebudPopup = ({
         <EyebudButton
           text="photo"
           func={() => {
-            const eid = eyebud.id;
-            eyebudPicture(eyebud.id).then(id =>
-              setTimeout(
-                () => setImgSrc(`${EYEBUD_PHOTO_URL}${eid}/${id}`),
-                10000
-              )
-            );
+            eyebudPicture(eyebud.id);
+            eyebudListener.imageEventListener(eyebud.id, setImgSrc);
           }}
         />
         <EyebudButton
           text={stream ? 'stop stream' : 'start stream'}
           func={() => {
             if (!stream) {
-              const eId = eyebud.id;
-              eyebudStream(eId).then(id => {
-                let incId = id;
-
-                setStream(
-                  setInterval(() => {
-                    setImgSrc(
-                      `${EYEBUD_PHOTO_URL}${eId}/${incId}?time=${+new Date()}`
-                    );
-                    incId++;
-                    incId %= 10;
-                  }, 2000)
-                );
-              });
+              eyebudStream(eyebud.id);
+              eyebudListener.imageEventListener(eyebud.id, setImgSrc, true);
+              setStream(true);
             } else {
-              clearInterval(stream);
               setImgSrc(null);
-              setStream(null);
+              setStream(false);
+              eyebudCommand(eyebud.id, 'stop_photo_stream');
+              eyebudListener.stopListening();
             }
           }}
         />
@@ -108,7 +94,9 @@ export const EyebudPopup = ({
         >
           video
         </button>
-        {imgSrc ? <img src={imgSrc} width={400} /> : null}
+        {imgSrc ? (
+          <img src={imgSrc + `?date=${+new Date()}`} width={400} />
+        ) : null}
       </div>
     </Popup>
   );
