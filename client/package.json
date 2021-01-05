@@ -20,7 +20,7 @@
     "@types/d3-ease": "^1.0.8",
     "@types/react-modal": "^3.8.2",
     "@types/web-bluetooth": "0.0.4",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "babylonjs": "^4.0.3",
     "babylonjs-gui": "^4.0.3",
     "d3-ease": "^1.0.5",
